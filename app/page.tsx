@@ -20,7 +20,7 @@ function getArticles() {
 }
 
 // 🔧 NUOVA FUNZIONE: pulizia e formattazione titolo
-function formatSlug(slug) {
+function formatSlug(slug: string) {
     return slug
         .replace(/[-_]/g, " ")            // trasforma - e _ in spazio
         .replace(/[()'",.?!:;]/g, "")     // rimuove simboli
