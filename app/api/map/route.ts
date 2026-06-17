@@ -4,24 +4,44 @@ import { getUsers } from "@/auth/users";
 import fs from "fs";
 import path from "path";
 
-// On Vercel, the project root is read-only. We use /tmp for writable storage.
-// On first load, /tmp/map.json is initialized from the bundled data/map.json.
-const MAP_SEED = path.join(process.cwd(), "data", "map.json");
-const MAP_TMP = path.join("/tmp", "map.json");
+const SUPABASE_URL = process.env.SUPABASE_URL!;
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY!;
 
-function loadMap() {
-    // Prefer /tmp (mutable), fall back to bundled seed
-    const file = fs.existsSync(MAP_TMP) ? MAP_TMP : MAP_SEED;
-    const raw = fs.readFileSync(file, "utf-8");
+const MAP_SEED = path.join(process.cwd(), "data", "map.json");
+
+async function loadMap() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/map?id=eq.1`, {
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+        },
+        cache: "no-store",
+    });
+    const rows = await res.json();
+    if (rows && rows.length > 0) {
+        return rows[0].data;
+    }
+    // Fallback al seed locale
+    const raw = fs.readFileSync(MAP_SEED, "utf-8");
     return JSON.parse(raw);
 }
 
-function saveMap(data: object) {
-    fs.writeFileSync(MAP_TMP, JSON.stringify(data, null, 2));
+async function saveMap(data: object) {
+    await fetch(`${SUPABASE_URL}/rest/v1/map?id=eq.1`, {
+        method: "PATCH",
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal",
+        },
+        body: JSON.stringify({ data }),
+    });
 }
 
 export async function GET() {
-    return NextResponse.json(loadMap());
+    const map = await loadMap();
+    return NextResponse.json(map);
 }
 
 export async function POST(req: NextRequest) {
@@ -34,6 +54,6 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    saveMap(body);
+    await saveMap(body);
     return NextResponse.json({ ok: true });
 }
