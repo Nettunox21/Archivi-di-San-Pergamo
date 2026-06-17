@@ -1,0 +1,44 @@
+export const factions = [
+    {
+        name: "San Pergamo",
+        banner: "/images/SanPergamoBanner.jpeg",
+        description: "Nazione dell'Ordine",
+        info: "Fondata dal Priore",
+        slug: "san-pergamo",
+    },
+    {
+        name: "Profitgrado",
+        banner: "/images/ProfitgradoBanner.jpeg",
+        description: "Capital City",
+        info: "Principe erede di Von Profit",
+        slug: "profitgrado",
+    },
+    {
+        name: "Falconia",
+        banner: "/images/FalconiaBanner.jpeg",
+        description: "Regno dei Falchi",
+        info: "Sovrano erede di Arstozka",
+        slug: "falconia",
+    },
+    {
+        name: "SENPAI",
+        banner: "/images/SENPAIBanner.jpeg",
+        description: "Luogo di nascita dell'MRP",
+        info: "San Ernesto – Pergamo (e) Profitgrado Atomic Institute",
+        slug: "senpai",
+    },
+    {
+        name: "FIORD",
+        banner: "/images/FIORDBanner.jpeg",
+        description: "Descrizione breve della fazione.",
+        info: "Informazioni aggiuntive",
+        slug: "fiord",
+    },
+    {
+        name: "Calkiria",
+        banner: "/images/CalkiriaBanner.jpeg",
+        description: "Descrizione breve della fazione.",
+        info: "Informazioni aggiuntive",
+        slug: "Calkiria",
+    },
+];

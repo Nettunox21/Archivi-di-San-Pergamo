@@ -1,0 +1,62 @@
+[
+  {
+    "username": "HubRis504",
+    "password": "S4nP3rg4moM3rd4",
+    "role": "user",
+    "avatar": "/avatars/hubris504.png"
+  },
+  {
+    "username": "PoleMos600",
+    "password": "APiazzaTienamenÈSuccessoQualcosa",
+    "role": "user",
+    "avatar": "/avatars/polemos600.png"
+  },
+  {
+    "username": "ApoRia432",
+    "password": "See you tomorrow!",
+    "role": "user",
+    "avatar": "/avatars/aporia432.png"
+  },
+  {
+    "username": "EleOs252",
+    "password": "See you tomorrow!",
+    "role": "user",
+    "avatar": "/avatars/eleos252.png"
+  },
+  {
+    "username": "EpieiKeia216",
+    "password": "See you tomorrow!",
+    "role": "user",
+    "avatar": "/avatars/epieikeia216.png"
+  },
+  {
+    "username": "KaLos618",
+    "password": "See you tomorrow!",
+    "role": "user",
+    "avatar": "/avatars/kalos618.png"
+  },
+  {
+    "username": "OreXis945",
+    "password": "iLoveboothillbuttcheeks89",
+    "role": "user",
+    "avatar": "/avatars/orexis945.png"
+  },
+  {
+    "username": "NeiKos496",
+    "password": "See you tomorrow!",
+    "role": "user",
+    "avatar": "/avatars/neikos496.png"
+  },
+  {
+    "username": "PhiLia093",
+    "password": "See you tomorrow!",
+    "role": "user",
+    "avatar": "/avatars/philia093.png"
+  },
+  {
+    "username": "SkeMma720",
+    "password": "ZandarWasRightX21",
+    "role": "admin",
+    "avatar": "/avatars/skemma720.png"
+  }
+]

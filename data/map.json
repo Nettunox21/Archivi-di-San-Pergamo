@@ -1,0 +1,44 @@
+{
+  "width": 100,
+  "height": 100,
+  "cells": [
+    {
+      "x": 5,
+      "y": 5,
+      "type": "faction",
+      "faction": "San Pergamo",
+      "city": "La Capitale"
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "type": "faction",
+      "faction": "Profitgrado",
+      "city": "Porto Ricco"
+    },
+    {
+      "x": 7,
+      "y": 5,
+      "type": "neutral"
+    },
+    {
+      "x": 8,
+      "y": 5,
+      "type": "common"
+    },
+    {
+      "x": 51,
+      "y": 2,
+      "type": "faction",
+      "faction": "Falconia",
+      "city": "Duloc"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "type": "faction",
+      "faction": "Calkiria",
+      "city": "Calcare"
+    }
+  ]
+}
