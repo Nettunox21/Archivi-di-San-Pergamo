@@ -41,4 +41,11 @@ export const factions = [
         info: "Informazioni aggiuntive",
         slug: "Calkiria",
     },
+    {
+        name: "Lil'Pisa",
+        banner: "/images/LilPisaBanner.jpeg",
+        description: "Descrizione breve della fazione.",
+        info: "Informazioni aggiuntive",
+        slug: "Calkiria",
+    },
 ];
