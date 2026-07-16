@@ -1,8 +1,6 @@
 ---
 title: "Profitgrado colpisce ancora?"
-images:
-  - "/images/notizie/trattato-duloc-1.jpg"
-  - "/images/notizie/trattato-duloc-2.jpg"
+images: "/images/notizie/SP_chernobyl.jpg"
 date: "16 Luglio, anno del Priore"
 location: "Priorato"
 reporter: "Cittadino di San Pergamo"
