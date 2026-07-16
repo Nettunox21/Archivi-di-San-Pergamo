@@ -7,7 +7,7 @@ import matter from "gray-matter";
 export interface NewsArticle {
     slug: string;
     title: string;
-    image: string;
+    images: string[];
     date: string;
     location: string;
     reporter: string;
@@ -30,7 +30,12 @@ export function getNewsArticles(): NewsArticle[] {
         return {
             slug: file.replace(".md", ""),
             title: data.title || file.replace(".md", ""),
-            image: data.image || "/images/placeholder-news.jpg",
+            images:
+                Array.isArray(data.images) && data.images.length > 0
+                    ? data.images
+                    : data.image
+                    ? [data.image]
+                    : ["/images/placeholder-news.jpg"],
             date: data.date || "",
             location: data.location || "",
             reporter: data.reporter || "",
