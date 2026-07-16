@@ -4,6 +4,7 @@ image: "/images/notizie/profitFC.jpg"
 date: "16 Luglio, 2026"
 location: "Profitgrado"
 reporter: "Cittadino di San Pergamo"
+order: 1
 ---
 
 La rinomata squadra ProfitFC, sponsorizzata e guidata dall'inimitabile monopolista Von Profit, ha conquistato la promozione in Serie A.
