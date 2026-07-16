@@ -1,5 +1,5 @@
 ---
-title: "ProfitFC si classifica in Serie A!"
+title: "ProfitFC domina le classifiche!"
 image: "/images/notizie/profitFC2.jpg"
 date: "16 Luglio, 2026"
 location: "Profitgrado"
