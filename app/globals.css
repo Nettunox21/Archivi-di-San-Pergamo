@@ -1469,3 +1469,115 @@ canvas {
   );
   pointer-events: none;
 }
+/* Aggiungi questo blocco al tuo globals.css.
+   Ho ripreso i colori/font dallo screenshot (oro/ambra su marrone scuro,
+   serif per i titoli). Se hai già delle CSS custom properties definite
+   (es. --gold, --bg-dark) sostituisci i valori qui sotto con quelle. */
+
+.news-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+}
+
+.news-hero {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.news-hero h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    color: #e8c98a;
+    font-size: 2.5rem;
+    letter-spacing: 0.03em;
+}
+
+.news-subtitle {
+    color: #b8a88c;
+    margin-top: 0.5rem;
+}
+
+.news-empty {
+    text-align: center;
+    color: #a89877;
+}
+
+.news-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.news-card {
+    display: flex;
+    background: #1c1712;
+    border: 1px solid #4a3a22;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.news-image-wrapper {
+    position: relative;
+    flex: 0 0 260px;
+    min-height: 220px;
+}
+
+.news-image {
+    object-fit: cover;
+}
+
+.news-body {
+    flex: 1;
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.news-title {
+    font-family: "Playfair Display", Georgia, serif;
+    color: #e8c98a;
+    font-size: 1.4rem;
+    letter-spacing: 0.02em;
+}
+
+.news-divider {
+    border: none;
+    border-top: 1px solid #4a3a22;
+    margin: 0.75rem 0 1rem;
+}
+
+.news-text {
+    color: #d9cbb0;
+    line-height: 1.6;
+    flex: 1;
+}
+
+.news-text p {
+    margin-bottom: 0.75rem;
+}
+
+.news-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #332a1c;
+    font-size: 0.85rem;
+    color: #a89877;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Responsive: su mobile immagine sopra, testo sotto */
+@media (max-width: 640px) {
+    .news-card {
+        flex-direction: column;
+    }
+
+    .news-image-wrapper {
+        flex: none;
+        width: 100%;
+        height: 200px;
+    }
+}
