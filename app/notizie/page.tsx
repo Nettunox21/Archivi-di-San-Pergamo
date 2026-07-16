@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { getNewsArticles } from "@/lib/notizie";
-import NewsImageCarousel from "@/components/NewsImageCarousel";
+import NewsImageCarousel from "@/app/components/NewsImageCarousel";
 
 export default function NotiziePage() {
     const articles = getNewsArticles();
