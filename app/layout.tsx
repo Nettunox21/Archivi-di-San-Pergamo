@@ -35,6 +35,7 @@ export default async function RootLayout({
                         <Link href="/mappa">Mappa</Link>
                         <Link href="/fazioni">Fazioni</Link>
                         <Link href="/feedback">Feedback</Link>
+                        <Link href="/notizie">Notizie</Link>
                     </nav>
                     <div className="search">
                         <SearchBar />
