@@ -1,13 +1,10 @@
 ---
-title: "Nuovo trattato commerciale tra San Pergamo e Duloc"
-image: "/images/notizie/profitFC.jpg"
-date: "16 Luglio, anno del Priore"
+title: "Nuovi orizzonti per il commercio: Duloc e Priorato"
+image: "/images/notizie/strettoDulocPriorato.jpg"
+date: "13 Aprile, anno del Priore"
 location: "Priorato"
-reporter: "Ernesto Colonna"
+reporter: "Il Priore, Sovrano di Falconia"
 order: 3
 ---
-
-L'Ordine ha annunciato oggi la firma di un nuovo trattato commerciale con la città di Duloc, capitale di Falconia.
-L'accordo prevede l'apertura di nuove rotte lungo la Columna Mercatus e un rafforzamento degli scambi di manoscritti tra i due territori.
-
-Il Priore ha dichiarato che l'intesa rappresenta un passo importante verso la stabilità economica della regione.
+È giunta voce di un nuovo progetto finanziato dai sovrani di San Pergamo e Falconia: la costruzione di un ponte destinato a facilitare il commercio tra la regione di Duloc e il Priorato. L'opera rappresenta un'importante opportunità per entrambe le nazioni: Falconia potrà sfruttarlo per espandere ulteriormente i propri scambi commerciali, mentre la giovane città di Priorato potrà beneficiare di un impulso economico capace di favorire la crescita del commercio e l’aumento della popolazione locale, ancora nettamente inferiore rispetto a quella di Falconia.
+Vecchi osservatori del cantiere ricordano antichi racconti di un ponte simile, ideato da un certo Salvatore. Un progetto che, come molti sanno, rimase solo sulla carta.
