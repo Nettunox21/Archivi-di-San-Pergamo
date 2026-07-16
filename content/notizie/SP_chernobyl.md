@@ -1,6 +1,6 @@
 ---
 title: "Profitgrado colpisce ancora?"
-images: "/images/notizie/SP_chernobyl.jpg"
+image: "/images/notizie/SP_chernobyl.jpg"
 date: "5 Maggio, 1973"
 location: "Priorato"
 reporter: "Cittadino di San Pergamo"
