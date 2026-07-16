@@ -2,7 +2,7 @@
 title: "La fine di San Pergamo?"
 image: "/images/notizie/P_chernobyl.jpg"
 date: "5 Maggio, 1973"
-location: "Priorato"
+location: "Profitgrado"
 reporter: "Superstite di Profitgrado"
 order: 5
 ---
