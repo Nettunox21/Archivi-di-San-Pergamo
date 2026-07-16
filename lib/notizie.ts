@@ -12,7 +12,7 @@ export interface NewsArticle {
     location: string;
     reporter: string;
     text: string;
-    created: number;
+    order: number;
 }
 
 const NEWS_DIR = path.join(process.cwd(), "content/notizie");
@@ -26,7 +26,6 @@ export function getNewsArticles(): NewsArticle[] {
         const filePath = path.join(NEWS_DIR, file);
         const raw = fs.readFileSync(filePath, "utf-8");
         const { data, content } = matter(raw);
-        const stats = fs.statSync(filePath);
 
         return {
             slug: file.replace(".md", ""),
@@ -36,10 +35,10 @@ export function getNewsArticles(): NewsArticle[] {
             location: data.location || "",
             reporter: data.reporter || "",
             text: content.trim(),
-            created: stats.birthtimeMs,
+            order: Number(data.order) || 0,
         };
     });
 
-    // Ordine di aggiunta: dalla più recente alla più vecchia (in cima le ultime notizie)
-    return articles.sort((a, b) => b.created - a.created);
+    // Ordine crescente nel campo "order": il valore più alto va in cima (più recente)
+    return articles.sort((a, b) => b.order - a.order);
 }
