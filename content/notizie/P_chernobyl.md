@@ -1,6 +1,6 @@
 ---
 title: "La fine di San Pergamo?"
-image: "/images/notizie/SP_chernobyl.jpg"
+image: "/images/notizie/P_chernobyl.jpg"
 date: "5 Maggio, 1973"
 location: "Priorato"
 reporter: "Superstite di Profitgrado"
