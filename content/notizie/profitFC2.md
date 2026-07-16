@@ -1,6 +1,6 @@
 ---
 title: "ProfitFC si classifica in Serie A!"
-image: "/images/notizie/profitFC.jpg"
+image: "/images/notizie/profitFC2.jpg"
 date: "16 Luglio, 2026"
 location: "Profitgrado"
 reporter: "Il Priore"
