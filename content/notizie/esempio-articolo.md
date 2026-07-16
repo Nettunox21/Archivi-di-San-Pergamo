@@ -4,6 +4,7 @@ image: "/images/notizie/profitFC.jpg"
 date: "16 Luglio, anno del Priore"
 location: "Priorato"
 reporter: "Ernesto Colonna"
+order: 3
 ---
 
 L'Ordine ha annunciato oggi la firma di un nuovo trattato commerciale con la città di Duloc, capitale di Falconia.
