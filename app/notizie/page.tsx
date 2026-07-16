@@ -1,7 +1,8 @@
 // Salva questo file come: app/notizie/page.tsx
 
-import Image from "next/image";
+import Link from "next/link";
 import { getNewsArticles } from "@/lib/notizie";
+import NewsImageCarousel from "@/components/NewsImageCarousel";
 
 export default function NotiziePage() {
     const articles = getNewsArticles();
@@ -15,6 +16,10 @@ export default function NotiziePage() {
                 <p className="news-subtitle">
                     I dispacci dell&apos;Ordine
                 </p>
+
+                <Link href="/notizie/richiedi" className="news-request-link">
+                    Hai notizie da archiviare? Clicca qui!
+                </Link>
             </header>
 
             <main className="news-main">
@@ -26,14 +31,7 @@ export default function NotiziePage() {
 
                 {articles.map((a) => (
                     <article key={a.slug} className="news-card">
-                        <div className="news-image-wrapper">
-                            <Image
-                                src={a.image}
-                                alt={a.title}
-                                fill
-                                className="news-image"
-                            />
-                        </div>
+                        <NewsImageCarousel images={a.images} alt={a.title} />
 
                         <div className="news-body">
                             <h2 className="news-title">{a.title}</h2>
