@@ -1,7 +1,7 @@
 ---
 title: "Chernobyl, 5 Maggio 1973"
 images:
-  - "/images/notizie/OFFICIAL_chernobyl.jpg"
+  - "/images/notizie/OFFICIAL_chernobyl.jpg" 
   - "/images/notizie/OFFICIAL_chernobyl2.jpg"
 date: "7 Maggio, 1973"
 location: "Mondo"
