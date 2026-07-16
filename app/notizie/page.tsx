@@ -37,7 +37,6 @@ export default function NotiziePage() {
 
                         <div className="news-body">
                             <h2 className="news-title">{a.title}</h2>
-                            <hr className="news-divider" />
 
                             <div className="news-text">
                                 {a.text.split("\n").filter(Boolean).map((par, i) => (
