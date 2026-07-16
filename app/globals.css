@@ -1538,6 +1538,150 @@ canvas {
     min-height: 220px;
 }
 
+.news-image-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    color: #e8c98a;
+    border: 1px solid #4a3a22;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: Georgia, serif;
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.news-image-arrow-left {
+    left: 8px;
+}
+
+.news-image-arrow-right {
+    right: 8px;
+}
+
+.news-request-link {
+    display: inline-block;
+    margin-top: 0.75rem;
+    color: #e8c98a;
+    text-decoration: underline;
+}
+
+.news-request-container {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+    color: #d9cbb0;
+}
+
+.news-request-container h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    color: #e8c98a;
+    margin-bottom: 0.5rem;
+}
+
+.news-request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.news-request-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.news-request-form input,
+.news-request-form textarea {
+    background: #1c1712;
+    border: 1px solid #4a3a22;
+    border-radius: 4px;
+    color: #d9cbb0;
+    padding: 0.6rem 0.75rem;
+    font-family: inherit;
+}
+
+.news-request-form button {
+    background: transparent;
+    border: 1px solid #b48a3d;
+    color: #e8c98a;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.news-request-success {
+    color: #9fc98a;
+}
+
+.news-request-error {
+    color: #d98a8a;
+}
+
+/* Pagina admin: gestione richieste articoli */
+.admin-requests-wrapper {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    color: #d9cbb0;
+}
+
+.admin-requests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.admin-request-card {
+    background: #1c1712;
+    border: 1px solid #4a3a22;
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+}
+
+.admin-request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #e8c98a;
+}
+
+.admin-request-delete {
+    background: transparent;
+    border: 1px solid #b45a3d;
+    color: #e08a72;
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.admin-request-details {
+    margin-top: 0.6rem;
+    line-height: 1.5;
+}
+
+.admin-request-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #332a1c;
+    font-size: 0.8rem;
+    color: #a89877;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
 .news-image {
     object-fit: cover;
 }
