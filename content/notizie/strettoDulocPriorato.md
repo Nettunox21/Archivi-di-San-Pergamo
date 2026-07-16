@@ -1,7 +1,7 @@
 ---
 title: "Nuovi orizzonti per il commercio: Duloc e Priorato"
 image: "/images/notizie/strettoDulocPriorato.jpg"
-date: "13 Aprile, anno del Priore"
+date: "13 Aprile"
 location: "Priorato"
 reporter: "Il Priore, Sovrano di Falconia"
 order: 3
