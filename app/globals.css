@@ -1475,9 +1475,25 @@ canvas {
    (es. --gold, --bg-dark) sostituisci i valori qui sotto con quelle. */
 
 .news-container {
+    position: relative;
     max-width: 1100px;
     margin: 0 auto;
     padding: 2rem 1.5rem 4rem;
+}
+
+/* Sfondo a piena larghezza, sfocato e scurito.
+   Va sul body/wrapper esterno, non su .news-container,
+   così non è limitato dal max-width. Vedi nota sotto. */
+.news-page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url("/news_bg.png");
+    background-size: cover;
+    background-position: center;
+    /* leggermente ingrandito per evitare bordi sfocati visibili */
+    transform: scale(1.1);
+    filter: blur(6px) brightness(0.35);
 }
 
 .news-hero {
