@@ -3,7 +3,7 @@ title: "ProfitFC domina le classifiche!"
 image: "/images/notizie/profitFC2.jpg"
 date: "16 Luglio, 2026"
 location: "Profitgrado"
-reporter: "Il Priore"
+reporter: "Il Priore "
 ---
 
 La celebre ProfitFC, sponsorizzata e guidata dall'inimitabile monopolista Von Profit, ha conquistato con pieno merito la promozione in Serie A.
