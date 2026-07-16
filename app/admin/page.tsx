@@ -10,6 +10,11 @@ const adminSections = [
         href: "/admin/feedback",
     },
     {
+        title: "Richieste articoli",
+        image: "/images/admin-placeholder.jpeg",
+        href: "/admin/notizie-richieste",
+    },
+    {
         title: "Gestione utenti",
         image: "/images/admin-placeholder.jpeg",
         href: "/admin/users",
