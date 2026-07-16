@@ -1554,12 +1554,9 @@ canvas {
     color: #e8c98a;
     font-size: 1.4rem;
     letter-spacing: 0.02em;
-}
-
-.news-divider {
-    border: none;
-    border-top: 1px solid #4a3a22;
-    margin: 0.75rem 0 1rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #4a3a22;
 }
 
 .news-text {
