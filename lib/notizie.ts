@@ -40,7 +40,6 @@ export function getNewsArticles(): NewsArticle[] {
         };
     });
 
-    // Ordine di aggiunta: dalla più vecchia alla più recente.
-    // Se preferisci il contrario (più recente in alto), cambia in (b.created - a.created)
-    return articles.sort((a, b) => a.created - b.created);
+    // Ordine di aggiunta: dalla più recente alla più vecchia (in cima le ultime notizie)
+    return articles.sort((a, b) => b.created - a.created);
 }
