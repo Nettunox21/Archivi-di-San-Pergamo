@@ -1,6 +1,6 @@
 ---
 title: "Nuovo trattato commerciale tra San Pergamo e Duloc"
-image: "/images/notizie/trattato-duloc.jpg"
+image: "/images/notizie/profitFC.jpg"
 date: "16 Luglio, anno del Priore"
 location: "Priorato"
 reporter: "Ernesto Colonna"
