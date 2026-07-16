@@ -8,6 +8,8 @@ export default function NotiziePage() {
 
     return (
         <div className="news-container">
+            <div className="news-page-bg" aria-hidden="true" />
+
             <header className="news-hero">
                 <h1>Notizie</h1>
                 <p className="news-subtitle">
