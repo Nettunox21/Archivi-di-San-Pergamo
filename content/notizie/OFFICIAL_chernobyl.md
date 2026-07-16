@@ -1,4 +1,3 @@
-
 ---
 title: "Chernobyl, 5 Maggio 1973"
 images:
