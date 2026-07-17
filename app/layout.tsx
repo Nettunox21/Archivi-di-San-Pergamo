@@ -2,8 +2,30 @@ import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
 import SearchBar from "./components/SearchBar";
+import MobileMenu from "./components/MobileMenu";
+import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
 import { cookies } from "next/headers";
 import { getUsers } from "@/auth/users";
+import type { Metadata, Viewport } from "next";
+
+export const metadata: Metadata = {
+    manifest: "/manifest.json",
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: "black-translucent",
+        title: "San Pergamo",
+    },
+    icons: {
+        icon: "/icons/icon-192.png",
+        apple: "/icons/apple-touch-icon.png",
+    },
+};
+
+export const viewport: Viewport = {
+    themeColor: "#151311",
+    width: "device-width",
+    initialScale: 1,
+};
 
 export default async function RootLayout({
     children,
@@ -17,6 +39,7 @@ export default async function RootLayout({
     return (
         <html lang="it">
             <body>
+                <ServiceWorkerRegister />
                 <header className="topbar">
                     <Link
                         href={currentUser?.role === "admin" ? "/admin" : "/"}
@@ -30,6 +53,7 @@ export default async function RootLayout({
                         />
                         <span>Archivi di San Pergamo</span>
                     </Link>
+
                     <nav className="nav">
                         <Link href="/">Home</Link>
                         <Link href="/mappa">Mappa</Link>
@@ -63,6 +87,14 @@ export default async function RootLayout({
                             </Link>
                         )}
                     </div>
+
+                    <MobileMenu
+                        currentUser={
+                            currentUser
+                                ? { username: currentUser.username, avatar: currentUser.avatar }
+                                : null
+                        }
+                    />
                 </header>
                 <main className="container">{children}</main>
             </body>
