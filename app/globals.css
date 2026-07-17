@@ -1738,3 +1738,133 @@ canvas {
         height: 200px;
     }
 }
+
+/* =========================
+ *  MENU MOBILE (hamburger)
+ * ========================= */
+
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(180, 140, 80, 0.4);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  align-items: center;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: #c8a96e;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+
+.hamburger-btn:hover span {
+  background: #e0c48f;
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 8, 6, 0.7);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.mobile-menu-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(78vw, 320px);
+  background: #1b1714;
+  border-left: 1px solid #3f2f22;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transform: translateX(100%);
+  transition: transform 0.28s ease;
+}
+
+.mobile-menu-overlay.is-open .mobile-menu {
+  transform: translateX(0);
+}
+
+.mobile-menu-close {
+  align-self: flex-end;
+  background: transparent;
+  border: none;
+  color: #c8a96e;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.mobile-menu-search input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #5e4730;
+  border-radius: 4px;
+  background: #241d18;
+  color: #e0d2bb;
+}
+
+.mobile-menu-links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.mobile-menu-links a {
+  font-size: 16px;
+  color: #c7ab78;
+  padding: 6px 0;
+  border-bottom: 1px solid #2a2118;
+}
+
+.mobile-menu-divider {
+  height: 1px;
+  background: #3f2f22;
+  margin: 4px 0;
+}
+
+.mobile-menu-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-menu-profile span {
+  flex: 1;
+  color: #e8d7b5;
+}
+
+@media (max-width: 760px) {
+  .topbar .nav,
+  .topbar .search,
+  .topbar .profile {
+    display: none;
+  }
+
+  .hamburger-btn {
+    display: flex;
+  }
+}
