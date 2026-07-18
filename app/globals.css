@@ -1888,3 +1888,63 @@ canvas {
     margin: 0 auto;
   }
 }
+
+/* =========================
+ *  FIX GRIGLIA FAZIONI SU MOBILE
+ *  (mantiene 3 per riga, testo compattato)
+ * ========================= */
+
+@media (max-width: 760px) {
+  .fazioni-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 0 10px;
+    margin: 24px auto;
+  }
+
+  .faction-info {
+    padding: 8px 8px 10px;
+  }
+
+  .faction-name {
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    margin: 0 0 4px;
+    line-height: 1.25;
+  }
+
+  .faction-description {
+    font-size: 10.5px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+  }
+
+  /* a 3 colonne su telefono non c'e' spazio per restare leggibile */
+  .faction-extra {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .fazioni-grid {
+    gap: 7px;
+    padding: 0 8px;
+  }
+
+  .faction-info {
+    padding: 6px 6px 8px;
+  }
+
+  .faction-name {
+    font-size: 9.5px;
+  }
+
+  .faction-description {
+    font-size: 9px;
+    -webkit-line-clamp: 2;
+  }
+}
