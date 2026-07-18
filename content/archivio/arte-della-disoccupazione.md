@@ -324,3 +324,19 @@ Chiunque mi attacchi è gay
 <div class="quote-author">San Ernesto</div>
 </div>
 </div>
+
+<div class="quote-card" data-number="19">
+<div class="quote-image">
+
+![](/images/SanErnestoPergamo.jpg)
+
+</div>
+<div>
+<div class="quote-text">
+
+San Pergamo non
+
+</div>
+<div class="quote-author">San Ernesto</div>
+</div>
+</div>
