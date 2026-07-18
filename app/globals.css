@@ -1868,3 +1868,23 @@ canvas {
     display: flex;
   }
 }
+
+/* =========================
+ *  FIX INFOBOX SU MOBILE
+ *  (testo sotto invece che a fianco)
+ * ========================= */
+
+@media (max-width: 760px) {
+  .wiki-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    padding: 16px !important;
+  }
+
+  .infobox {
+    width: 100% !important;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+}
