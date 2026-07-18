@@ -1,8 +1,5 @@
 :::infobox
 title: La Guerra Santa
-images:
-  - /images/guerra1.jpg
-  - /images/guerra2.jpg
 data:
   Data: ...
   Luogo: ...
