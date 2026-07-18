@@ -45,6 +45,13 @@ function cellCoord(x: number, y: number): string {
     return `${toColumnLabel(x)}-${y + 1}`;
 }
 
+/** Distanza euclidea tra due touch points (per il pinch-zoom) */
+function touchDistance(t1: React.Touch, t2: React.Touch): number {
+    const dx = t1.clientX - t2.clientX;
+    const dy = t1.clientY - t2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
 export default function MappaPage() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [mapData, setMapData] = useState<MapData | null>(null);
@@ -57,6 +64,9 @@ export default function MappaPage() {
     const lastMouse = useRef({ x: 0, y: 0 });
     const panRef = useRef({ x: HEADER_SIZE, y: HEADER_SIZE });
     const zoomRef = useRef(1);
+
+    // stato per il pinch-zoom a due dita
+    const lastTouchDistance = useRef<number | null>(null);
 
     useEffect(() => {
         function updateSize() {
@@ -221,6 +231,33 @@ export default function MappaPage() {
         ctx.restore();
     }
 
+    function selectCellAtScreenPoint(screenX: number, screenY: number) {
+        // ignora tap/click sugli header
+        if (screenX < HEADER_SIZE || screenY < HEADER_SIZE) return;
+
+        const cell = getCellAt(screenX, screenY);
+        if (!cell) return;
+
+        if (selectedCell && cell.x === selectedCell.x && cell.y === selectedCell.y) {
+            setSelectedCell(null);
+        } else {
+            setSelectedCell(cell);
+        }
+    }
+
+    function zoomAt(centerX: number, centerY: number, newZoom: number) {
+        const clamped = Math.min(Math.max(newZoom, 0.1), 4);
+        panRef.current = {
+            x: centerX - (centerX - panRef.current.x) * (clamped / zoomRef.current),
+            y: centerY - (centerY - panRef.current.y) * (clamped / zoomRef.current),
+        };
+        zoomRef.current = clamped;
+        setZoom(clamped);
+        setPan({ ...panRef.current });
+    }
+
+    // ---------- MOUSE (desktop) ----------
+
     function handleMouseDown(e: React.MouseEvent) {
         isPanning.current = true;
         didPan.current = false;
@@ -244,20 +281,7 @@ export default function MappaPage() {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const rect = canvas.getBoundingClientRect();
-        const screenX = e.clientX - rect.left;
-        const screenY = e.clientY - rect.top;
-
-        // ignora click sugli header
-        if (screenX < HEADER_SIZE || screenY < HEADER_SIZE) return;
-
-        const cell = getCellAt(screenX, screenY);
-        if (!cell) return;
-
-        if (selectedCell && cell.x === selectedCell.x && cell.y === selectedCell.y) {
-            setSelectedCell(null);
-        } else {
-            setSelectedCell(cell);
-        }
+        selectCellAtScreenPoint(e.clientX - rect.left, e.clientY - rect.top);
     }
 
     function handleWheel(e: React.WheelEvent) {
@@ -269,15 +293,76 @@ export default function MappaPage() {
         const mouseY = e.clientY - rect.top - HEADER_SIZE;
 
         const delta = e.deltaY > 0 ? 0.9 : 1.1;
-        const newZoom = Math.min(Math.max(zoomRef.current * delta, 0.1), 4);
+        zoomAt(mouseX, mouseY, zoomRef.current * delta);
+    }
 
-        panRef.current = {
-            x: mouseX - (mouseX - panRef.current.x) * (newZoom / zoomRef.current),
-            y: mouseY - (mouseY - panRef.current.y) * (newZoom / zoomRef.current),
-        };
-        zoomRef.current = newZoom;
-        setZoom(newZoom);
-        setPan({ ...panRef.current });
+    // ---------- TOUCH (mobile) ----------
+
+    function handleTouchStart(e: React.TouchEvent) {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        if (e.touches.length === 1) {
+            isPanning.current = true;
+            didPan.current = false;
+            lastMouse.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            lastTouchDistance.current = null;
+        } else if (e.touches.length === 2) {
+            // due dita: si passa alla modalità pinch-zoom, niente pan nel frattempo
+            isPanning.current = false;
+            lastTouchDistance.current = touchDistance(e.touches[0], e.touches[1]);
+        }
+    }
+
+    function handleTouchMove(e: React.TouchEvent) {
+        // impedisce alla pagina di scrollare mentre si trascina la mappa
+        e.preventDefault();
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+
+        if (e.touches.length === 1 && isPanning.current) {
+            const dx = e.touches[0].clientX - lastMouse.current.x;
+            const dy = e.touches[0].clientY - lastMouse.current.y;
+            if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didPan.current = true;
+            lastMouse.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            panRef.current = { x: panRef.current.x + dx, y: panRef.current.y + dy };
+            setPan({ ...panRef.current });
+        } else if (e.touches.length === 2 && lastTouchDistance.current !== null) {
+            const newDistance = touchDistance(e.touches[0], e.touches[1]);
+            const scaleFactor = newDistance / lastTouchDistance.current;
+
+            const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left - HEADER_SIZE;
+            const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top - HEADER_SIZE;
+
+            zoomAt(centerX, centerY, zoomRef.current * scaleFactor);
+            lastTouchDistance.current = newDistance;
+            didPan.current = true; // un pinch non deve mai contare come tap
+        }
+    }
+
+    function handleTouchEnd(e: React.TouchEvent) {
+        const canvas = canvasRef.current;
+
+        if (e.touches.length === 0) {
+            // ultimo dito sollevato
+            const wasPanning = isPanning.current;
+            isPanning.current = false;
+            lastTouchDistance.current = null;
+
+            if (!didPan.current && wasPanning && canvas && e.changedTouches.length === 1) {
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.changedTouches[0];
+                selectCellAtScreenPoint(touch.clientX - rect.left, touch.clientY - rect.top);
+            }
+        } else if (e.touches.length === 1) {
+            // si passa da pinch (2 dita) a pan (1 dito rimasto)
+            lastTouchDistance.current = null;
+            isPanning.current = true;
+            didPan.current = true; // evita che il dito rimasto generi un tap-selezione
+            lastMouse.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
     }
 
     const selectedFaction = selectedCell?.type === "faction"
@@ -294,7 +379,11 @@ export default function MappaPage() {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onWheel={handleWheel}
-                style={{ cursor: "grab", display: "block" }}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onTouchCancel={handleTouchEnd}
+                style={{ cursor: "grab", display: "block", touchAction: "none" }}
             />
 
             {selectedCell && (
