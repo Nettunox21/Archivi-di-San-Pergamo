@@ -1,11 +1,114 @@
 import { marked } from "marked";
-import yaml from "js-yaml";
 
 type Fazione = {
     bandiera: string;
     nome?: string;
     descrizione: string;
 };
+
+/**
+ * Mini-parser YAML "fatto in casa": niente dipendenze esterne.
+ * Supporta solo il sottoinsieme che serve all'infobox:
+ *  - chiave: valore
+ *  - chiave:
+ *      sotto-chiave: valore        (mappa annidata)
+ *  - chiave:
+ *      - campo: valore              (lista di oggetti)
+ *        campo2: valore
+ *      - altro-valore-semplice      (lista di stringhe)
+ */
+function parseSimpleYaml(text: string): Record<string, any> {
+    const rawLines = text.replace(/\t/g, "  ").split("\n");
+
+    const lines = rawLines
+        .map((l) => {
+            const match = l.match(/^(\s*)(.*)$/);
+            const indent = match ? match[1].length : 0;
+            const content = match ? match[2] : l;
+            return { indent, content };
+        })
+        .filter((l) => l.content.trim().length > 0);
+
+    let pos = 0;
+
+    function parseBlock(minIndent: number): any {
+        if (pos >= lines.length) return null;
+        const first = lines[pos];
+        if (first.indent < minIndent) return null;
+
+        if (first.content.trim().startsWith("- ")) {
+            // LISTA
+            const list: any[] = [];
+            const listIndent = first.indent;
+
+            while (
+                pos < lines.length &&
+                lines[pos].indent === listIndent &&
+                lines[pos].content.trim().startsWith("- ")
+            ) {
+                const itemContent = lines[pos].content.trim().slice(2);
+                pos++;
+                const colonIdx = itemContent.indexOf(":");
+
+                if (colonIdx !== -1) {
+                    // elemento della lista è un oggetto (es. fazione)
+                    const obj: Record<string, any> = {};
+                    const k = itemContent.slice(0, colonIdx).trim();
+                    const v = itemContent.slice(colonIdx + 1).trim();
+                    obj[k] = v;
+
+                    // righe successive più indentate = altri campi dello stesso oggetto
+                    while (
+                        pos < lines.length &&
+                        lines[pos].indent > listIndent &&
+                        !lines[pos].content.trim().startsWith("- ")
+                    ) {
+                        const line = lines[pos].content.trim();
+                        const ci = line.indexOf(":");
+                        if (ci !== -1) {
+                            const kk = line.slice(0, ci).trim();
+                            const vv = line.slice(ci + 1).trim();
+                            obj[kk] = vv;
+                        }
+                        pos++;
+                    }
+                    list.push(obj);
+                } else {
+                    // elemento della lista è una stringa semplice (es. immagine)
+                    list.push(itemContent);
+                }
+            }
+            return list;
+        } else {
+            // MAPPA
+            const map: Record<string, any> = {};
+            const mapIndent = first.indent;
+
+            while (pos < lines.length && lines[pos].indent === mapIndent) {
+                const line = lines[pos].content.trim();
+                const colonIdx = line.indexOf(":");
+                if (colonIdx === -1) {
+                    pos++;
+                    continue;
+                }
+                const key = line.slice(0, colonIdx).trim();
+                const rest = line.slice(colonIdx + 1).trim();
+                pos++;
+
+                if (rest.length > 0) {
+                    map[key] = rest;
+                } else if (pos < lines.length && lines[pos].indent > mapIndent) {
+                    map[key] = parseBlock(lines[pos].indent);
+                } else {
+                    map[key] = "";
+                }
+            }
+            return map;
+        }
+    }
+
+    return parseBlock(0) ?? {};
+}
 
 export function parseWiki(md: string) {
     // 1. REMOVE FRONTMATTER
@@ -18,7 +121,7 @@ export function parseWiki(md: string) {
         (_, content) => {
             let parsed: Record<string, any> = {};
             try {
-                parsed = (yaml.load(content) as Record<string, any>) ?? {};
+                parsed = parseSimpleYaml(content) ?? {};
             } catch (e) {
                 console.error("Errore nel parsing dell'infobox:", e);
                 parsed = {};
