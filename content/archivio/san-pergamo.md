@@ -18,7 +18,7 @@ Festa: 16 novembre
 Economia: Manoscritti, commercio, ricerca
 :::
 
-**San Pergamo** è una città situata nel continente di Arstozka, nello Stato di cui costituisce uno dei principali centri amministrativi e culturali. La capitale dello Stato è Priorato, posta nelle immediate vicinanze della città, ai piedi della sede dell’Ordine.
+**San Pergamo** è uno Stato situato nel continente di Arstozka, nello Stato di cui costituisce uno dei principali centri amministrativi e culturali. La capitale dello Stato è Priorato, posta nelle immediate vicinanze della città, ai piedi della sede dell’Ordine.
 
 La città sorge a un’altitudine di 117 metri ed è caratterizzata da un’organizzazione fortemente legata all’Ordine, istituzione centrale nella vita politica, culturale ed economica del territorio.
 
