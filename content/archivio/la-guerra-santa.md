@@ -1,3 +1,4 @@
+:::infobox
 title: Nome della guerra
 images:
   - /images/guerra1.jpg
@@ -14,3 +15,4 @@ fazioni:
     descrizione: breve descrizione...
   - bandiera: /images/flag2.png
     descrizione: breve descrizione...
+:::
