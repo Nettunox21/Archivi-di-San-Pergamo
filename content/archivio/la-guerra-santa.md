@@ -1,12 +1,6 @@
 # La Guerra Santa
 
 ---
-Data
-Luogo
-Casus Belli
-Esito
-Modifiche territoriali
-
 :::infobox
 title: La Guerra Santa
 image: /images/FalconiaBanner.jpeg
