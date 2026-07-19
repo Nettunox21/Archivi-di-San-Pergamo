@@ -1,12 +1,14 @@
 ---
-title: Trattato di San Pergamo
-image: /images/FalconiaBanner.jpeg
+title: Wow
+image: /images/VonProfitPollice.png
 background: /old_paper.png
-description: Il trattato che sancì la pace tra le nazioni dell'Ordine.
+description: Ciao
 ---
 
-Testo della prima pagina del documento. Puoi usare il **Markdown** normale: paragrafi, *corsivo*, elenchi, ecc.
+Testo della prima pagina del documento. Testo perchè se non funziona il **Markdown** normale: paragrafi, *corsivo*, elenchi, ecc. mi incazzo.
+-Test
+-test
 
 :::pagina:::
 
-Testo della seconda pagina. Ogni pagina viene mostrata separatamente, con i pulsanti Avanti/Indietro nella modale.
+Testo della seconda pagina. Ogni pagina viene mostrata separatamente, perfavore gesù dimmi che è compatibile con telefono
