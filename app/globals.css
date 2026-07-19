@@ -482,7 +482,7 @@ blockquote {
 /* =========================
  *  INFOBOX - FAZIONI COINVOLTE
  * ========================= */
-
+/* Contenitore della lista fazioni DENTRO l'infobox */
 .infobox-fazioni {
   padding: 8px 8px 10px;
   border-top: 1px solid #58412d;
@@ -496,19 +496,36 @@ blockquote {
   margin: 4px 4px 8px;
 }
 
-.infobox-fazione {
+/* Blocco standalone ":::bandiere", usabile nel corpo dell'articolo */
+.flag-table {
+  border: 1px solid #4f3928;
+  border-radius: 6px;
+  background: #201915;
+  padding: 10px 4px 4px;
+  margin: 20px 0;
+}
+
+.flag-table-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #e2c690;
+  margin: 2px 8px 10px;
+}
+
+/* Righe condivise: bandiera 9:16 a sinistra, descrizione a destra */
+.flag-table-item {
   display: flex;
   gap: 8px;
-  padding: 6px 4px;
+  padding: 6px 8px;
   border-bottom: 1px solid #3d2d22;
 }
 
-.infobox-fazione:last-child {
+.flag-table-item:last-child {
   border-bottom: none;
 }
 
-/* Specificità maggiore di ".infobox img" per non farsi sovrascrivere width/filter */
-.infobox-fazione .infobox-fazione-flag {
+.flag-table-flag {
   width: 42px;
   aspect-ratio: 9 / 16;
   object-fit: cover;
@@ -518,19 +535,19 @@ blockquote {
   filter: none;
 }
 
-.infobox-fazione-desc {
+.flag-table-desc {
   color: #d7c6a6;
   font-size: 13px;
   line-height: 1.4;
 }
 
-.infobox-fazione-desc strong {
+.flag-table-desc strong {
   color: #e6d4ae;
   display: block;
   margin-bottom: 2px;
 }
 
-.infobox-fazione-desc p {
+.flag-table-desc p {
   margin: 0;
 }
 /* =========================
