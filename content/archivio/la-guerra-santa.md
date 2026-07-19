@@ -7,7 +7,7 @@ Data: 11 Luglio 2023 a.G.
 Luogo: Valle Innevata del Vecchio Continente
 Casus Belli: Gloria.
 Esito: Vittoria di Arstozka
-Modifiche territoriali:
+Modifiche territoriali: Il territorio di Sanctum Imperum viene ceduto a Arstozka
 :::
 :::bandiere
 - bandiera: /images/FalconiaBanner.jpeg
