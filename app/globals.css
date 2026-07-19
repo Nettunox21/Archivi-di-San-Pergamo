@@ -2268,35 +2268,52 @@ canvas {
 }
 
 /* Velo scuro sopra lo sfondo, per rendere leggibile il testo */
-.document-modal-scrim {
-  position: absolute;
-  inset: 0;
-  background: rgba(10, 7, 4, 0.62);
+.document-modal-scrim { 
+  display: none;
 }
 
 .document-modal-content {
   position: relative;
   flex: 1;
-  padding: 28px 26px 12px;
+  padding: 20px;
   overflow-y: auto;
+  display: flex;
+  align-items: flex-start;
+}
+
+.document-modal-content::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  background: rgba(245, 235, 210, 0.94);
+  border: 1px solid rgba(90, 60, 30, 0.25);
+  border-radius: 4px;
+  box-shadow: inset 0 0 30px rgba(90, 60, 30, 0.15);
 }
 
 .document-modal-title {
+  position: relative;
+  z-index: 1;
   font-family: 'Palatino Linotype', Palatino, serif;
-  color: #e6d4ae;
+  color: #3b2a17;
   font-size: 20px;
   letter-spacing: 0.04em;
   margin: 0 0 16px;
+  padding: 20px 24px 0;
 }
 
 .document-modal-text {
-  color: #000;
-  font-size: 21px;
-  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+  color: #2b1c10;
+  font-family: 'Palatino Linotype', Palatino, serif;
+  font-size: 17px;
+  line-height: 1.75;
+  padding: 0 24px 20px;
 }
 
 .document-modal-text p {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
 }
 
 .document-modal-pagination {
