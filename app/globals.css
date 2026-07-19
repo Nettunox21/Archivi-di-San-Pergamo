@@ -2269,16 +2269,17 @@ canvas {
 
 /* Velo scuro sopra lo sfondo, per rendere leggibile il testo */
 .document-modal-scrim { 
-  display: none;
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 7, 4, 0.55);
 }
 
 .document-modal-content {
   position: relative;
   flex: 1;
-  padding: 20px;
+  padding: 28px 26px 12px;
   overflow-y: auto;
-  display: flex;
-  align-items: flex-start;
 }
 
 .document-modal-content::before {
@@ -2295,21 +2296,21 @@ canvas {
   position: relative;
   z-index: 1;
   font-family: 'Palatino Linotype', Palatino, serif;
-  color: #3b2a17;
+  color: #f1e4c8;
   font-size: 20px;
   letter-spacing: 0.04em;
   margin: 0 0 16px;
-  padding: 20px 24px 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .document-modal-text {
   position: relative;
   z-index: 1;
-  color: #2b1c10;
+  color: #f1e4c8;
   font-family: 'Palatino Linotype', Palatino, serif;
   font-size: 17px;
   line-height: 1.75;
-  padding: 0 24px 20px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .document-modal-text p {
