@@ -110,18 +110,14 @@ function parseSimpleYaml(text: string): any {
     return parseBlock(0) ?? {};
 }
 
-/** Genera l'HTML per una lista "bandiera + descrizione", riusata sia dall'infobox che dal blocco standalone */
+/** Genera l'HTML per una lista "bandiera + descrizione", riusata sia dall'infobox che dal blocco standalone.
+ *  IMPORTANTE: nessuna indentazione/newline nell'output, altrimenti Markdown la interpreta
+ *  come blocco di codice indentato invece che come HTML da renderizzare. */
 function renderFlagList(items: Fazione[]): string {
     return items
         .map(
-            (f) => `
-              <div class="flag-table-item">
-                <img src="${f.bandiera}" alt="${f.nome ?? "Bandiera"}" class="flag-table-flag" />
-                <div class="flag-table-desc">
-                  ${f.nome ? `<strong>${f.nome}</strong>` : ""}
-                  <p>${f.descrizione ?? ""}</p>
-                </div>
-              </div>`
+            (f) =>
+                `<div class="flag-table-item"><img src="${f.bandiera}" alt="${f.nome ?? "Bandiera"}" class="flag-table-flag" /><div class="flag-table-desc">${f.nome ? `<strong>${f.nome}</strong>` : ""}<p>${f.descrizione ?? ""}</p></div></div>`
         )
         .join("");
 }
@@ -230,12 +226,7 @@ export function parseWiki(md: string) {
 
         if (!items.length) return "";
 
-        return `
-            <div class="flag-table">
-                ${title ? `<h3 class="flag-table-title">${title}</h3>` : ""}
-                ${renderFlagList(items)}
-            </div>
-        `;
+        return `<div class="flag-table">${title ? `<h3 class="flag-table-title">${title}</h3>` : ""}${renderFlagList(items)}</div>`;
     });
 
     // 4. NOW PARSE CLEAN MARKDOWN
