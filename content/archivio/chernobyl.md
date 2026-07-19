@@ -1,6 +1,6 @@
 # Chernobyl
 
----
+ 
 
 :::infobox
 title: Chernobyl
@@ -13,7 +13,7 @@ Energia: Energia XP
 Livello INES: Quasi livello 7
 :::
 
----
+ 
 
 **Chernobyl** è un incidente sfiorato verificatosi nel maggio 1973 presso un bunker sotterraneo situato nello Stato di Falconia.
 
@@ -21,7 +21,7 @@ L’evento è considerato uno dei più gravi mai registrati nei sistemi di produ
 
 L’incidente non fu causato da un test, ma da un’operazione di estrazione ordinaria. Una manovra errata portò alla rimozione parziale del sistema di contenimento, generando un incremento incontrollato del parametro noto come *Entity Cramming*.
 
----
+ 
 
 ## Stato del reattore
 
@@ -30,7 +30,7 @@ Operativo: TRUE
 Entity Cramming: ██████████ 100% (CRITICO)  
 Tridenti: █████████░ 92% (12 su 13 presenti)  
 
----
+ 
 
 ## Descrizione
 
@@ -42,7 +42,7 @@ L’anomalia fu causata dalla rimozione accidentale di un tridente di sicurezza,
 
 Nonostante le condizioni critiche, non si verificò alcuna esplosione. Il sistema fu stabilizzato tramite un intervento esterno che azzerò completamente il livello di Entity Cramming.
 
----
+ 
 
 ## Log operativo
 [01:23:04] Avvio ciclo estrazione
@@ -56,7 +56,7 @@ Nonostante le condizioni critiche, non si verificò alcuna esplosione. Il sistem
 [01:24:20] Sistema stabilizzato
 
 
----
+ 
 
 ## Comunicazioni radio
 
@@ -82,7 +82,7 @@ Nonostante le condizioni critiche, non si verificò alcuna esplosione. Il sistem
 
 > [SOVRANO] Non abbiamo più scelta.
 
----
+ 
 
 ## Conseguenze
 
@@ -92,7 +92,7 @@ Nonostante le condizioni critiche, non si verificò alcuna esplosione. Il sistem
 - Disturbi visivi e perdita di memoria segnalati  
 - Ripristino completo dopo stabilizzazione  
 
----
+ 
 
 ## Intervento
 
