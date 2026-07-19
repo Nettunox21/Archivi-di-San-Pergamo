@@ -1,3 +1,21 @@
+# La Guerra Santa
+
+---
+Data
+Luogo
+Casus Belli
+Esito
+Modifiche territoriali
+
+:::infobox
+title: La Guerra Santa
+image: /images/FalconiaBanner.jpeg
+Data:
+Luogo:
+Casus Belli: Gloria.
+Esito:
+Modifiche territoriali:
+:::
 :::bandiere
 - bandiera: /images/FalconiaBanner.jpeg
   nome: Impero D'Arstozka
