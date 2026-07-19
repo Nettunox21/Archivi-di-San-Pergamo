@@ -1,6 +1,6 @@
 # Lil'Pisa
 
----
+ 
 
 :::infobox
 title: Lil'Pisa
@@ -14,13 +14,13 @@ Festa principale: 11 settembre
 Economia: Turismo e attività illecite
 :::
 
----
+ 
 
 **Lil'Pisa** è un parco nazionale situato nel continente di Arstozka, ai piedi di San Pergamo e Profitgrado.
 
 Il parco appartiene per il 50% all'ex sovrano del Regno dei Nani, responsabile di restauri e nuove infrastrutture, mentre il restante 50% non appartiene ufficialmente ad alcuna entità.
 
----
+ 
 
 ## Storia
 
@@ -28,7 +28,7 @@ Originariamente nata come opera per modificare lo skyline di San Pergamo, Lil'Pi
 
 Successivamente l’area è stata sviluppata con bancarelle, panchine, moli e siepi decorative.
 
----
+ 
 
 ## Geografia
 
@@ -41,7 +41,7 @@ Confini:
 - Nord: Piazza Tinamen (Profitgrado)  
 - Ovest: San Pergamo  
 
----
+ 
 
 ## Economia
 
@@ -49,7 +49,7 @@ Confini:
 - Mambo's Industries  
 - Attività illecite  
 
----
+ 
 
 ## Cultura
 
@@ -61,13 +61,13 @@ La principale festività si celebra l’11 settembre, in ricordo dell’attentat
 
 Piatto tipico: **Mambo's Bread**
 
----
+ 
 
 ## Infrastrutture
 
 - Sentieri guidati  
 
----
+ 
 
 ## Relazioni esterne
 
