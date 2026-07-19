@@ -2272,7 +2272,7 @@ canvas {
   display: block;
   position: absolute;
   inset: 0;
-  background: rgba(10, 7, 4, 0.55);
+  background: transparent
 }
 
 .document-modal-content {
@@ -2296,7 +2296,7 @@ canvas {
   position: relative;
   z-index: 1;
   font-family: 'Palatino Linotype', Palatino, serif;
-  color: #f1e4c8;
+  color: #000000;
   font-size: 20px;
   letter-spacing: 0.04em;
   margin: 0 0 16px;
