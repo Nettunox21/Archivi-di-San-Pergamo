@@ -15,7 +15,7 @@ Modifiche territoriali:
   descrizione: Impero predecessore di Falconia, fu il principale protagonista della guerra, conducendo l'offensiva vittoriosa. La sua potenza militare si fondava sull'integrazione degli eserciti delle nazioni conquistate.
 - bandiera: /images/ProfitgradoBanner.jpeg
   nome: Sacro Impero
-  descrizione: Predecessore di Profitgrado
+  descrizione: Antico predecessore di Profitgrado, fu l'ultimo impero nemico di Arstozka a essere sconfitto. Era retto dal padre dell'attuale principe di Profitgrado. La morte del Papa segnò la fine dell'impero e avvenne sulla cima di una montagna innevata.
 :::
 
 ## Riassunto della guerra
