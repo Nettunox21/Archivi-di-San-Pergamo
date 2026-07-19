@@ -1,8 +1,8 @@
 :::bandiere
 - bandiera: /images/FalconiaBanner.jpeg
-  nome: Falconia
-  descrizione: breve descrizione qui...
+  nome: Impero D'Arstozka
+  descrizione: Predecessore di Falconia
 - bandiera: /images/ProfitgradoBanner.jpeg
-  nome: Profitgrado
-  descrizione: altra descrizione...
+  nome: Sacro Impero
+  descrizione: Predecessore di Profitgrado
 :::
