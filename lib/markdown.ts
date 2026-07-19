@@ -145,12 +145,11 @@ export function parseWiki(md: string) {
 
             const title: string = parsed.title ?? "Info";
 
-            // Galleria: usa "images" (array) se presente, altrimenti fallback su "image" singola
-            const images: string[] = Array.isArray(parsed.images)
-                ? parsed.images
-                : parsed.image
-                ? [parsed.image]
-                : [];
+            // Immagine singola (formato originale 1:2, NESSUN ritaglio forzato)
+            // vs galleria vera con più immagini (scorrevole, formato indipendente)
+            const hasGallery = Array.isArray(parsed.images) && parsed.images.length > 0;
+            const images: string[] = hasGallery ? parsed.images : [];
+            const singleImage: string | null = !hasGallery && parsed.image ? parsed.image : null;
 
             // Campi semplici chiave/valore: supporta sia il vecchio formato
             // (campi scritti direttamente a livello principale, es. pagine paese)
@@ -180,6 +179,11 @@ export function parseWiki(md: string) {
                    </div>`
                 : "";
 
+            // Immagine singola: stesso markup/classe del comportamento originale, formato intatto
+            const singleImageHTML = singleImage
+                ? `<img src="${singleImage}" alt="${title}" class="infobox-image" />`
+                : "";
+
             const rowsHTML = Object.entries(data)
                 .map(([key, value]) => `<tr><td>${key}</td><td>${value}</td></tr>`)
                 .join("");
@@ -193,6 +197,7 @@ export function parseWiki(md: string) {
 
             infoboxHTML = `
                 <aside class="infobox">
+                    ${singleImageHTML}
                     ${galleryHTML}
                     <h2>${title}</h2>
                     ${rowsHTML ? `<table><tbody>${rowsHTML}</tbody></table>` : ""}
