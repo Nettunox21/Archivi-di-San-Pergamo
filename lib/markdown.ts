@@ -136,8 +136,17 @@ export function parseWiki(md: string) {
                 ? [parsed.image]
                 : [];
 
-            // Campi semplici chiave/valore (Data, Luogo, Casus Belli, ecc.)
-            const data: Record<string, any> = parsed.data ?? {};
+            // Campi semplici chiave/valore: supporta sia il vecchio formato
+            // (campi scritti direttamente a livello principale, es. pagine paese)
+            // sia il nuovo formato annidato "data: { ... }" (es. pagine guerra)
+            const reservedKeys = ["title", "image", "images", "data", "fazioni"];
+            const looseData: Record<string, any> = {};
+            for (const [key, value] of Object.entries(parsed)) {
+                if (!reservedKeys.includes(key) && typeof value !== "object") {
+                    looseData[key] = value;
+                }
+            }
+            const data: Record<string, any> = { ...looseData, ...(parsed.data ?? {}) };
 
             // Fazioni coinvolte
             const fazioni: Fazione[] = Array.isArray(parsed.fazioni) ? parsed.fazioni : [];
