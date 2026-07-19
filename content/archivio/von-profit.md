@@ -1,7 +1,5 @@
 # Vincent Speculus Cristofer Von Profit
 
----
-
 ## Galleria Immagini
 
 <div class="gallery-scroll">
