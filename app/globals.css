@@ -2269,9 +2269,6 @@ canvas {
 
 /* Velo scuro sopra lo sfondo, per rendere leggibile il testo */
 .document-modal-scrim { 
-  display: block;
-  position: absolute;
-  inset: 0;
   background: transparent
 }
 
