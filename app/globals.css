@@ -2306,7 +2306,7 @@ canvas {
 .document-modal-text {
   position: relative;
   z-index: 1;
-  color: #f1e4c8;
+  color: #000000;
   font-family: 'Palatino Linotype', Palatino, serif;
   font-size: 17px;
   line-height: 1.75;
