@@ -9,7 +9,6 @@ Luogo:
 Casus Belli: Gloria.
 Esito:
 Modifiche territoriali:
-:::
 :::bandiere
 - bandiera: /images/FalconiaBanner.jpeg
   nome: Impero D'Arstozka
@@ -17,4 +16,5 @@ Modifiche territoriali:
 - bandiera: /images/ProfitgradoBanner.jpeg
   nome: Sacro Impero
   descrizione: Predecessore di Profitgrado
+:::
 :::
