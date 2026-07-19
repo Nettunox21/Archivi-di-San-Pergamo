@@ -58,6 +58,7 @@ export default async function RootLayout({
                         <Link href="/">Home</Link>
                         <Link href="/mappa">Mappa</Link>
                         <Link href="/fazioni">Fazioni</Link>
+                        <Link href="/documenti">Documenti</Link>
                         <Link href="/feedback">Feedback</Link>
                         <Link href="/notizie">Notizie</Link>
                     </nav>
