@@ -6,6 +6,7 @@ import type { WikiDocument } from "@/lib/documents";
 export default function DocumentiClient({ documents }: { documents: WikiDocument[] }) {
     const [query, setQuery] = useState("");
     const [selected, setSelected] = useState<WikiDocument | null>(null);
+    const [pageIndex, setPageIndex] = useState(0);
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -14,6 +15,17 @@ export default function DocumentiClient({ documents }: { documents: WikiDocument
             (d.title + " " + d.description).toLowerCase().includes(q)
         );
     }, [documents, query]);
+
+    function openDocument(doc: WikiDocument) {
+        setSelected(doc);
+        setPageIndex(0);
+    }
+
+    function closeDocument() {
+        setSelected(null);
+    }
+
+    const totalPages = selected?.pages.length ?? 0;
 
     return (
         <div className="documenti-wrapper">
@@ -31,7 +43,7 @@ export default function DocumentiClient({ documents }: { documents: WikiDocument
                     <button
                         key={doc.slug}
                         className="document-card"
-                        onClick={() => setSelected(doc)}
+                        onClick={() => openDocument(doc)}
                     >
                         <div className="document-banner">
                             {doc.image && (
@@ -53,37 +65,62 @@ export default function DocumentiClient({ documents }: { documents: WikiDocument
             </div>
 
             {selected && (
-                <div
-                    className="document-modal-backdrop"
-                    onClick={() => setSelected(null)}
-                >
-                    <div
-                        className="document-modal"
-                        onClick={(e) => e.stopPropagation()}
-                    >
+                <div className="document-modal-backdrop" onClick={closeDocument}>
+                    {/* Rettangolo STONDATO esterno: nessuna immagine, solo cornice/tema */}
+                    <div className="document-modal" onClick={(e) => e.stopPropagation()}>
                         <button
                             className="document-modal-close"
-                            onClick={() => setSelected(null)}
+                            onClick={closeDocument}
                             aria-label="Chiudi documento"
                         >
                             ✕
                         </button>
 
+                        {/* Rettangolo NORMALE interno: qui va lo sfondo */}
                         <div
-                            className="document-modal-bg"
+                            className="document-modal-panel"
                             style={{
-                                backgroundImage: selected.image
-                                    ? `url(${selected.image})`
+                                backgroundImage: selected.background
+                                    ? `url(${selected.background})`
                                     : undefined,
                             }}
                         >
-                            <div className="document-modal-panel">
+                            <div className="document-modal-scrim" />
+
+                            <div className="document-modal-content">
                                 <h2 className="document-modal-title">{selected.title}</h2>
+
                                 <div
                                     className="document-modal-text"
-                                    dangerouslySetInnerHTML={{ __html: selected.contentHTML }}
+                                    dangerouslySetInnerHTML={{
+                                        __html: selected.pages[pageIndex] ?? "",
+                                    }}
                                 />
                             </div>
+
+                            {totalPages > 1 && (
+                                <div className="document-modal-pagination">
+                                    <button
+                                        onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+                                        disabled={pageIndex === 0}
+                                        aria-label="Pagina precedente"
+                                    >
+                                        ‹
+                                    </button>
+                                    <span>
+                                        Pagina {pageIndex + 1} di {totalPages}
+                                    </span>
+                                    <button
+                                        onClick={() =>
+                                            setPageIndex((p) => Math.min(totalPages - 1, p + 1))
+                                        }
+                                        disabled={pageIndex === totalPages - 1}
+                                        aria-label="Pagina successiva"
+                                    >
+                                        ›
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
