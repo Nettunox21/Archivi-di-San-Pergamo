@@ -12,13 +12,13 @@ Modifiche territoriali:
 :::bandiere
 - bandiera: /images/FalconiaBanner.jpeg
   nome: Impero D'Arstozka
-  descrizione: Predecessore di Falconia
+  descrizione: Impero predecessore di Falconia, fu il principale protagonista della guerra, conducendo l'offensiva vittoriosa. La sua potenza militare si fondava sull'integrazione degli eserciti delle nazioni conquistate.
 - bandiera: /images/ProfitgradoBanner.jpeg
   nome: Sacro Impero
   descrizione: Predecessore di Profitgrado
 :::
 
-## Ciao
+## Riassunto della guerra
 
 **Falconia** è uno Stato situato nel continente di Arstozka e Agartha. Sorge su un colle e rappresenta un insediamento di grandi dimensioni con circa 100 abitanti. Il villaggio principale si sviluppa nella pianura sottostante, mentre il territorio circostante presenta una grande varietà geografica.
 
