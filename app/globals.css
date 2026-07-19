@@ -2214,21 +2214,25 @@ canvas {
   z-index: 2000;
 }
 
+/* Contenitore ESTERNO stondato: nessuna immagine, solo tema scuro + cornice */
 .document-modal {
   position: relative;
-  width: 100%;
-  max-width: 640px;
-  max-height: 85vh;
-  border-radius: 16px;
+  width: min(640px, 92vw);
+  height: min(760px, 88vh);
+  border-radius: 20px;
   overflow: hidden;
+  background: #14100c;
   border: 1px solid rgba(180, 140, 80, 0.35);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
 }
 
 .document-modal-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 22px;
+  right: 22px;
   z-index: 10;
   width: 32px;
   height: 32px;
@@ -2248,25 +2252,33 @@ canvas {
   border-color: rgba(180, 140, 80, 0.8);
 }
 
-/* Immagine di sfondo dietro il testo */
-.document-modal-bg {
+/* Rettangolo NORMALE interno (angoli poco o per nulla arrotondati):
+   qui va l'immagine di sfondo, che può essere diversa dalla copertina della card */
+.document-modal-panel {
+  position: relative;
+  flex: 1;
+  border-radius: 4px;
+  border: 1px solid rgba(180, 140, 80, 0.25);
+  background-color: #201915;
   background-size: cover;
   background-position: center;
-  padding: 40px 24px;
-  max-height: 85vh;
-  overflow-y: auto;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-/* Rettangolo "normale" con il testo, sopra lo sfondo */
-.document-modal-panel {
-  background: rgba(15, 10, 5, 0.88);
-  border: 1px solid rgba(180, 140, 80, 0.3);
-  border-radius: 6px;
-  padding: 24px 28px;
-  width: 100%;
+/* Velo scuro sopra lo sfondo, per rendere leggibile il testo */
+.document-modal-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 7, 4, 0.62);
+}
+
+.document-modal-content {
+  position: relative;
+  flex: 1;
+  padding: 28px 26px 12px;
+  overflow-y: auto;
 }
 
 .document-modal-title {
@@ -2278,13 +2290,48 @@ canvas {
 }
 
 .document-modal-text {
-  color: #d7c6a6;
+  color: #f1e4c8;
   font-size: 14px;
   line-height: 1.6;
 }
 
 .document-modal-text p {
   margin: 0 0 12px;
+}
+
+.document-modal-pagination {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 0 16px;
+  border-top: 1px solid rgba(180, 140, 80, 0.2);
+}
+
+.document-modal-pagination button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(180, 140, 80, 0.4);
+  background: rgba(15, 10, 5, 0.6);
+  color: #e6d4ae;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.document-modal-pagination button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.document-modal-pagination span {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: rgba(230, 212, 174, 0.8);
 }
 
 /* =========================
@@ -2303,7 +2350,13 @@ canvas {
     grid-template-columns: 1fr;
   }
 
-  .document-modal-panel {
-    padding: 18px 20px;
+  .document-modal {
+    width: 95vw;
+    height: 88vh;
+    padding: 10px;
+  }
+
+  .document-modal-content {
+    padding: 24px 18px 8px;
   }
 }
