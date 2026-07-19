@@ -18,7 +18,13 @@ type Fazione = {
  *      - altro-valore-semplice      (lista di stringhe)
  */
 function parseSimpleYaml(text: string): any {
-    const rawLines = text.replace(/\t/g, "  ").split("\n");
+    // Normalizza i fine riga: file salvati con CRLF (\r\n) o CR (\r) rompono
+    // il rilevamento dell'indentazione più sotto, quindi si converte tutto a LF.
+    const rawLines = text
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .replace(/\t/g, "  ")
+        .split("\n");
 
     const lines = rawLines
         .map((l) => {
