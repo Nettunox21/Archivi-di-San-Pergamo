@@ -1,6 +1,6 @@
 # Report Genealogico – Famiglia Von Profit
 
----
+ 
 
 :::infobox
 title: Famiglia Von Profit
@@ -12,7 +12,7 @@ Figura centrale: Vincent Speculus Cristofer Von Profit
 Stato attuale: Attivo
 :::
 
----
+ 
 
 ## Lettera allegata al report
 
@@ -26,7 +26,7 @@ Stato attuale: Attivo
 >
 > Detto ciò, la lasciamo alla consultazione del report.
 
----
+ 
 
 ## Origine e Migrazione Primaria
 
@@ -35,7 +35,7 @@ Il nucleo proto-familiare mostra alta mobilità e adattamento culturale.
 
 Successivamente avviene il trasferimento in Giappone, con integrazione in un contesto militare e gerarchico.
 
----
+ 
 
 ## Consolidamento Europeo e Acquisizione del Titolo
 
@@ -45,7 +45,7 @@ La crescita patrimoniale risulta estremamente rapida e anomala nei modelli econo
 
 ![](/images/GraficoGuadagni.png)
 
----
+ 
 
 ## Espansione e Dominio nel Territorio Italiano
 
@@ -74,7 +74,7 @@ Attività principali:
 
 </div>
 
----
+ 
 
 ## Linea Genealogica Nota
 
@@ -86,7 +86,7 @@ Riconosciuto come membro più influente.
 Sopravvive a un evento nucleare grazie a un sistema di bunkerizzazione avanzato.  
 Successivamente muore per una caduta accidentale.
 
----
+ 
 
 ### Erede diretto
 
@@ -100,7 +100,7 @@ Durante questo periodo:
 
 Le circostanze della morte non risultano documentate.
 
----
+ 
 
 ### Erede attuale
 
