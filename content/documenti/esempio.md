@@ -1,7 +1,7 @@
 ---
 title: Trattato di San Pergamo
 image: /images/FalconiaBanner.jpeg
-background: /images/ProfitgradoBanner.jpeg
+background: /old_paper.png
 description: Il trattato che sancì la pace tra le nazioni dell'Ordine.
 ---
 
