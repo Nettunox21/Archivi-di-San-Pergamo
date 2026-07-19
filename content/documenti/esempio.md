@@ -6,8 +6,8 @@ description: Ciao
 ---
 
 Testo della prima pagina del documento. Testo perchè se non funziona il **Markdown** normale: paragrafi, *corsivo*, elenchi, ecc. mi incazzo.
--Test
--test
+- Test
+- test
 
 :::pagina:::
 
