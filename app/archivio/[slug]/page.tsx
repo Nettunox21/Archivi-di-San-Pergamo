@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
-import { parseWiki } from "@/lib/markdown"; // ✅ MOVE HERE
+import { parseWiki } from "@/lib/markdown";
 
 marked.setOptions({
     gfm: true,
@@ -48,14 +48,10 @@ export default async function Page({
         notFound();
     }
 
-    const html = parseWiki(markdown); // ✅ works now
+    const html = parseWiki(markdown);
 
-    return (
-        <div className="wiki-layout">
-            <article
-                className="markdown-content"
-                dangerouslySetInnerHTML={{ __html: html }}
-            />
-        </div>
-    );
+    // parseWiki() restituisce già l'intero markup, incluso
+    // <div class="wiki-layout"><article class="markdown-content">...</article></div>.
+    // Niente wrapper qui, altrimenti si annida due volte (bug del doppio wiki-layout).
+    return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }
