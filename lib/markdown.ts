@@ -236,9 +236,16 @@ export function parseWiki(md: string) {
     });
 
     // 4. NOW PARSE CLEAN MARKDOWN
-    const contentHTML = marked.parse(md);
+    let contentHTML = marked.parse(md) as string;
 
-    // 5. COMBINE FINAL OUTPUT
+    // 5. Converte i link [testo](documento:slug) in link reali verso la sezione Documenti,
+    //    che apriranno automaticamente la modale di quel documento
+    contentHTML = contentHTML.replace(
+        /href="documento:([a-zA-Z0-9_-]+)"/g,
+        'href="/documenti?doc=$1"'
+    );
+
+    // 6. COMBINE FINAL OUTPUT
     return `
         <div class="wiki-layout">
             ${infoboxHTML}
