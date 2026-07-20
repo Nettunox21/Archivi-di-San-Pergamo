@@ -1,7 +1,7 @@
 ---
 title: Annessione Sanctum Imperum
 image: /images/VonProfitPollice.png
-background: /old_paper.png
+background: /new_old_paper.png
 description: "Seguente alla sconfitta segnata da Arstozka, Predecessore del Priore"
 ---
 Giorno 10/7/2023 a.G.
