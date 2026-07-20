@@ -20,7 +20,7 @@ Codeste sono le trattative coloniali:
 
 Gloria ad Arstozka!
 
----
+
 
 FIRMA
 FrancobolloD
