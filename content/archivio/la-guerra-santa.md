@@ -10,7 +10,7 @@ Esito: Vittoria di Arstozka
 Modifiche territoriali: Il territorio di Sanctum Imperum viene ceduto a Arstozka
 :::
 :::bandiere
-- bandiera: /images/FalconiaBanner.jpeg
+- bandiera: /images/ArstozkaBanner.jpg
   nome: Impero D'Arstozka
   descrizione: Impero predecessore di Falconia, fu il principale protagonista della guerra, conducendo l'offensiva vittoriosa. La sua potenza militare si fondava sull'integrazione degli eserciti delle nazioni conquistate.
 - bandiera: /images/ProfitgradoBanner.jpeg
