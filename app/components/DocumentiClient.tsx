@@ -1,12 +1,30 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { WikiDocument } from "@/lib/documents";
 
 export default function DocumentiClient({ documents }: { documents: WikiDocument[] }) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
     const [query, setQuery] = useState("");
     const [selected, setSelected] = useState<WikiDocument | null>(null);
     const [pageIndex, setPageIndex] = useState(0);
+
+    // Se si arriva da un link tipo /documenti?doc=slug (da un articolo wiki),
+    // apre automaticamente la modale del documento corrispondente
+    useEffect(() => {
+        const docParam = searchParams.get("doc");
+        if (!docParam) return;
+
+        const found = documents.find((d) => d.slug === docParam);
+        if (found) {
+            setSelected(found);
+            setPageIndex(0);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams, documents]);
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -23,6 +41,10 @@ export default function DocumentiClient({ documents }: { documents: WikiDocument
 
     function closeDocument() {
         setSelected(null);
+        // pulisce l'URL da ?doc=... senza ricaricare la pagina
+        if (searchParams.get("doc")) {
+            router.replace("/documenti");
+        }
     }
 
     const totalPages = selected?.pages.length ?? 0;
