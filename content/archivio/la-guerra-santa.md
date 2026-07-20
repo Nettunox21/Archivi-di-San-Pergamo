@@ -2,7 +2,7 @@
 
 :::infobox
 title: La Guerra Santa
-image: /images/FalconiaBanner.jpeg
+image: /images/ArstozkaBanner.jpg
 Data: 11 Luglio 2023 a.G.
 Luogo: Valle Innevata del Vecchio Continente
 Casus Belli: Gloria.
