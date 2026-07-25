@@ -6,6 +6,14 @@ type Fazione = {
     descrizione: string;
 };
 
+type Raccolta = {
+    immagine: string;
+    titolo?: string;
+    descrizione?: string;
+    autori?: string;
+    significato?: string;
+};
+
 /**
  * Mini-parser YAML "fatto in casa": niente dipendenze esterne.
  * Supporta solo il sottoinsieme che serve all'infobox e ai blocchi wiki:
@@ -128,6 +136,17 @@ function renderFlagList(items: Fazione[]): string {
         .join("");
 }
 
+/** Genera l'HTML per una raccolta: immagine (formato 1:2) a sinistra, testo a destra.
+ *  Nessuna indentazione/newline nell'output (stesso motivo di renderFlagList). */
+function renderRaccolte(items: Raccolta[]): string {
+    return items
+        .map(
+            (r) =>
+                `<div class="raccolta-item"><div class="raccolta-image"><img src="${r.immagine}" alt="${r.titolo ?? "Raccolta"}" /></div><div class="raccolta-content">${r.titolo ? `<h3 class="raccolta-title">${r.titolo}</h3>` : ""}${r.descrizione ? `<p class="raccolta-description">${r.descrizione}</p>` : ""}${r.autori ? `<p class="raccolta-meta"><strong>Autori principali:</strong> ${r.autori}</p>` : ""}${r.significato ? `<p class="raccolta-meta"><strong>Significato della carta:</strong> ${r.significato}</p>` : ""}</div></div>`
+        )
+        .join("");
+}
+
 export function parseWiki(md: string) {
     // 1. REMOVE FRONTMATTER
     md = md.replace(/^---[\s\S]*?---/, "");
@@ -233,6 +252,27 @@ export function parseWiki(md: string) {
         if (!items.length) return "";
 
         return `<div class="flag-table">${title ? `<h3 class="flag-table-title">${title}</h3>` : ""}${renderFlagList(items)}</div>`;
+    });
+
+    // 3b. NUOVO BLOCCO RIUTILIZZABILE ":::raccolte" (immagine 1:2 + testo, disposti verticalmente)
+    md = md.replace(/:::raccolte([\s\S]*?):::/g, (_, content) => {
+        let parsed: any = {};
+        try {
+            parsed = parseSimpleYaml(content) ?? {};
+        } catch (e) {
+            console.error("Errore nel parsing del blocco raccolte:", e);
+            return "";
+        }
+
+        const items: Raccolta[] = Array.isArray(parsed)
+            ? parsed
+            : Array.isArray(parsed.items)
+            ? parsed.items
+            : [];
+
+        if (!items.length) return "";
+
+        return `<div class="raccolte-list">${renderRaccolte(items)}</div>`;
     });
 
     // 4. NOW PARSE CLEAN MARKDOWN
