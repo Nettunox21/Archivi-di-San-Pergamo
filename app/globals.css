@@ -2375,3 +2375,85 @@ canvas {
     padding: 24px 18px 8px;
   }
 }
+/*================================================
+ * RACCOLTE (pagina /documenti/help)
+ * =========================================*/
+
+.raccolte-list {
+  display: flex;
+  flex-direction: column;
+  margin: 24px 0;
+  border-top: 1px solid #4f3928;
+  border-bottom: 1px solid #4f3928;
+}
+
+.raccolta-item {
+  display: flex;
+  gap: 24px;
+  padding: 24px 4px;
+  border-bottom: 1px solid #3d2d22;
+}
+
+.raccolta-item:last-child {
+  border-bottom: none;
+}
+
+.raccolta-image {
+  flex: 0 0 140px;
+  width: 140px;
+  aspect-ratio: 1 / 2;
+  border: 1px solid #4f3928;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #201915;
+}
+
+.raccolta-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.raccolta-content {
+  flex: 1;
+  padding-top: 4px;
+}
+
+.raccolta-title {
+  font-family: 'Palatino Linotype', Palatino, serif;
+  color: #e6d4ae;
+  font-size: 18px;
+  letter-spacing: 0.03em;
+  margin: 0 0 12px;
+}
+
+.raccolta-description {
+  color: #d7c6a6;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+
+.raccolta-meta {
+  color: #c8a96e;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0 0 6px;
+}
+
+.raccolta-meta strong {
+  color: #e2c690;
+}
+
+@media (max-width: 600px) {
+  .raccolta-item {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .raccolta-image {
+    width: 110px;
+    flex: 0 0 auto;
+  }
+}
