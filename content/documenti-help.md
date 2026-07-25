@@ -15,7 +15,7 @@ Guida alle raccolte in cui sono organizzati i documenti dell'archivio.
   autori:
   significato: Creazione, ingegno
 
-- immagine: /images/papessa.png
+- immagine: /images/la_papessa.png
   titolo: La Papessa
   descrizione: Documenti riguardanti San Pergamo.
   autori:
@@ -51,7 +51,7 @@ Guida alle raccolte in cui sono organizzati i documenti dell'archivio.
   autori:
   significato: Vittoria, conquista
 
-- immagine: /images/giustizia.png
+- immagine: /images/la_giustizia.png
   titolo: La Giustizia
   descrizione: Documenti giudiziari.
   autori:
