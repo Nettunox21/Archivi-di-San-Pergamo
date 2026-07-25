@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getDocuments } from "@/lib/documents";
 import DocumentiClient from "@/app/components/DocumentiClient";
 
@@ -11,6 +12,9 @@ export default function DocumentiPage() {
                 <p className="wiki-subtitle">
                     Archivio dei documenti ufficiali dell'Ordine
                 </p>
+                <Link href="/documenti/help" className="btn">
+                    Raccolte
+                </Link>
             </header>
 
             <DocumentiClient documents={documents} />
