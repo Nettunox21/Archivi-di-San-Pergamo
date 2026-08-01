@@ -1,6 +1,6 @@
 ---
 title: "Trasmissione da Night City"
-image: "/images/notizie/night_city.jpg"
+image: "/images/notizie/night_city.png"
 date: "..."
 location: "Costruzione Night City"
 reporter: "..."
