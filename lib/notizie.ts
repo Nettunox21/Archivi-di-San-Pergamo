@@ -13,6 +13,7 @@ export interface NewsArticle {
     reporter: string;
     text: string;
     order: number;
+    stile: string;
 }
 
 const NEWS_DIR = path.join(process.cwd(), "content/notizie");
@@ -41,6 +42,9 @@ export function getNewsArticles(): NewsArticle[] {
             reporter: data.reporter || "",
             text: content.trim(),
             order: Number(data.order) || 0,
+            // Stile grafico speciale per l'articolo (es. "cyberpunk").
+            // Vuoto = stile classico pergamena/oro.
+            stile: typeof data.stile === "string" ? data.stile.trim() : "",
         };
     });
 
