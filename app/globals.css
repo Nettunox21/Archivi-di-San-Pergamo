@@ -2459,9 +2459,10 @@ canvas {
   }
 }
 /* =========================
- *  NOTIZIE — STILE SPECIALE "CYBERPUNK" (v4: HUD netrunner, glitch esagerato)
+ *  NOTIZIE — STILE SPECIALE "CYBERPUNK" (v5: glitch da videogioco)
  *  Attivato dal frontmatter "stile: cyberpunk" in un file
  *  content/notizie/*.md — vedi lib/notizie.ts
+ *  Richiede il filtro SVG #cp-distort definito in app/notizie/page.tsx
  * ========================= */
 
 .news-card--cyberpunk {
@@ -2469,6 +2470,7 @@ canvas {
     --cp-cyan: #7fe9ff;
     --cp-cyan-dim: rgba(127, 233, 255, 0.4);
     --cp-lime: #d9f76b;
+    --cp-magenta: #ff2b8f;
     --cp-text: #cfe8e3;
 
     position: relative;
@@ -2499,10 +2501,10 @@ canvas {
         0 bottom 0, 0 bottom 0,
         right 0 bottom 0, right 0 bottom 0;
 
-    animation: cp-jitter 4.5s infinite;
+    animation: cp-jitter 4.5s infinite steps(1, jump-none);
 }
 
-/* Texture a scanline molto leggera, solo suggerita */
+/* Texture a scanline leggera */
 .news-card--cyberpunk::before {
     content: "";
     position: absolute;
@@ -2518,14 +2520,14 @@ canvas {
     );
 }
 
-/* Linea di scan che attraversa TUTTA la card, in sincro con le raffiche di glitch */
+/* Linea di scan che attraversa tutta la card, sincronizzata con le raffiche */
 .news-card--cyberpunk::after {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
     height: 3px;
-    z-index: 5;
+    z-index: 6;
     pointer-events: none;
     background: var(--cp-lime);
     opacity: 0;
@@ -2538,10 +2540,15 @@ canvas {
     z-index: 2;
 }
 
+.news-card--cyberpunk .news-image-wrapper {
+    position: relative;
+}
+
 .news-card--cyberpunk .news-image-wrapper::after {
     content: "";
     position: absolute;
     inset: 0;
+    z-index: 3;
     background: linear-gradient(
         180deg,
         rgba(127, 233, 255, 0.12),
@@ -2551,8 +2558,25 @@ canvas {
     pointer-events: none;
 }
 
+/* Blocco di colore solido n.1, compare a scatti sull'immagine */
+.news-card--cyberpunk .news-image-wrapper::before {
+    content: "";
+    position: absolute;
+    z-index: 4;
+    pointer-events: none;
+    width: 30px;
+    height: 20px;
+    top: 16%;
+    left: 12%;
+    background: #2f2bff;
+    opacity: 0;
+    animation: cp-confetti-a 4.5s infinite steps(1, jump-none);
+}
+
+/* L'immagine vera e propria: filtro base + distorsione/inversione a scatti */
 .news-card--cyberpunk .news-image {
     filter: grayscale(0.25) contrast(1.1) saturate(1.1);
+    animation: cp-image-warp 4.5s infinite steps(1, jump-none);
 }
 
 .news-card--cyberpunk .news-image-arrow {
@@ -2562,8 +2586,9 @@ canvas {
     border-radius: 0;
 }
 
-/* Etichetta piccola sopra al titolo, in stile "tag" HUD */
+/* Etichetta piccola sopra al titolo */
 .news-card--cyberpunk .news-title {
+    position: relative;
     font-family: "Share Tech Mono", "Courier New", monospace;
     color: var(--cp-text);
     text-transform: uppercase;
@@ -2583,14 +2608,46 @@ canvas {
     opacity: 0.85;
 }
 
+/* Blocco di colore solido n.2, una barra vicino al titolo */
+.news-card--cyberpunk .news-title::after {
+    content: "";
+    position: absolute;
+    right: 4%;
+    top: 0;
+    z-index: 4;
+    pointer-events: none;
+    width: 35%;
+    height: 8px;
+    background: var(--cp-magenta);
+    opacity: 0;
+    animation: cp-confetti-b 4.5s infinite steps(1, jump-none);
+}
+
 .news-card--cyberpunk .news-text {
+    position: relative;
     font-family: "Share Tech Mono", "Courier New", monospace;
     color: var(--cp-text);
     line-height: 1.65;
     font-size: 0.95rem;
 }
 
+/* Blocco di colore solido n.3, una barra dentro il corpo del testo */
+.news-card--cyberpunk .news-text::before {
+    content: "";
+    position: absolute;
+    left: 2%;
+    top: 38%;
+    z-index: 4;
+    pointer-events: none;
+    width: 55%;
+    height: 5px;
+    background: linear-gradient(90deg, var(--cp-magenta), var(--cp-lime));
+    opacity: 0;
+    animation: cp-confetti-c 4.5s infinite steps(1, jump-none);
+}
+
 .news-card--cyberpunk .news-meta {
+    position: relative;
     font-family: "Share Tech Mono", "Courier New", monospace;
     color: var(--cp-lime);
     border-top: 1px solid var(--cp-cyan-dim);
@@ -2607,76 +2664,87 @@ canvas {
     opacity: 0.6;
 }
 
-/* Glitch esagerato su TUTTA la card: due raffiche per ciclo (~ogni 2s),
-   con scatti di posizione ampi, un "taglio" (clip-path) che simula una
-   fetta di schermo che salta, e uno sdoppiamento cromatico ciano/lime
-   di tutto il contenuto (immagine compresa) via drop-shadow. */
+/* Blocco di colore solido n.4, quadratino in basso */
+.news-card--cyberpunk .news-meta::after {
+    content: "";
+    position: absolute;
+    right: 6%;
+    bottom: 4px;
+    z-index: 4;
+    pointer-events: none;
+    width: 14px;
+    height: 14px;
+    background: #f4ff5c;
+    opacity: 0;
+    animation: cp-confetti-d 4.5s infinite steps(1, jump-none);
+}
+
+/* ================================================
+   ANIMAZIONI
+   Tutte durano 4.5s e condividono gli stessi punti di
+   "raffica" (77-80% e 88-90%) cosi' i vari livelli
+   (posizione, colore, blocchi, distorsione immagine)
+   scattano insieme ma con dettagli leggermente sfalsati,
+   che e' quello che rende il glitch caotico e non un
+   singolo blocco che si muove.
+   ================================================ */
+
+/* Card intera: scatti di posizione + sdoppiamento cromatico ciano/lime/magenta
+   di TUTTO il contenuto (via drop-shadow, che duplica anche l'immagine) +
+   taglio a fetta (clip-path) */
 @keyframes cp-jitter {
-    0%, 76%, 100% {
+    0%, 76%, 81%, 87%, 91%, 100% {
         transform: translate(0, 0);
         filter: none;
         clip-path: inset(0 0 0 0);
     }
-
-    /* --- prima raffica --- */
     77% {
-        transform: translate(-7px, 2px);
+        transform: translate(-8px, 2px);
         clip-path: inset(0 0 0 0);
         filter:
-            drop-shadow(-4px 0 0 rgba(127, 233, 255, 0.85))
-            drop-shadow(4px 0 0 rgba(217, 247, 107, 0.85))
-            hue-rotate(8deg) brightness(1.2);
+            drop-shadow(-5px 0 0 rgba(127, 233, 255, 0.9))
+            drop-shadow(5px 0 0 rgba(255, 43, 143, 0.85))
+            hue-rotate(10deg) brightness(1.2);
     }
     78% {
-        transform: translate(6px, -3px);
+        transform: translate(7px, -3px);
         clip-path: inset(18% 0 52% 0);
         filter:
-            drop-shadow(5px 0 0 rgba(217, 247, 107, 0.8))
-            brightness(1.25);
+            drop-shadow(6px 0 0 rgba(217, 247, 107, 0.85))
+            drop-shadow(-6px 0 0 rgba(255, 43, 143, 0.6))
+            saturate(1.6) brightness(1.3);
     }
     79% {
-        transform: translate(-5px, 3px);
+        transform: translate(-6px, 3px);
         clip-path: inset(0 0 0 0);
-        filter: drop-shadow(-4px 0 0 rgba(127, 233, 255, 0.7));
+        filter: drop-shadow(-5px 0 0 rgba(127, 233, 255, 0.75));
     }
     80% {
-        transform: translate(3px, -1px);
-        clip-path: inset(60% 0 5% 0);
-        filter: drop-shadow(3px 0 0 rgba(217, 247, 107, 0.6));
+        transform: translate(4px, -1px);
+        clip-path: inset(62% 0 4% 0);
+        filter: drop-shadow(4px 0 0 rgba(217, 247, 107, 0.65));
     }
-    81%, 87% {
-        transform: translate(0, 0);
-        clip-path: inset(0 0 0 0);
-        filter: none;
-    }
-
-    /* --- seconda raffica --- */
     88% {
-        transform: translate(5px, -2px);
+        transform: translate(6px, -2px);
         clip-path: inset(0 0 0 0);
         filter:
-            drop-shadow(4px 0 0 rgba(127, 233, 255, 0.8))
-            drop-shadow(-4px 0 0 rgba(217, 247, 107, 0.8))
+            drop-shadow(5px 0 0 rgba(127, 233, 255, 0.85))
+            drop-shadow(-5px 0 0 rgba(217, 247, 107, 0.85))
             brightness(1.15);
     }
     89% {
-        transform: translate(-6px, 1px);
+        transform: translate(-7px, 1px);
         clip-path: inset(35% 0 25% 0);
-        filter: drop-shadow(-3px 0 0 rgba(127, 233, 255, 0.75));
+        filter: drop-shadow(-4px 0 0 rgba(255, 43, 143, 0.75)) saturate(1.5);
     }
     90% {
-        transform: translate(4px, -2px);
+        transform: translate(5px, -2px);
         clip-path: inset(0 0 0 0);
-        filter: hue-rotate(-6deg) brightness(1.1);
-    }
-    91%, 100% {
-        transform: translate(0, 0);
-        clip-path: inset(0 0 0 0);
-        filter: none;
+        filter: hue-rotate(-8deg) brightness(1.1);
     }
 }
 
-/* Linea di scan: lampeggia in sincro con le due raffiche sopra */
+/* Linea di scan, in sincro con le raffiche */
 @keyframes cp-scanline {
     0%, 76% { opacity: 0; top: 20%; }
     77% { opacity: 0.9; top: 30%; }
@@ -2689,9 +2757,65 @@ canvas {
     100% { opacity: 0; }
 }
 
+/* Distorsione vera dell'immagine (feTurbulence + feDisplacementMap) con
+   sbalzi di colore, sfasata di un paio di punti percentuali rispetto alla
+   card per un effetto meno "tutto insieme" e piu' caotico */
+@keyframes cp-image-warp {
+    0%, 76%, 79%, 87%, 90%, 100% {
+        filter: grayscale(0.25) contrast(1.1) saturate(1.1);
+    }
+    77% {
+        filter: url(#cp-distort) hue-rotate(120deg) saturate(2.2) contrast(1.3) brightness(1.15);
+    }
+    78% {
+        filter: url(#cp-distort) invert(0.8) hue-rotate(-60deg) saturate(2.5) contrast(1.4);
+    }
+    88% {
+        filter: url(#cp-distort) hue-rotate(80deg) saturate(2.3) contrast(1.35);
+    }
+    89% {
+        filter: url(#cp-distort) hue-rotate(-150deg) saturate(2.6) brightness(1.2);
+    }
+}
+
+/* Blocchi di colore solido: ognuno appare in un istante diverso e sparisce
+   subito, come i quadratini/barre nell'immagine di riferimento */
+@keyframes cp-confetti-a {
+    0%, 76%, 78%, 100% { opacity: 0; }
+    77% { opacity: 0.9; }
+    88% { opacity: 0.85; top: 55%; left: 65%; background: var(--cp-magenta); }
+    89% { opacity: 0; }
+}
+
+@keyframes cp-confetti-b {
+    0%, 78%, 80%, 87%, 100% { opacity: 0; }
+    79% { opacity: 0.85; }
+    89% { opacity: 0.75; background: var(--cp-lime); width: 20%; }
+    90% { opacity: 0; }
+}
+
+@keyframes cp-confetti-c {
+    0%, 77%, 79%, 88%, 100% { opacity: 0; }
+    78% { opacity: 0.8; }
+    89% { opacity: 0.7; }
+    90% { opacity: 0; }
+}
+
+@keyframes cp-confetti-d {
+    0%, 79%, 81%, 89%, 100% { opacity: 0; }
+    80% { opacity: 0.9; }
+    90% { opacity: 0.8; background: #2f2bff; }
+    91% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .news-card--cyberpunk,
-    .news-card--cyberpunk::after {
+    .news-card--cyberpunk::after,
+    .news-card--cyberpunk .news-image,
+    .news-card--cyberpunk .news-image-wrapper::before,
+    .news-card--cyberpunk .news-title::after,
+    .news-card--cyberpunk .news-text::before,
+    .news-card--cyberpunk .news-meta::after {
         animation: none;
     }
 }
