@@ -11,6 +11,30 @@ export default function NotiziePage() {
         <div className="news-container">
             <div className="news-page-bg" aria-hidden="true" />
 
+            {/* Filtro SVG per la distorsione "glitch" delle immagini in stile
+                cyberpunk. E' solo una definizione, non renderizza nulla da solo:
+                viene richiamato dal CSS con filter: url(#cp-distort) */}
+            <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+                <defs>
+                    <filter id="cp-distort" x="-20%" y="-20%" width="140%" height="140%">
+                        <feTurbulence
+                            type="fractalNoise"
+                            baseFrequency="0.012 0.14"
+                            numOctaves="2"
+                            seed="4"
+                            result="cpNoise"
+                        />
+                        <feDisplacementMap
+                            in="SourceGraphic"
+                            in2="cpNoise"
+                            scale="22"
+                            xChannelSelector="R"
+                            yChannelSelector="G"
+                        />
+                    </filter>
+                </defs>
+            </svg>
+
             <header className="news-hero">
                 <h1>Notizie</h1>
                 <p className="news-subtitle">
