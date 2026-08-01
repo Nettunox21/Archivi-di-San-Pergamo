@@ -29,35 +29,51 @@ export default function NotiziePage() {
                     </p>
                 )}
 
-                {articles.map((a) => (
-                    <article key={a.slug} className="news-card">
-                        <NewsImageCarousel images={a.images} alt={a.title} />
+                {articles.map((a) => {
+                    const isCyberpunk = a.stile === "cyberpunk";
 
-                        <div className="news-body">
-                            <h2 className="news-title">{a.title}</h2>
+                    return (
+                        <article
+                            key={a.slug}
+                            className={
+                                isCyberpunk
+                                    ? "news-card news-card--cyberpunk"
+                                    : "news-card"
+                            }
+                        >
+                            <NewsImageCarousel images={a.images} alt={a.title} />
 
-                            <div className="news-text">
-                                {a.text.split("\n").filter(Boolean).map((par, i) => (
-                                    <p key={i}>{par}</p>
-                                ))}
+                            <div className="news-body">
+                                <h2
+                                    className="news-title"
+                                    data-text={isCyberpunk ? a.title : undefined}
+                                >
+                                    {a.title}
+                                </h2>
+
+                                <div className="news-text">
+                                    {a.text.split("\n").filter(Boolean).map((par, i) => (
+                                        <p key={i}>{par}</p>
+                                    ))}
+                                </div>
+
+                                <div className="news-meta">
+                                    {a.date && (
+                                        <span className="news-meta-item">{a.date}</span>
+                                    )}
+                                    {a.location && (
+                                        <span className="news-meta-item">{a.location}</span>
+                                    )}
+                                    {a.reporter && (
+                                        <span className="news-meta-item">
+                                            Reporter: {a.reporter}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-
-                            <div className="news-meta">
-                                {a.date && (
-                                    <span className="news-meta-item">{a.date}</span>
-                                )}
-                                {a.location && (
-                                    <span className="news-meta-item">{a.location}</span>
-                                )}
-                                {a.reporter && (
-                                    <span className="news-meta-item">
-                                        Reporter: {a.reporter}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </article>
-                ))}
+                        </article>
+                    );
+                })}
             </main>
         </div>
     );
