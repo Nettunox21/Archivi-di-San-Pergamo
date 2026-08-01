@@ -2458,36 +2458,63 @@ canvas {
   }
 }
 /* =========================
- *  NOTIZIE — STILE SPECIALE "CYBERPUNK"
+ *  NOTIZIE — STILE SPECIALE "CYBERPUNK" (v2: squarcio ciano/giallo)
  *  Attivato dal frontmatter "stile: cyberpunk" in un file
  *  content/notizie/*.md — vedi lib/notizie.ts
  * ========================= */
 
 .news-card--cyberpunk {
     position: relative;
-    background: linear-gradient(160deg, #0d0518 0%, #170a24 55%, #0a0512 100%);
-    border: 1px solid #ff2bd6;
-    box-shadow:
-        0 0 12px rgba(255, 43, 214, 0.35),
-        0 0 26px rgba(0, 255, 249, 0.12),
-        inset 0 0 40px rgba(0, 255, 249, 0.05);
-    overflow: hidden;
+    isolation: isolate;
+    background: linear-gradient(160deg, #050b09 0%, #0a130d 55%, #030604 100%);
+    border: none;
+    box-shadow: none;
+    /* bordo frastagliato: la card sembra strappata, non tagliata dritta */
+    clip-path: polygon(
+        0% 3%, 2% 0%, 38% 0%, 41% 2.5%, 59% 1.5%, 63% 0%, 98% 0%, 100% 4%,
+        99% 40%, 100% 55%, 98.5% 68%, 100% 94%, 97% 100%, 61% 100%, 58% 98%,
+        42% 99%, 39% 100%, 2% 100%, 0% 96%, 1.5% 60%, 0% 45%, 1% 20%
+    );
+    animation: cyberpunk-jitter 7s infinite;
 }
 
-/* Scanlines sottili sopra tutta la card */
+/* Strato dietro la card, dello stesso taglio frastagliato ma leggermente
+   spostato: e' quello che "sbircia" dai bordi dando l'idea dello squarcio
+   nella pagina, come se sotto la pergamena ci fosse un altro schermo. */
 .news-card--cyberpunk::before {
     content: "";
     position: absolute;
-    inset: 0;
-    background-image: repeating-linear-gradient(
-        0deg,
-        rgba(0, 255, 249, 0.045) 0px,
-        rgba(0, 255, 249, 0.045) 1px,
-        transparent 1px,
-        transparent 3px
+    inset: -7px;
+    z-index: -1;
+    background: linear-gradient(120deg, #05d9e8 0%, #fcee0a 55%, #05d9e8 100%);
+    clip-path: polygon(
+        0% 3%, 2% 0%, 38% 0%, 41% 2.5%, 59% 1.5%, 63% 0%, 98% 0%, 100% 4%,
+        99% 40%, 100% 55%, 98.5% 68%, 100% 94%, 97% 100%, 61% 100%, 58% 98%,
+        42% 99%, 39% 100%, 2% 100%, 0% 96%, 1.5% 60%, 0% 45%, 1% 20%
     );
+    filter: blur(1px);
+    opacity: 0.95;
+}
+
+/* Barra di scan/glitch che attraversa la card a scatti, a intervalli */
+.news-card--cyberpunk::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
     pointer-events: none;
-    z-index: 1;
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(252, 238, 10, 0.22) 48%,
+        rgba(5, 217, 232, 0.3) 50%,
+        transparent 52%,
+        transparent 100%
+    );
+    background-size: 100% 500%;
+    mix-blend-mode: screen;
+    opacity: 0;
+    animation: cyberpunk-scan-sweep 5.5s infinite steps(1, jump-none);
 }
 
 .news-card--cyberpunk .news-body {
@@ -2505,34 +2532,34 @@ canvas {
     inset: 0;
     background: linear-gradient(
         180deg,
-        rgba(255, 43, 214, 0.16),
-        rgba(0, 255, 249, 0.1)
+        rgba(5, 217, 232, 0.18),
+        rgba(252, 238, 10, 0.12)
     );
     mix-blend-mode: screen;
     pointer-events: none;
 }
 
 .news-card--cyberpunk .news-image {
-    filter: saturate(1.35) contrast(1.12) hue-rotate(-8deg);
+    filter: saturate(1.4) contrast(1.15) hue-rotate(140deg);
 }
 
 .news-card--cyberpunk .news-image-arrow {
-    background: rgba(10, 5, 20, 0.65);
-    color: #00fff9;
-    border: 1px solid #ff2bd6;
+    background: rgba(4, 10, 8, 0.65);
+    color: #fcee0a;
+    border: 1px solid #05d9e8;
 }
 
-/* Titolo con effetto glitch: due copie sfalsate (data-text) sopra il testo reale */
+/* Titolo con sdoppiamento cromatico ciano/giallo, a scatti (non fluido) */
 .news-card--cyberpunk .news-title {
     font-family: "Orbitron", "Palatino Linotype", sans-serif;
-    color: #00fff9;
+    color: #e9fbff;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 1px solid #ff2bd6;
+    border-bottom: 1px solid #05d9e8;
     position: relative;
     text-shadow:
-        0 0 6px rgba(0, 255, 249, 0.6),
-        0 0 14px rgba(255, 43, 214, 0.35);
+        0 0 6px rgba(5, 217, 232, 0.55),
+        0 0 14px rgba(252, 238, 10, 0.3);
 }
 
 .news-card--cyberpunk .news-title::before,
@@ -2547,47 +2574,70 @@ canvas {
 }
 
 .news-card--cyberpunk .news-title::before {
-    color: #ff2bd6;
+    color: #fcee0a;
     clip-path: inset(0 0 55% 0);
-    animation: cyberpunk-glitch-1 3.4s infinite linear alternate-reverse;
+    animation: cyberpunk-glitch-1 3.2s infinite steps(2, jump-none);
 }
 
 .news-card--cyberpunk .news-title::after {
-    color: #00fff9;
+    color: #05d9e8;
     clip-path: inset(55% 0 0 0);
-    animation: cyberpunk-glitch-2 2.7s infinite linear alternate-reverse;
-}
-
-@keyframes cyberpunk-glitch-1 {
-    0% { transform: translate(0, 0); }
-    20% { transform: translate(-2px, -1px); }
-    40% { transform: translate(2px, 1px); }
-    60% { transform: translate(-1px, 1px); }
-    80% { transform: translate(1px, -1px); }
-    100% { transform: translate(0, 0); }
-}
-
-@keyframes cyberpunk-glitch-2 {
-    0% { transform: translate(0, 0); }
-    25% { transform: translate(2px, 1px); }
-    50% { transform: translate(-2px, -1px); }
-    75% { transform: translate(1px, -1px); }
-    100% { transform: translate(0, 0); }
+    animation: cyberpunk-glitch-2 2.5s infinite steps(3, jump-none);
 }
 
 .news-card--cyberpunk .news-text {
-    color: #d7c9ff;
+    color: #cdeef2;
 }
 
 .news-card--cyberpunk .news-meta {
-    color: #00fff9;
-    border-top: 1px solid rgba(255, 43, 214, 0.35);
+    color: #fcee0a;
+    border-top: 1px solid rgba(5, 217, 232, 0.4);
     font-family: "Orbitron", monospace;
     letter-spacing: 0.05em;
 }
 
+/* Scatto generale della card: quasi sempre ferma, con un piccolo strappo
+   improvviso ogni tanto (verso la fine del ciclo di 7s) */
+@keyframes cyberpunk-jitter {
+    0%, 90%, 100% { transform: translate(0, 0); }
+    91% { transform: translate(-4px, 2px); }
+    92% { transform: translate(3px, -2px); }
+    93% { transform: translate(-2px, -3px); }
+    94% { transform: translate(2px, 2px); }
+    95% { transform: translate(0, 0); }
+}
+
+/* Barra di scan: sparisce quasi sempre, appare in due lampi rapidi per ciclo */
+@keyframes cyberpunk-scan-sweep {
+    0% { background-position: 0 0%; opacity: 0; }
+    3% { opacity: 1; background-position: 0 15%; }
+    7% { opacity: 0; }
+    55% { opacity: 0; }
+    58% { opacity: 1; background-position: 0 85%; }
+    63% { opacity: 0; }
+    100% { opacity: 0; background-position: 0 100%; }
+}
+
+@keyframes cyberpunk-glitch-1 {
+    0%, 85%, 100% { transform: translate(0, 0); clip-path: inset(0 0 55% 0); }
+    87% { transform: translate(-3px, 0); clip-path: inset(10% 0 40% 0); }
+    89% { transform: translate(3px, 0); clip-path: inset(0 0 60% 0); }
+    91% { transform: translate(-2px, 0); clip-path: inset(20% 0 30% 0); }
+    93% { transform: translate(0, 0); clip-path: inset(0 0 55% 0); }
+}
+
+@keyframes cyberpunk-glitch-2 {
+    0%, 88%, 100% { transform: translate(0, 0); clip-path: inset(55% 0 0 0); }
+    90% { transform: translate(3px, 0); clip-path: inset(45% 0 10% 0); }
+    92% { transform: translate(-3px, 0); clip-path: inset(60% 0 0 0); }
+    94% { transform: translate(2px, 0); clip-path: inset(35% 0 20% 0); }
+    96% { transform: translate(0, 0); clip-path: inset(55% 0 0 0); }
+}
+
 /* Chi preferisce meno movimento sullo schermo non deve avere il glitch a tutta forza */
 @media (prefers-reduced-motion: reduce) {
+    .news-card--cyberpunk,
+    .news-card--cyberpunk::after,
     .news-card--cyberpunk .news-title::before,
     .news-card--cyberpunk .news-title::after {
         animation: none;
