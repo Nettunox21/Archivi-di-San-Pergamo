@@ -2459,7 +2459,7 @@ canvas {
   }
 }
 /* =========================
- *  NOTIZIE — STILE SPECIALE "CYBERPUNK" (v3: HUD netrunner)
+ *  NOTIZIE — STILE SPECIALE "CYBERPUNK" (v4: HUD netrunner, glitch esagerato)
  *  Attivato dal frontmatter "stile: cyberpunk" in un file
  *  content/notizie/*.md — vedi lib/notizie.ts
  * ========================= */
@@ -2499,7 +2499,7 @@ canvas {
         0 bottom 0, 0 bottom 0,
         right 0 bottom 0, right 0 bottom 0;
 
-    animation: cp-jitter 8s infinite;
+    animation: cp-jitter 4.5s infinite;
 }
 
 /* Texture a scanline molto leggera, solo suggerita */
@@ -2518,19 +2518,19 @@ canvas {
     );
 }
 
-/* Linea di scan che attraversa TUTTA la card (non solo il titolo) a scatti */
+/* Linea di scan che attraversa TUTTA la card, in sincro con le raffiche di glitch */
 .news-card--cyberpunk::after {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
-    height: 2px;
+    height: 3px;
     z-index: 5;
     pointer-events: none;
     background: var(--cp-lime);
     opacity: 0;
     mix-blend-mode: screen;
-    animation: cp-scanline 8s infinite steps(1, jump-none);
+    animation: cp-scanline 4.5s infinite steps(1, jump-none);
 }
 
 .news-card--cyberpunk .news-body {
@@ -2607,39 +2607,85 @@ canvas {
     opacity: 0.6;
 }
 
-/* Glitch dell'intero articolo: quasi sempre fermo, con un breve scatto
-   di posizione + filtro (colpisce insieme immagine e testo, non solo il titolo) */
+/* Glitch esagerato su TUTTA la card: due raffiche per ciclo (~ogni 2s),
+   con scatti di posizione ampi, un "taglio" (clip-path) che simula una
+   fetta di schermo che salta, e uno sdoppiamento cromatico ciano/lime
+   di tutto il contenuto (immagine compresa) via drop-shadow. */
 @keyframes cp-jitter {
-    0%, 93%, 100% {
+    0%, 76%, 100% {
         transform: translate(0, 0);
         filter: none;
+        clip-path: inset(0 0 0 0);
     }
-    94% {
-        transform: translate(-3px, 1px);
-        filter: hue-rotate(8deg) brightness(1.1);
+
+    /* --- prima raffica --- */
+    77% {
+        transform: translate(-7px, 2px);
+        clip-path: inset(0 0 0 0);
+        filter:
+            drop-shadow(-4px 0 0 rgba(127, 233, 255, 0.85))
+            drop-shadow(4px 0 0 rgba(217, 247, 107, 0.85))
+            hue-rotate(8deg) brightness(1.2);
     }
-    95% {
-        transform: translate(2px, -1px);
+    78% {
+        transform: translate(6px, -3px);
+        clip-path: inset(18% 0 52% 0);
+        filter:
+            drop-shadow(5px 0 0 rgba(217, 247, 107, 0.8))
+            brightness(1.25);
+    }
+    79% {
+        transform: translate(-5px, 3px);
+        clip-path: inset(0 0 0 0);
+        filter: drop-shadow(-4px 0 0 rgba(127, 233, 255, 0.7));
+    }
+    80% {
+        transform: translate(3px, -1px);
+        clip-path: inset(60% 0 5% 0);
+        filter: drop-shadow(3px 0 0 rgba(217, 247, 107, 0.6));
+    }
+    81%, 87% {
+        transform: translate(0, 0);
+        clip-path: inset(0 0 0 0);
         filter: none;
     }
-    96% {
-        transform: translate(-2px, 0);
-        filter: hue-rotate(-6deg) brightness(1.06);
+
+    /* --- seconda raffica --- */
+    88% {
+        transform: translate(5px, -2px);
+        clip-path: inset(0 0 0 0);
+        filter:
+            drop-shadow(4px 0 0 rgba(127, 233, 255, 0.8))
+            drop-shadow(-4px 0 0 rgba(217, 247, 107, 0.8))
+            brightness(1.15);
     }
-    97% {
+    89% {
+        transform: translate(-6px, 1px);
+        clip-path: inset(35% 0 25% 0);
+        filter: drop-shadow(-3px 0 0 rgba(127, 233, 255, 0.75));
+    }
+    90% {
+        transform: translate(4px, -2px);
+        clip-path: inset(0 0 0 0);
+        filter: hue-rotate(-6deg) brightness(1.1);
+    }
+    91%, 100% {
         transform: translate(0, 0);
+        clip-path: inset(0 0 0 0);
         filter: none;
     }
 }
 
-/* La linea di scan lampeggia due volte per ciclo, in punti casuali dell'altezza */
+/* Linea di scan: lampeggia in sincro con le due raffiche sopra */
 @keyframes cp-scanline {
-    0%, 38% { opacity: 0; top: 15%; }
-    39% { opacity: 0.8; top: 28%; }
-    40% { opacity: 0; }
-    70%, 72% { opacity: 0; top: 64%; }
-    73% { opacity: 0.7; top: 55%; }
-    74% { opacity: 0; }
+    0%, 76% { opacity: 0; top: 20%; }
+    77% { opacity: 0.9; top: 30%; }
+    78% { opacity: 0.4; top: 48%; }
+    79% { opacity: 0.9; top: 15%; }
+    80%, 87% { opacity: 0; }
+    88% { opacity: 0.85; top: 62%; }
+    89% { opacity: 0.3; top: 70%; }
+    90% { opacity: 0; }
     100% { opacity: 0; }
 }
 
