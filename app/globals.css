@@ -2459,7 +2459,7 @@ canvas {
   }
 }
 /* =========================
- *  NOTIZIE — STILE SPECIALE "CYBERPUNK" (v5: glitch da videogioco)
+ *  NOTIZIE — STILE SPECIALE "CYBERPUNK" (v6: finestre di glitch allargate)
  *  Attivato dal frontmatter "stile: cyberpunk" in un file
  *  content/notizie/*.md — vedi lib/notizie.ts
  *  Richiede il filtro SVG #cp-distort definito in app/notizie/page.tsx
@@ -2501,7 +2501,7 @@ canvas {
         0 bottom 0, 0 bottom 0,
         right 0 bottom 0, right 0 bottom 0;
 
-    animation: cp-jitter 4.5s infinite steps(1, jump-none);
+    animation: cp-jitter 5s infinite steps(1, jump-none);
 }
 
 /* Texture a scanline leggera */
@@ -2532,7 +2532,7 @@ canvas {
     background: var(--cp-lime);
     opacity: 0;
     mix-blend-mode: screen;
-    animation: cp-scanline 4.5s infinite steps(1, jump-none);
+    animation: cp-scanline 5s infinite steps(1, jump-none);
 }
 
 .news-card--cyberpunk .news-body {
@@ -2570,13 +2570,13 @@ canvas {
     left: 12%;
     background: #2f2bff;
     opacity: 0;
-    animation: cp-confetti-a 4.5s infinite steps(1, jump-none);
+    animation: cp-confetti-a 5s infinite steps(1, jump-none);
 }
 
 /* L'immagine vera e propria: filtro base + distorsione/inversione a scatti */
 .news-card--cyberpunk .news-image {
     filter: grayscale(0.25) contrast(1.1) saturate(1.1);
-    animation: cp-image-warp 4.5s infinite steps(1, jump-none);
+    animation: cp-image-warp 5s infinite steps(1, jump-none);
 }
 
 .news-card--cyberpunk .news-image-arrow {
@@ -2620,7 +2620,7 @@ canvas {
     height: 8px;
     background: var(--cp-magenta);
     opacity: 0;
-    animation: cp-confetti-b 4.5s infinite steps(1, jump-none);
+    animation: cp-confetti-b 5s infinite steps(1, jump-none);
 }
 
 .news-card--cyberpunk .news-text {
@@ -2643,7 +2643,7 @@ canvas {
     height: 5px;
     background: linear-gradient(90deg, var(--cp-magenta), var(--cp-lime));
     opacity: 0;
-    animation: cp-confetti-c 4.5s infinite steps(1, jump-none);
+    animation: cp-confetti-c 5s infinite steps(1, jump-none);
 }
 
 .news-card--cyberpunk .news-meta {
@@ -2676,29 +2676,26 @@ canvas {
     height: 14px;
     background: #f4ff5c;
     opacity: 0;
-    animation: cp-confetti-d 4.5s infinite steps(1, jump-none);
+    animation: cp-confetti-d 5s infinite steps(1, jump-none);
 }
 
 /* ================================================
-   ANIMAZIONI
-   Tutte durano 4.5s e condividono gli stessi punti di
-   "raffica" (77-80% e 88-90%) cosi' i vari livelli
-   (posizione, colore, blocchi, distorsione immagine)
-   scattano insieme ma con dettagli leggermente sfalsati,
-   che e' quello che rende il glitch caotico e non un
-   singolo blocco che si muove.
+   ANIMAZIONI — durata 5s, due raffiche per ciclo:
+   raffica 1: da 3.4s a 4.0s (68%-80%)
+   raffica 2: da 4.3s a 4.8s (86%-96%)
+   Ogni singolo stato dura circa 150ms: abbastanza
+   perche' il browser faccia in tempo a disegnarlo,
+   a differenza della versione precedente dove gli
+   stati duravano ~45ms e sparivano prima di comparire.
    ================================================ */
 
-/* Card intera: scatti di posizione + sdoppiamento cromatico ciano/lime/magenta
-   di TUTTO il contenuto (via drop-shadow, che duplica anche l'immagine) +
-   taglio a fetta (clip-path) */
 @keyframes cp-jitter {
-    0%, 76%, 81%, 87%, 91%, 100% {
+    0%, 68%, 80%, 86%, 96%, 100% {
         transform: translate(0, 0);
         filter: none;
         clip-path: inset(0 0 0 0);
     }
-    77% {
+    71% {
         transform: translate(-8px, 2px);
         clip-path: inset(0 0 0 0);
         filter:
@@ -2706,7 +2703,7 @@ canvas {
             drop-shadow(5px 0 0 rgba(255, 43, 143, 0.85))
             hue-rotate(10deg) brightness(1.2);
     }
-    78% {
+    74% {
         transform: translate(7px, -3px);
         clip-path: inset(18% 0 52% 0);
         filter:
@@ -2714,17 +2711,12 @@ canvas {
             drop-shadow(-6px 0 0 rgba(255, 43, 143, 0.6))
             saturate(1.6) brightness(1.3);
     }
-    79% {
+    77% {
         transform: translate(-6px, 3px);
-        clip-path: inset(0 0 0 0);
+        clip-path: inset(62% 0 4% 0);
         filter: drop-shadow(-5px 0 0 rgba(127, 233, 255, 0.75));
     }
-    80% {
-        transform: translate(4px, -1px);
-        clip-path: inset(62% 0 4% 0);
-        filter: drop-shadow(4px 0 0 rgba(217, 247, 107, 0.65));
-    }
-    88% {
+    89% {
         transform: translate(6px, -2px);
         clip-path: inset(0 0 0 0);
         filter:
@@ -2732,80 +2724,77 @@ canvas {
             drop-shadow(-5px 0 0 rgba(217, 247, 107, 0.85))
             brightness(1.15);
     }
-    89% {
+    92% {
         transform: translate(-7px, 1px);
         clip-path: inset(35% 0 25% 0);
         filter: drop-shadow(-4px 0 0 rgba(255, 43, 143, 0.75)) saturate(1.5);
     }
-    90% {
-        transform: translate(5px, -2px);
-        clip-path: inset(0 0 0 0);
-        filter: hue-rotate(-8deg) brightness(1.1);
-    }
 }
 
-/* Linea di scan, in sincro con le raffiche */
 @keyframes cp-scanline {
-    0%, 76% { opacity: 0; top: 20%; }
-    77% { opacity: 0.9; top: 30%; }
-    78% { opacity: 0.4; top: 48%; }
-    79% { opacity: 0.9; top: 15%; }
-    80%, 87% { opacity: 0; }
-    88% { opacity: 0.85; top: 62%; }
-    89% { opacity: 0.3; top: 70%; }
-    90% { opacity: 0; }
+    0%, 68% { opacity: 0; top: 20%; }
+    71% { opacity: 0.9; top: 30%; }
+    74% { opacity: 0.4; top: 48%; }
+    77% { opacity: 0.9; top: 15%; }
+    80%, 86% { opacity: 0; }
+    89% { opacity: 0.85; top: 62%; }
+    92% { opacity: 0.3; top: 70%; }
+    96% { opacity: 0; }
     100% { opacity: 0; }
 }
 
-/* Distorsione vera dell'immagine (feTurbulence + feDisplacementMap) con
-   sbalzi di colore, sfasata di un paio di punti percentuali rispetto alla
-   card per un effetto meno "tutto insieme" e piu' caotico */
+/* Distorsione vera dell'immagine, ferma per ~150ms ad ogni stato */
 @keyframes cp-image-warp {
-    0%, 76%, 79%, 87%, 90%, 100% {
+    0%, 68%, 80%, 86%, 96%, 100% {
         filter: grayscale(0.25) contrast(1.1) saturate(1.1);
     }
-    77% {
+    71% {
         filter: url(#cp-distort) hue-rotate(120deg) saturate(2.2) contrast(1.3) brightness(1.15);
     }
-    78% {
+    74% {
         filter: url(#cp-distort) invert(0.8) hue-rotate(-60deg) saturate(2.5) contrast(1.4);
     }
-    88% {
-        filter: url(#cp-distort) hue-rotate(80deg) saturate(2.3) contrast(1.35);
+    77% {
+        filter: url(#cp-distort) hue-rotate(30deg) saturate(1.8) contrast(1.2);
     }
     89% {
+        filter: url(#cp-distort) hue-rotate(80deg) saturate(2.3) contrast(1.35);
+    }
+    92% {
         filter: url(#cp-distort) hue-rotate(-150deg) saturate(2.6) brightness(1.2);
     }
 }
 
-/* Blocchi di colore solido: ognuno appare in un istante diverso e sparisce
-   subito, come i quadratini/barre nell'immagine di riferimento */
 @keyframes cp-confetti-a {
-    0%, 76%, 78%, 100% { opacity: 0; }
-    77% { opacity: 0.9; }
-    88% { opacity: 0.85; top: 55%; left: 65%; background: var(--cp-magenta); }
-    89% { opacity: 0; }
+    0%, 68%, 77%, 100% { opacity: 0; }
+    71% { opacity: 0.9; }
+    74% { opacity: 0; }
+    89% { opacity: 0.85; top: 55%; left: 65%; background: var(--cp-magenta); }
+    92% { opacity: 0; }
 }
 
 @keyframes cp-confetti-b {
-    0%, 78%, 80%, 87%, 100% { opacity: 0; }
-    79% { opacity: 0.85; }
-    89% { opacity: 0.75; background: var(--cp-lime); width: 20%; }
-    90% { opacity: 0; }
+    0%, 71%, 80%, 86%, 100% { opacity: 0; }
+    74% { opacity: 0.85; }
+    77% { opacity: 0; }
+    92% { opacity: 0.75; background: var(--cp-lime); width: 20%; }
+    96% { opacity: 0; }
 }
 
 @keyframes cp-confetti-c {
-    0%, 77%, 79%, 88%, 100% { opacity: 0; }
-    78% { opacity: 0.8; }
+    0%, 68%, 74%, 86%, 100% { opacity: 0; }
+    71% { opacity: 0.8; }
+    77% { opacity: 0; }
     89% { opacity: 0.7; }
-    90% { opacity: 0; }
+    92% { opacity: 0; }
 }
 
 @keyframes cp-confetti-d {
-    0%, 79%, 81%, 89%, 100% { opacity: 0; }
-    80% { opacity: 0.9; }
-    90% { opacity: 0.8; background: #2f2bff; }
-    91% { opacity: 0; }
+    0%, 74%, 80%, 92%, 100% { opacity: 0; }
+    77% { opacity: 0.9; }
+    80% { opacity: 0; }
+    96% { opacity: 0.8; background: #2f2bff; }
+    100% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
