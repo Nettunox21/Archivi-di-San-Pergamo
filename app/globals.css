@@ -2457,3 +2457,139 @@ canvas {
     flex: 0 0 auto;
   }
 }
+/* =========================
+ *  NOTIZIE — STILE SPECIALE "CYBERPUNK"
+ *  Attivato dal frontmatter "stile: cyberpunk" in un file
+ *  content/notizie/*.md — vedi lib/notizie.ts
+ * ========================= */
+
+.news-card--cyberpunk {
+    position: relative;
+    background: linear-gradient(160deg, #0d0518 0%, #170a24 55%, #0a0512 100%);
+    border: 1px solid #ff2bd6;
+    box-shadow:
+        0 0 12px rgba(255, 43, 214, 0.35),
+        0 0 26px rgba(0, 255, 249, 0.12),
+        inset 0 0 40px rgba(0, 255, 249, 0.05);
+    overflow: hidden;
+}
+
+/* Scanlines sottili sopra tutta la card */
+.news-card--cyberpunk::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 249, 0.045) 0px,
+        rgba(0, 255, 249, 0.045) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+.news-card--cyberpunk .news-body {
+    position: relative;
+    z-index: 2;
+}
+
+.news-card--cyberpunk .news-image-wrapper {
+    position: relative;
+}
+
+.news-card--cyberpunk .news-image-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 43, 214, 0.16),
+        rgba(0, 255, 249, 0.1)
+    );
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+.news-card--cyberpunk .news-image {
+    filter: saturate(1.35) contrast(1.12) hue-rotate(-8deg);
+}
+
+.news-card--cyberpunk .news-image-arrow {
+    background: rgba(10, 5, 20, 0.65);
+    color: #00fff9;
+    border: 1px solid #ff2bd6;
+}
+
+/* Titolo con effetto glitch: due copie sfalsate (data-text) sopra il testo reale */
+.news-card--cyberpunk .news-title {
+    font-family: "Orbitron", "Palatino Linotype", sans-serif;
+    color: #00fff9;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #ff2bd6;
+    position: relative;
+    text-shadow:
+        0 0 6px rgba(0, 255, 249, 0.6),
+        0 0 14px rgba(255, 43, 214, 0.35);
+}
+
+.news-card--cyberpunk .news-title::before,
+.news-card--cyberpunk .news-title::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: transparent;
+    overflow: hidden;
+}
+
+.news-card--cyberpunk .news-title::before {
+    color: #ff2bd6;
+    clip-path: inset(0 0 55% 0);
+    animation: cyberpunk-glitch-1 3.4s infinite linear alternate-reverse;
+}
+
+.news-card--cyberpunk .news-title::after {
+    color: #00fff9;
+    clip-path: inset(55% 0 0 0);
+    animation: cyberpunk-glitch-2 2.7s infinite linear alternate-reverse;
+}
+
+@keyframes cyberpunk-glitch-1 {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-2px, -1px); }
+    40% { transform: translate(2px, 1px); }
+    60% { transform: translate(-1px, 1px); }
+    80% { transform: translate(1px, -1px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes cyberpunk-glitch-2 {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(2px, 1px); }
+    50% { transform: translate(-2px, -1px); }
+    75% { transform: translate(1px, -1px); }
+    100% { transform: translate(0, 0); }
+}
+
+.news-card--cyberpunk .news-text {
+    color: #d7c9ff;
+}
+
+.news-card--cyberpunk .news-meta {
+    color: #00fff9;
+    border-top: 1px solid rgba(255, 43, 214, 0.35);
+    font-family: "Orbitron", monospace;
+    letter-spacing: 0.05em;
+}
+
+/* Chi preferisce meno movimento sullo schermo non deve avere il glitch a tutta forza */
+@media (prefers-reduced-motion: reduce) {
+    .news-card--cyberpunk .news-title::before,
+    .news-card--cyberpunk .news-title::after {
+        animation: none;
+    }
+}
