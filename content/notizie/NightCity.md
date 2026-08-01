@@ -1,9 +1,9 @@
 ---
 title: "Trasmissione da Night City"
 image: "/images/notizie/night_city.png"
-date: "..."
+date: "1/08"
 location: "Costruzione Night City"
-reporter: "..."
+reporter: "Stanley Media"
 order: 10
 stile: cyberpunk
 ---
