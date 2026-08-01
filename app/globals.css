@@ -2808,3 +2808,7 @@ canvas {
         animation: none;
     }
 }
+.news-card--cyberpunk .news-image {
+    filter: url(#cp-distort) hue-rotate(90deg) saturate(2) !important;
+    animation: none !important;
+}
