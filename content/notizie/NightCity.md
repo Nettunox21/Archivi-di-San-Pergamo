@@ -4,7 +4,7 @@ image: "/images/notizie/night_city.png"
 date: "1/08"
 location: "Costruzione Night City"
 reporter: "Stanley Media"
-order: 11
+order: -1
 stile: cyberpunk
 ---
 Buongiorno Night City!
