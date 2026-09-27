@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { factions } from "@/app/data/factions";
 import { OCEAN_COLOR, LAKE_COLOR, NEUTRAL_LAND_COLOR, fallbackColorForState } from "@/app/data/mapColors";
-import { computeBBox, pointInRing } from "@/app/lib/mapGeo";
+import { computeBBox, pointInRing } from "@/lib/mapGeo";
 
 const GEOJSON_URL = "/data/mappa-mondo.geojson";
 const TARGET_MAX_SIDE = 3000;
