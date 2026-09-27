@@ -2,383 +2,344 @@
 
 import { useEffect, useRef, useState } from "react";
 import { factions } from "@/app/data/factions";
+import { OCEAN_COLOR, LAKE_COLOR, NEUTRAL_LAND_COLOR, fallbackColorForState } from "@/app/data/mapColors";
+import { computeBBox, pointInRing } from "@/app/lib/mapGeo";
 
-/* ================= TYPES ================= */
+const GEOJSON_URL = "/data/mappa-mondo.geojson";
+const TARGET_MAX_SIDE = 3000;
 
-type CellType = "ocean" | "neutral" | "common" | "faction";
-
-type Cell = {
-    x: number;
-    y: number;
-    type: CellType;
-    faction?: string;
-    city?: string;
+type CellProps = {
+    id: number;
+    type: "ocean" | "island" | "lake";
+    state: number;
+    province: number;
+    population: number;
 };
 
-type MapData = {
-    width: number;
-    height: number;
-    cells: Cell[];
+type CellFeature = {
+    geometry: { coordinates: number[][][] };
+    properties: CellProps;
 };
 
-/* ================= CONFIG ================= */
+type CellsGeoJSON = { features: CellFeature[] };
 
-const CELL = 48;
+type StateInfo = { name?: string; color?: string; faction?: string };
+type StatesMap = Record<string, StateInfo>;
 
-/* STRICT + SAFE COLOR MAP */
-const TYPE_COLORS: Record<CellType, string> = {
-    ocean: "#1a2a3a",
-    neutral: "#3a3530",
-    common: "#2a3a2a",
-    faction: "#4a2a4a",
-};
-
-/* IMPORTANT: ALL KEYS QUOTED (fixes Vercel crash) */
-const FACTION_COLORS: Record<string, string> = {
-    "San Pergamo": "#4a3520",
-    "Profitgrado": "#3a2a4a",
-    "Falconia": "#4a2a2a",
-    "SENPAI": "#2a3a4a",
-    "FIORD": "#2a4a3a",
-};
-
-/* ================= COORDS ================= */
-
-const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-function toLabel(n: number) {
-    if (n < 26) return ALPHA[n];
-    return ALPHA[Math.floor(n / 26) - 1] + ALPHA[n % 26];
-}
-
-function parseCoord(input: string) {
-    const m = input.trim().toUpperCase().match(/^([A-Z]{1,2})-(\d+)$/);
-    if (!m) return null;
-
-    const col = m[1];
-    const row = parseInt(m[2], 10) - 1;
-
-    const x =
-        col.length === 1
-            ? ALPHA.indexOf(col)
-            : (ALPHA.indexOf(col[0]) + 1) * 26 + ALPHA.indexOf(col[1]);
-
-    return { x, y: row };
-}
-
-/* ================= COMPONENT ================= */
-
-export default function AdminMapPage() {
+export default function AdminMapStatesPage() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-
-    const [mapData, setMapData] = useState<MapData | null>(null);
-    const [coord, setCoord] = useState("");
-    const [selected, setSelected] = useState<Cell | null>(null);
-
-    const [type, setType] = useState<CellType>("ocean");
+    const [geo, setGeo] = useState<CellsGeoJSON | null>(null);
+    const [statesInfo, setStatesInfo] = useState<StatesMap>({});
+    const [selectedStateId, setSelectedStateId] = useState<number | null>(null);
+    const [name, setName] = useState("");
+    const [color, setColor] = useState("#4a3520");
     const [faction, setFaction] = useState("");
-    const [city, setCity] = useState("");
+    const [saving, setSaving] = useState(false);
+    const [savedMsg, setSavedMsg] = useState("");
+    const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
-    const camera = useRef({ x: 0, y: 0 });
+    const pan = useRef({ x: 0, y: 0 });
     const zoom = useRef(1);
+    const isPanning = useRef(false);
+    const didPan = useRef(false);
+    const lastMouse = useRef({ x: 0, y: 0 });
 
-    const dragging = useRef(false);
-    const last = useRef({ x: 0, y: 0 });
+    const offscreenRef = useRef<HTMLCanvasElement | null>(null);
+    const projRef = useRef({ minX: 0, minY: 0, scale: 1 });
+    const initializedView = useRef(false);
 
-    const cellMap = useRef<Map<string, Cell>>(new Map());
-
-    /* LOAD */
     useEffect(() => {
-        fetch("/api/map")
-            .then(r => r.json())
-            .then((data: MapData) => {
-                setMapData(data);
-
-                const map = new Map<string, Cell>();
-                data.cells.forEach(c => {
-                    map.set(`${c.x},${c.y}`, c);
-                });
-
-                cellMap.current = map;
-            });
+        function updateSize() {
+            setCanvasSize({ width: Math.max(window.innerWidth - 340, 320), height: 700 });
+        }
+        updateSize();
+        window.addEventListener("resize", updateSize);
+        return () => window.removeEventListener("resize", updateSize);
     }, []);
 
-    /* DRAW */
+    useEffect(() => {
+        Promise.all([
+            fetch(GEOJSON_URL).then((r) => r.json()),
+            fetch("/api/map-states").then((r) => r.json()).catch(() => ({ states: {} })),
+        ]).then(([geoData, statesData]) => {
+            setGeo(geoData);
+            setStatesInfo(statesData.states || {});
+        });
+    }, []);
+
+    const stateIds = geo
+        ? Array.from(new Set(geo.features.map((f) => f.properties.state).filter((id) => id !== 0))).sort((a, b) => a - b)
+        : [];
+
+    useEffect(() => {
+        if (!geo) return;
+        const { minX, minY, maxX, maxY } = computeBBox(geo.features);
+        const width = maxX - minX || 1;
+        const height = maxY - minY || 1;
+        const scale = TARGET_MAX_SIDE / Math.max(width, height);
+        projRef.current = { minX, minY, scale };
+
+        const off = document.createElement("canvas");
+        off.width = Math.ceil(width * scale);
+        off.height = Math.ceil(height * scale);
+        const ctx = off.getContext("2d");
+        if (!ctx) return;
+
+        for (const f of geo.features) {
+            const p = f.properties;
+            const ring = f.geometry.coordinates[0];
+
+            let fill = OCEAN_COLOR;
+            if (p.type === "lake") fill = LAKE_COLOR;
+            else if (p.type === "island") {
+                if (p.state !== 0) {
+                    const info = statesInfo[String(p.state)];
+                    fill = info?.color || fallbackColorForState(p.state);
+                } else {
+                    fill = NEUTRAL_LAND_COLOR;
+                }
+            }
+
+            ctx.beginPath();
+            ring.forEach(([lng, lat], i) => {
+                const x = (lng - minX) * scale;
+                const y = (lat - minY) * scale;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+            ctx.fillStyle = fill;
+            ctx.fill();
+            ctx.strokeStyle = "rgba(255,255,255,0.06)";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        offscreenRef.current = off;
+        draw();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [geo, statesInfo]);
+
+    useEffect(() => {
+        const off = offscreenRef.current;
+        if (!off || canvasSize.width === 0 || initializedView.current) return;
+        initializedView.current = true;
+        const initialZoom = Math.min(canvasSize.width / off.width, canvasSize.height / off.height, 1);
+        zoom.current = initialZoom;
+        pan.current = {
+            x: (canvasSize.width - off.width * initialZoom) / 2,
+            y: (canvasSize.height - off.height * initialZoom) / 2,
+        };
+        draw();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [geo, statesInfo, canvasSize]);
+
     useEffect(() => {
         draw();
-    }, [mapData, selected]);
-
-    function getCell(x: number, y: number): Cell {
-        return (
-            cellMap.current.get(`${x},${y}`) ?? {
-                x,
-                y,
-                type: "ocean",
-            }
-        );
-    }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [canvasSize, selectedStateId]);
 
     function draw() {
         const canvas = canvasRef.current;
-        if (!canvas || !mapData) return;
-
+        const off = offscreenRef.current;
+        if (!canvas || !off) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         ctx.save();
-        ctx.translate(camera.current.x, camera.current.y);
+        ctx.translate(pan.current.x, pan.current.y);
         ctx.scale(zoom.current, zoom.current);
+        ctx.drawImage(off, 0, 0);
 
-        for (let y = 0; y < mapData.height; y++) {
-            for (let x = 0; x < mapData.width; x++) {
-                const c = getCell(x, y);
-
-                const color =
-                    c.type === "faction" && c.faction
-                        ? FACTION_COLORS[c.faction] ?? "#444"
-                        : TYPE_COLORS[c.type];
-
-                const px = x * CELL;
-                const py = y * CELL;
-
-                ctx.fillStyle = color;
-                ctx.fillRect(px, py, CELL, CELL);
-
-                const isSel =
-                    selected?.x === x && selected?.y === y;
-
-                ctx.strokeStyle = isSel
-                    ? "#c8a96e"
-                    : "rgba(255,255,255,0.05)";
-                ctx.lineWidth = isSel ? 3 : 1;
-                ctx.strokeRect(px, py, CELL, CELL);
-
-                ctx.fillStyle = "rgba(255,255,255,0.25)";
-                ctx.font = "10px serif";
-                ctx.textAlign = "center";
-                ctx.fillText(
-                    `${toLabel(x)}-${y + 1}`,
-                    px + CELL / 2,
-                    py + CELL / 2
-                );
+        if (selectedStateId !== null && geo) {
+            const { minX, minY, scale } = projRef.current;
+            ctx.strokeStyle = "#c8a96e";
+            ctx.lineWidth = 2 / zoom.current;
+            for (const f of geo.features) {
+                if (f.properties.state !== selectedStateId) continue;
+                const ring = f.geometry.coordinates[0];
+                ctx.beginPath();
+                ring.forEach(([lng, lat], i) => {
+                    const x = (lng - minX) * scale;
+                    const y = (lat - minY) * scale;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.closePath();
+                ctx.stroke();
             }
         }
 
         ctx.restore();
     }
 
-    /* CLICK */
-    function onClick(e: React.MouseEvent) {
-        if (!mapData) return;
+    function findFeatureAt(screenX: number, screenY: number): CellFeature | null {
+        if (!geo) return null;
+        const { minX, minY, scale } = projRef.current;
+        const worldX = (screenX - pan.current.x) / zoom.current;
+        const worldY = (screenY - pan.current.y) / zoom.current;
+        const lng = worldX / scale + minX;
+        const lat = worldY / scale + minY;
 
-        const rect = canvasRef.current!.getBoundingClientRect();
-
-        const mx =
-            (e.clientX - rect.left - camera.current.x) /
-            zoom.current;
-        const my =
-            (e.clientY - rect.top - camera.current.y) /
-            zoom.current;
-
-        const x = Math.floor(mx / CELL);
-        const y = Math.floor(my / CELL);
-
-        if (
-            x < 0 ||
-            y < 0 ||
-            x >= mapData.width ||
-            y >= mapData.height
-        )
-            return;
-
-        const cell = getCell(x, y);
-
-        setSelected(cell);
-        setType(cell.type);
-        setFaction(cell.faction ?? "");
-        setCity(cell.city ?? "");
+        for (const f of geo.features) {
+            if (pointInRing(lng, lat, f.geometry.coordinates[0])) return f;
+        }
+        return null;
     }
 
-    /* PAN */
-    function onMouseDown(e: React.MouseEvent) {
-        dragging.current = true;
-        last.current = { x: e.clientX, y: e.clientY };
+    function openStateEditor(id: number) {
+        setSelectedStateId(id);
+        const info = statesInfo[String(id)];
+        setName(info?.name || "");
+        setColor(info?.color || fallbackColorForState(id));
+        setFaction(info?.faction || "");
     }
 
-    function onMouseMove(e: React.MouseEvent) {
-        if (!dragging.current) return;
-
-        camera.current.x += e.clientX - last.current.x;
-        camera.current.y += e.clientY - last.current.y;
-
-        last.current = { x: e.clientX, y: e.clientY };
-
+    function focusState(id: number) {
+        if (!geo) return;
+        openStateEditor(id);
+        const { minX, minY, scale } = projRef.current;
+        let minWX = Infinity, minWY = Infinity, maxWX = -Infinity, maxWY = -Infinity;
+        for (const f of geo.features) {
+            if (f.properties.state !== id) continue;
+            for (const [lng, lat] of f.geometry.coordinates[0]) {
+                const x = (lng - minX) * scale;
+                const y = (lat - minY) * scale;
+                if (x < minWX) minWX = x;
+                if (x > maxWX) maxWX = x;
+                if (y < minWY) minWY = y;
+                if (y > maxWY) maxWY = y;
+            }
+        }
+        if (!isFinite(minWX)) return;
+        const w = maxWX - minWX || 1;
+        const h = maxWY - minWY || 1;
+        const fitZoom = Math.min(canvasSize.width / (w * 1.6), canvasSize.height / (h * 1.6), 4);
+        zoom.current = fitZoom;
+        pan.current = {
+            x: canvasSize.width / 2 - (minWX + w / 2) * fitZoom,
+            y: canvasSize.height / 2 - (minWY + h / 2) * fitZoom,
+        };
         draw();
     }
 
-    function onMouseUp() {
-        dragging.current = false;
+    function handleMouseDown(e: React.MouseEvent) {
+        isPanning.current = true;
+        didPan.current = false;
+        lastMouse.current = { x: e.clientX, y: e.clientY };
     }
 
-    /* ZOOM */
-    function onWheel(e: React.WheelEvent) {
+    function handleMouseMove(e: React.MouseEvent) {
+        if (!isPanning.current) return;
+        const dx = e.clientX - lastMouse.current.x;
+        const dy = e.clientY - lastMouse.current.y;
+        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didPan.current = true;
+        lastMouse.current = { x: e.clientX, y: e.clientY };
+        pan.current = { x: pan.current.x + dx, y: pan.current.y + dy };
+        draw();
+    }
+
+    function handleMouseUp(e: React.MouseEvent) {
+        isPanning.current = false;
+        if (didPan.current) return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const found = findFeatureAt(e.clientX - rect.left, e.clientY - rect.top);
+        if (!found || found.properties.state === 0) return;
+        openStateEditor(found.properties.state);
+    }
+
+    function handleWheel(e: React.WheelEvent) {
         e.preventDefault();
-
-        const rect = canvasRef.current!.getBoundingClientRect();
-
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
-
-        const worldX =
-            (mouseX - camera.current.x) / zoom.current;
-        const worldY =
-            (mouseY - camera.current.y) / zoom.current;
-
+        const worldX = (mouseX - pan.current.x) / zoom.current;
+        const worldY = (mouseY - pan.current.y) / zoom.current;
         const factor = e.deltaY > 0 ? 0.9 : 1.1;
-        const newZoom = Math.min(
-            Math.max(zoom.current * factor, 0.4),
-            3
-        );
-
-        camera.current.x = mouseX - worldX * newZoom;
-        camera.current.y = mouseY - worldY * newZoom;
-
+        const newZoom = Math.min(Math.max(zoom.current * factor, 0.1), 8);
+        pan.current = { x: mouseX - worldX * newZoom, y: mouseY - worldY * newZoom };
         zoom.current = newZoom;
-
         draw();
     }
 
-    /* SEARCH */
-    function search() {
-        const parsed = parseCoord(coord);
-        if (!parsed) return;
-
-        const cell = getCell(parsed.x, parsed.y);
-
-        setSelected(cell);
-
-        camera.current.x =
-            -parsed.x * CELL * zoom.current + 200;
-        camera.current.y =
-            -parsed.y * CELL * zoom.current + 200;
-
-        draw();
-    }
-
-    /* SAVE */
     async function save() {
-        if (!mapData || !selected) return;
-
-        const updatedCells = mapData.cells.filter(
-            c =>
-                !(c.x === selected.x && c.y === selected.y)
-        );
-
-        if (type !== "ocean") {
-            updatedCells.push({
-                x: selected.x,
-                y: selected.y,
-                type,
-                faction:
-                    type === "faction" ? faction : undefined,
-                city: city || undefined,
-            });
-        }
-
-        const newMap: MapData = {
-            ...mapData,
-            cells: updatedCells,
+        if (selectedStateId === null) return;
+        setSaving(true);
+        setSavedMsg("");
+        const updated: StatesMap = {
+            ...statesInfo,
+            [String(selectedStateId)]: {
+                name: name || undefined,
+                color: color || undefined,
+                faction: faction || undefined,
+            },
         };
-
-        await fetch("/api/map", {
+        await fetch("/api/map-states", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newMap),
+            body: JSON.stringify({ states: updated }),
         });
-
-        setMapData(newMap);
-
-        const map = new Map<string, Cell>();
-        newMap.cells.forEach(c => {
-            map.set(`${c.x},${c.y}`, c);
-        });
-        cellMap.current = map;
+        setStatesInfo(updated);
+        setSaving(false);
+        setSavedMsg("Salvato.");
     }
 
     return (
         <div className="admin-map-layout">
             <canvas
                 ref={canvasRef}
-                width={1200}
-                height={800}
+                width={canvasSize.width}
+                height={canvasSize.height}
                 className="map-canvas"
-                onClick={onClick}
-                onMouseDown={onMouseDown}
-                onMouseMove={onMouseMove}
-                onMouseUp={onMouseUp}
-                onWheel={onWheel}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onWheel={handleWheel}
             />
 
             <div className="admin-panel">
-                <h2>Editor Mappa</h2>
+                <h2>Stati della mappa</h2>
 
-                <label>Coordinate</label>
-                <input
-                    value={coord}
-                    onChange={e => setCoord(e.target.value)}
-                />
+                <label>Vai a stato</label>
+                <select
+                    value={selectedStateId ?? ""}
+                    onChange={(e) => e.target.value && focusState(Number(e.target.value))}
+                >
+                    <option value="">--</option>
+                    {stateIds.map((id) => (
+                        <option key={id} value={id}>
+                            Stato #{id} — {statesInfo[String(id)]?.name || "senza nome"}
+                        </option>
+                    ))}
+                </select>
 
-                <button onClick={search}>Vai</button>
-
-                {selected && (
+                {selectedStateId !== null && (
                     <>
                         <hr />
 
-                        <label>Tipo</label>
-                        <select
-                            value={type}
-                            onChange={e =>
-                                setType(
-                                    e.target.value as CellType
-                                )
-                            }
-                        >
-                            <option value="ocean">Oceano</option>
-                            <option value="neutral">Neutro</option>
-                            <option value="common">Comune</option>
-                            <option value="faction">Fazione</option>
+                        <label>Nome</label>
+                        <input value={name} onChange={(e) => setName(e.target.value)} placeholder={`Stato #${selectedStateId}`} />
+
+                        <label>Colore</label>
+                        <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
+
+                        <label>Fazione collegata</label>
+                        <select value={faction} onChange={(e) => setFaction(e.target.value)}>
+                            <option value="">-- nessuna --</option>
+                            {factions.map((f) => (
+                                <option key={f.name} value={f.name}>{f.name}</option>
+                            ))}
                         </select>
 
-                        {type === "faction" && (
-                            <>
-                                <label>Fazione</label>
-                                <select
-                                    value={faction}
-                                    onChange={e =>
-                                        setFaction(e.target.value)
-                                    }
-                                >
-                                    <option value="">--</option>
-                                    {factions.map(f => (
-                                        <option key={f.name}>
-                                            {f.name}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                <label>Città</label>
-                                <input
-                                    value={city}
-                                    onChange={e =>
-                                        setCity(e.target.value)
-                                    }
-                                />
-                            </>
-                        )}
-
-                        <button onClick={save}>Salva</button>
+                        <button onClick={save} disabled={saving}>
+                            {saving ? "Salvataggio..." : "Salva"}
+                        </button>
+                        {savedMsg && <p style={{ color: "#c8a96e", fontSize: 12 }}>{savedMsg}</p>}
                     </>
                 )}
             </div>
