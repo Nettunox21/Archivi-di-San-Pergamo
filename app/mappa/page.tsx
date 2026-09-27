@@ -1,49 +1,29 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { factions } from "@/app/data/factions";
+import { OCEAN_COLOR, LAKE_COLOR, NEUTRAL_LAND_COLOR, fallbackColorForState } from "@/app/data/mapColors";
+import { computeBBox, pointInRing } from "@/app/lib/mapGeo";
 
-type Cell = {
-    x: number;
-    y: number;
-    type: "ocean" | "neutral" | "common" | "faction";
-    faction?: string;
-    city?: string;
+const GEOJSON_URL = "/data/mappa-mondo.geojson";
+const TARGET_MAX_SIDE = 3000;
+
+type CellProps = {
+    id: number;
+    type: "ocean" | "island" | "lake";
+    state: number;
+    province: number;
+    population: number;
 };
 
-type MapData = {
-    width: number;
-    height: number;
-    cells: Cell[];
+type CellFeature = {
+    geometry: { coordinates: number[][][] };
+    properties: CellProps;
 };
 
-const CELL_SIZE = 64;
-const HEADER_SIZE = 28; // spessore banda header (px, in screen space)
+type CellsGeoJSON = { features: CellFeature[] };
 
-const TYPE_COLORS: Record<string, string> = {
-    ocean: "#1a2a3a",
-    neutral: "#3a3530",
-    common: "#2a3a2a",
-};
-
-const FACTION_COLORS: Record<string, string> = {
-    "San Pergamo": "#4a3520",
-    "Profitgrado": "#3a2a4a",
-    "Falconia": "#4a2a2a",
-    "SENPAI": "#2a3a4a",
-    "FIORD": "#2a4a3a",
-};
-
-/** Converte indice colonna (0-based) in etichetta: 0→A, 25→Z, 26→AA, 27→AB … */
-function toColumnLabel(n: number): string {
-    const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    if (n < 26) return ALPHA[n];
-    return ALPHA[Math.floor(n / 26) - 1] + ALPHA[n % 26];
-}
-
-/** Restituisce la coordinata leggibile di una cella, es. "C-14" */
-function cellCoord(x: number, y: number): string {
-    return `${toColumnLabel(x)}-${y + 1}`;
-}
+type StateInfo = { name?: string; color?: string; faction?: string };
+type StatesMap = Record<string, StateInfo>;
 
 /** Distanza euclidea tra due touch points (per il pinch-zoom) */
 function touchDistance(t1: React.Touch, t2: React.Touch): number {
@@ -54,19 +34,23 @@ function touchDistance(t1: React.Touch, t2: React.Touch): number {
 
 export default function MappaPage() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [mapData, setMapData] = useState<MapData | null>(null);
-    const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
-    const [pan, setPan] = useState({ x: HEADER_SIZE, y: HEADER_SIZE });
+    const [geo, setGeo] = useState<CellsGeoJSON | null>(null);
+    const [statesInfo, setStatesInfo] = useState<StatesMap>({});
+    const [selected, setSelected] = useState<CellFeature | null>(null);
+    const [pan, setPan] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+
     const isPanning = useRef(false);
     const didPan = useRef(false);
     const lastMouse = useRef({ x: 0, y: 0 });
-    const panRef = useRef({ x: HEADER_SIZE, y: HEADER_SIZE });
+    const panRef = useRef({ x: 0, y: 0 });
     const zoomRef = useRef(1);
-
-    // stato per il pinch-zoom a due dita
     const lastTouchDistance = useRef<number | null>(null);
+
+    const offscreenRef = useRef<HTMLCanvasElement | null>(null);
+    const projRef = useRef({ minX: 0, minY: 0, scale: 1 });
+    const initializedView = useRef(false);
 
     useEffect(() => {
         function updateSize() {
@@ -78,175 +62,126 @@ export default function MappaPage() {
     }, []);
 
     useEffect(() => {
-        fetch("/api/map")
-            .then((r) => r.json())
-            .then(setMapData);
+        Promise.all([
+            fetch(GEOJSON_URL).then((r) => r.json()),
+            fetch("/api/map-states").then((r) => r.json()).catch(() => ({ states: {} })),
+        ]).then(([geoData, statesData]) => {
+            setGeo(geoData);
+            setStatesInfo(statesData.states || {});
+        });
     }, []);
 
+    // costruisce l'immagine offscreen (tutte le celle disegnate una sola volta)
     useEffect(() => {
-        if (!mapData || canvasSize.width === 0) return;
-        draw();
-    }, [mapData, pan, zoom, canvasSize]);
+        if (!geo) return;
+        const { minX, minY, maxX, maxY } = computeBBox(geo.features);
+        const width = maxX - minX || 1;
+        const height = maxY - minY || 1;
+        const scale = TARGET_MAX_SIDE / Math.max(width, height);
+        projRef.current = { minX, minY, scale };
 
-    function getCellAt(screenX: number, screenY: number): Cell | null {
-        if (!mapData) return null;
-        // sottrai l'header per ottenere coordinate nella zona mappa
-        const mapX = screenX - HEADER_SIZE;
-        const mapY = screenY - HEADER_SIZE;
-        const gridX = Math.floor((mapX - panRef.current.x) / (CELL_SIZE * zoomRef.current));
-        const gridY = Math.floor((mapY - panRef.current.y) / (CELL_SIZE * zoomRef.current));
-        if (gridX < 0 || gridY < 0 || gridX >= mapData.width || gridY >= mapData.height) return null;
-        const found = mapData.cells.find((c) => c.x === gridX && c.y === gridY);
-        return found || { x: gridX, y: gridY, type: "ocean" };
-    }
+        const off = document.createElement("canvas");
+        off.width = Math.ceil(width * scale);
+        off.height = Math.ceil(height * scale);
+        const ctx = off.getContext("2d");
+        if (!ctx) return;
+
+        for (const f of geo.features) {
+            const props = f.properties;
+            const ring = f.geometry.coordinates[0];
+
+            let fill = OCEAN_COLOR;
+            if (props.type === "lake") fill = LAKE_COLOR;
+            else if (props.type === "island") {
+                if (props.state !== 0) {
+                    const info = statesInfo[String(props.state)];
+                    fill = info?.color || fallbackColorForState(props.state);
+                } else {
+                    fill = NEUTRAL_LAND_COLOR;
+                }
+            }
+
+            ctx.beginPath();
+            ring.forEach(([lng, lat], i) => {
+                const x = (lng - minX) * scale;
+                const y = (lat - minY) * scale;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+            ctx.fillStyle = fill;
+            ctx.fill();
+            ctx.strokeStyle = "rgba(255,255,255,0.06)";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        offscreenRef.current = off;
+        draw();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [geo, statesInfo]);
+
+    // centra la vista la prima volta che mappa e canvas sono pronti
+    useEffect(() => {
+        const off = offscreenRef.current;
+        if (!off || canvasSize.width === 0 || initializedView.current) return;
+        initializedView.current = true;
+        const initialZoom = Math.min(canvasSize.width / off.width, canvasSize.height / off.height, 1);
+        zoomRef.current = initialZoom;
+        panRef.current = {
+            x: (canvasSize.width - off.width * initialZoom) / 2,
+            y: (canvasSize.height - off.height * initialZoom) / 2,
+        };
+        setZoom(initialZoom);
+        setPan({ ...panRef.current });
+    }, [geo, statesInfo, canvasSize]);
+
+    useEffect(() => {
+        draw();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pan, zoom, canvasSize]);
 
     function draw() {
         const canvas = canvasRef.current;
-        if (!canvas || !mapData) return;
+        const off = offscreenRef.current;
+        if (!canvas || !off) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // — ZONA MAPPA (con pan/zoom, ritagliata sotto gli header) —
         ctx.save();
-        ctx.beginPath();
-        ctx.rect(HEADER_SIZE, HEADER_SIZE, canvas.width - HEADER_SIZE, canvas.height - HEADER_SIZE);
-        ctx.clip();
-
-        ctx.translate(HEADER_SIZE + panRef.current.x, HEADER_SIZE + panRef.current.y);
+        ctx.translate(panRef.current.x, panRef.current.y);
         ctx.scale(zoomRef.current, zoomRef.current);
-
-        for (let y = 0; y < mapData.height; y++) {
-            for (let x = 0; x < mapData.width; x++) {
-                const cell = mapData.cells.find((c) => c.x === x && c.y === y) || { x, y, type: "ocean" as const };
-                const cx = x * CELL_SIZE;
-                const cy = y * CELL_SIZE;
-
-                let color = TYPE_COLORS[cell.type] || TYPE_COLORS.ocean;
-                if (cell.type === "faction" && cell.faction) {
-                    color = FACTION_COLORS[cell.faction] || "#4a4a4a";
-                }
-
-                ctx.fillStyle = color;
-                ctx.fillRect(cx, cy, CELL_SIZE, CELL_SIZE);
-
-                ctx.strokeStyle = "rgba(255,255,255,0.06)";
-                ctx.lineWidth = 1 / zoomRef.current;
-                ctx.strokeRect(cx, cy, CELL_SIZE, CELL_SIZE);
-
-                if (zoomRef.current > 0.5) {
-                    if (cell.type === "faction" && cell.faction) {
-                        ctx.fillStyle = "rgba(200,169,110,0.9)";
-                        ctx.font = `bold 10px 'Palatino Linotype', serif`;
-                        ctx.textAlign = "center";
-                        ctx.fillText(cell.faction, cx + CELL_SIZE / 2, cy + CELL_SIZE / 2 - 6);
-                        if (cell.city) {
-                            ctx.fillStyle = "rgba(180,150,100,0.6)";
-                            ctx.font = `8px 'Palatino Linotype', serif`;
-                            ctx.fillText(cell.city, cx + CELL_SIZE / 2, cy + CELL_SIZE / 2 + 8);
-                        }
-                    } else if (cell.type === "neutral") {
-                        ctx.fillStyle = "rgba(180,150,100,0.3)";
-                        ctx.font = `8px 'Palatino Linotype', serif`;
-                        ctx.textAlign = "center";
-                        ctx.fillText("Terra di nessuno", cx + CELL_SIZE / 2, cy + CELL_SIZE / 2);
-                    } else if (cell.type === "common") {
-                        ctx.fillStyle = "rgba(180,150,100,0.3)";
-                        ctx.font = `8px 'Palatino Linotype', serif`;
-                        ctx.textAlign = "center";
-                        ctx.fillText("Comunale", cx + CELL_SIZE / 2, cy + CELL_SIZE / 2);
-                    }
-                }
-            }
-        }
-
-        ctx.restore();
-
-        // — HEADER COLONNE (A, B … ZZ) — fisso in cima —
-        ctx.save();
-        ctx.fillStyle = "rgba(10,8,5,0.95)";
-        ctx.fillRect(HEADER_SIZE, 0, canvas.width - HEADER_SIZE, HEADER_SIZE);
-
-        ctx.font = `bold 10px 'Palatino Linotype', serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        for (let x = 0; x < mapData.width; x++) {
-            const screenX = HEADER_SIZE + panRef.current.x + x * CELL_SIZE * zoomRef.current + (CELL_SIZE * zoomRef.current) / 2;
-            if (screenX < HEADER_SIZE || screenX > canvas.width) continue;
-            const label = toColumnLabel(x);
-            // evidenzia la colonna selezionata
-            if (selectedCell && selectedCell.x === x) {
-                ctx.fillStyle = "rgba(200,169,110,0.15)";
-                ctx.fillRect(
-                    HEADER_SIZE + panRef.current.x + x * CELL_SIZE * zoomRef.current,
-                    0,
-                    CELL_SIZE * zoomRef.current,
-                    HEADER_SIZE
-                );
-            }
-            ctx.fillStyle = selectedCell?.x === x ? "#c8a96e" : "rgba(180,140,80,0.55)";
-            ctx.fillText(label, screenX, HEADER_SIZE / 2);
-        }
-
-        // — HEADER RIGHE (1, 2 …) — fisso a sinistra —
-        ctx.fillStyle = "rgba(10,8,5,0.95)";
-        ctx.fillRect(0, HEADER_SIZE, HEADER_SIZE, canvas.height - HEADER_SIZE);
-
-        ctx.font = `bold 9px 'Palatino Linotype', serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        for (let y = 0; y < mapData.height; y++) {
-            const screenY = HEADER_SIZE + panRef.current.y + y * CELL_SIZE * zoomRef.current + (CELL_SIZE * zoomRef.current) / 2;
-            if (screenY < HEADER_SIZE || screenY > canvas.height) continue;
-            if (selectedCell && selectedCell.y === y) {
-                ctx.fillStyle = "rgba(200,169,110,0.15)";
-                ctx.fillRect(
-                    0,
-                    HEADER_SIZE + panRef.current.y + y * CELL_SIZE * zoomRef.current,
-                    HEADER_SIZE,
-                    CELL_SIZE * zoomRef.current
-                );
-            }
-            ctx.fillStyle = selectedCell?.y === y ? "#c8a96e" : "rgba(180,140,80,0.55)";
-            ctx.fillText(String(y + 1), HEADER_SIZE / 2, screenY);
-        }
-
-        // — ANGOLO in alto a sinistra (quadratino vuoto) —
-        ctx.fillStyle = "rgba(10,8,5,0.95)";
-        ctx.fillRect(0, 0, HEADER_SIZE, HEADER_SIZE);
-
-        // bordi separatori header
-        ctx.strokeStyle = "rgba(180,140,80,0.18)";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(HEADER_SIZE, 0);
-        ctx.lineTo(HEADER_SIZE, canvas.height);
-        ctx.moveTo(0, HEADER_SIZE);
-        ctx.lineTo(canvas.width, HEADER_SIZE);
-        ctx.stroke();
-
+        ctx.drawImage(off, 0, 0);
         ctx.restore();
     }
 
-    function selectCellAtScreenPoint(screenX: number, screenY: number) {
-        // ignora tap/click sugli header
-        if (screenX < HEADER_SIZE || screenY < HEADER_SIZE) return;
+    function findFeatureAt(screenX: number, screenY: number): CellFeature | null {
+        if (!geo) return null;
+        const { minX, minY, scale } = projRef.current;
+        const worldX = (screenX - panRef.current.x) / zoomRef.current;
+        const worldY = (screenY - panRef.current.y) / zoomRef.current;
+        const lng = worldX / scale + minX;
+        const lat = worldY / scale + minY;
 
-        const cell = getCellAt(screenX, screenY);
-        if (!cell) return;
+        for (const f of geo.features) {
+            if (pointInRing(lng, lat, f.geometry.coordinates[0])) return f;
+        }
+        return null;
+    }
 
-        if (selectedCell && cell.x === selectedCell.x && cell.y === selectedCell.y) {
-            setSelectedCell(null);
+    function selectAtScreenPoint(screenX: number, screenY: number) {
+        const found = findFeatureAt(screenX, screenY);
+        if (!found) return;
+        if (selected && selected.properties.id === found.properties.id) {
+            setSelected(null);
         } else {
-            setSelectedCell(cell);
+            setSelected(found);
         }
     }
 
     function zoomAt(centerX: number, centerY: number, newZoom: number) {
-        const clamped = Math.min(Math.max(newZoom, 0.1), 4);
+        const clamped = Math.min(Math.max(newZoom, 0.2), 8);
         panRef.current = {
             x: centerX - (centerX - panRef.current.x) * (clamped / zoomRef.current),
             y: centerY - (centerY - panRef.current.y) * (clamped / zoomRef.current),
@@ -276,12 +211,11 @@ export default function MappaPage() {
 
     function handleMouseUp(e: React.MouseEvent) {
         isPanning.current = false;
-        if (didPan.current) return; // era un pan, non un click
-
+        if (didPan.current) return;
         const canvas = canvasRef.current;
         if (!canvas) return;
         const rect = canvas.getBoundingClientRect();
-        selectCellAtScreenPoint(e.clientX - rect.left, e.clientY - rect.top);
+        selectAtScreenPoint(e.clientX - rect.left, e.clientY - rect.top);
     }
 
     function handleWheel(e: React.WheelEvent) {
@@ -289,9 +223,8 @@ export default function MappaPage() {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left - HEADER_SIZE;
-        const mouseY = e.clientY - rect.top - HEADER_SIZE;
-
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
         const delta = e.deltaY > 0 ? 0.9 : 1.1;
         zoomAt(mouseX, mouseY, zoomRef.current * delta);
     }
@@ -299,25 +232,19 @@ export default function MappaPage() {
     // ---------- TOUCH (mobile) ----------
 
     function handleTouchStart(e: React.TouchEvent) {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
         if (e.touches.length === 1) {
             isPanning.current = true;
             didPan.current = false;
             lastMouse.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             lastTouchDistance.current = null;
         } else if (e.touches.length === 2) {
-            // due dita: si passa alla modalità pinch-zoom, niente pan nel frattempo
             isPanning.current = false;
             lastTouchDistance.current = touchDistance(e.touches[0], e.touches[1]);
         }
     }
 
     function handleTouchMove(e: React.TouchEvent) {
-        // impedisce alla pagina di scrollare mentre si trascina la mappa
         e.preventDefault();
-
         const canvas = canvasRef.current;
         if (!canvas) return;
         const rect = canvas.getBoundingClientRect();
@@ -332,42 +259,44 @@ export default function MappaPage() {
         } else if (e.touches.length === 2 && lastTouchDistance.current !== null) {
             const newDistance = touchDistance(e.touches[0], e.touches[1]);
             const scaleFactor = newDistance / lastTouchDistance.current;
-
-            const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left - HEADER_SIZE;
-            const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top - HEADER_SIZE;
-
+            const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+            const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
             zoomAt(centerX, centerY, zoomRef.current * scaleFactor);
             lastTouchDistance.current = newDistance;
-            didPan.current = true; // un pinch non deve mai contare come tap
+            didPan.current = true;
         }
     }
 
     function handleTouchEnd(e: React.TouchEvent) {
         const canvas = canvasRef.current;
-
         if (e.touches.length === 0) {
-            // ultimo dito sollevato
             const wasPanning = isPanning.current;
             isPanning.current = false;
             lastTouchDistance.current = null;
-
             if (!didPan.current && wasPanning && canvas && e.changedTouches.length === 1) {
                 const rect = canvas.getBoundingClientRect();
                 const touch = e.changedTouches[0];
-                selectCellAtScreenPoint(touch.clientX - rect.left, touch.clientY - rect.top);
+                selectAtScreenPoint(touch.clientX - rect.left, touch.clientY - rect.top);
             }
         } else if (e.touches.length === 1) {
-            // si passa da pinch (2 dita) a pan (1 dito rimasto)
             lastTouchDistance.current = null;
             isPanning.current = true;
-            didPan.current = true; // evita che il dito rimasto generi un tap-selezione
+            didPan.current = true;
             lastMouse.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         }
     }
 
-    const selectedFaction = selectedCell?.type === "faction"
-        ? factions.find((f) => f.name === selectedCell.faction)
+    const props = selected?.properties;
+    const selectedStateInfo = props && props.state !== 0 ? statesInfo[String(props.state)] : null;
+    const selectedFaction = selectedStateInfo?.faction
+        ? factions.find((f) => f.name === selectedStateInfo.faction)
         : null;
+
+    let title = "Oceano";
+    if (props?.type === "lake") title = "Lago";
+    else if (props?.type === "island") {
+        title = props.state === 0 ? "Terra di nessuno" : selectedStateInfo?.name || `Stato #${props.state}`;
+    }
 
     return (
         <div style={{ position: "relative", width: "100%", height: "calc(100vh - 60px)", overflow: "hidden", background: "#0a0f14" }}>
@@ -386,37 +315,38 @@ export default function MappaPage() {
                 style={{ cursor: "grab", display: "block", touchAction: "none" }}
             />
 
-            {selectedCell && (
+            {selected && props && (
                 <div className="map-infobox">
-                    {selectedCell.type === "faction" && selectedFaction ? (
+                    {selectedFaction ? (
                         <>
                             <div className="map-infobox-banner">
                                 <img src={selectedFaction.banner} alt={selectedFaction.name} />
                             </div>
                             <div className="map-infobox-body">
-                                <p className="map-infobox-coord">{cellCoord(selectedCell.x, selectedCell.y)}</p>
-                                <h2 className="map-infobox-title">{selectedFaction.name}</h2>
-                                {selectedCell.city && (
-                                    <p className="map-infobox-city">📍 {selectedCell.city}</p>
-                                )}
+                                <p className="map-infobox-coord">Cella #{props.id}</p>
+                                <h2 className="map-infobox-title">{title}</h2>
                                 <p className="map-infobox-desc">{selectedFaction.description}</p>
                                 <p className="map-infobox-info">{selectedFaction.info}</p>
                             </div>
                         </>
                     ) : (
                         <div className="map-infobox-body">
-                            <p className="map-infobox-coord">{cellCoord(selectedCell.x, selectedCell.y)}</p>
-                            <h2 className="map-infobox-title">
-                                {selectedCell.type === "ocean" ? "Oceano" :
-                                 selectedCell.type === "neutral" ? "Terra di nessuno" : "Comunale"}
-                            </h2>
+                            <p className="map-infobox-coord">Cella #{props.id}</p>
+                            <h2 className="map-infobox-title">{title}</h2>
                             <p className="map-infobox-desc">
-                                {selectedCell.type === "ocean" ? "Acque internazionali." :
-                                 selectedCell.type === "neutral" ? "Territorio non rivendicato." : "Territorio comunale."}
+                                {props.type === "ocean" && "Acque internazionali."}
+                                {props.type === "lake" && "Specchio d'acqua interno."}
+                                {props.type === "island" && props.state === 0 && "Territorio non rivendicato."}
+                                {props.type === "island" && props.state !== 0 && (
+                                    <>
+                                        Provincia #{props.province}
+                                        {props.population > 0 ? ` · Popolazione ${Math.round(props.population * 1000).toLocaleString("it-IT")}` : ""}
+                                    </>
+                                )}
                             </p>
                         </div>
                     )}
-                    <button className="map-infobox-close" onClick={() => setSelectedCell(null)}>✕</button>
+                    <button className="map-infobox-close" onClick={() => setSelected(null)}>✕</button>
                 </div>
             )}
         </div>
