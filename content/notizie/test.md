@@ -1,11 +1,11 @@
 ---
-title: "Nuova arena a Lucropoli"
+title: "Il leader di Falconia colpevole del Lollocausto?"
 image: "/images/notizie/Arena_Lucropoli.png"
-date: "3 Agosto, 2168"
+date: "6 Ottobre, 2168"
 location: "Lucropoli"
-reporter: "Cittadino di Profitgrado"
+reporter: "Jhon Doe"
 order: 1
-secret:yes
+secret: yes
 ---
 
-Lucropoli compie un nuovo e significativo passo nella propria crescita con l'avvio della costruzione di una delle opere più importanti della sua giovane storia. Una nuova arena sorgerà nel cuore della città, destinata a diventare un punto centrale per la vita culturale, pubblica e istituzionale del territorio.La maestosa struttura, progettata per accogliere grandi raduni, celebrazioni, spettacoli e manifestazioni di ogni genere, rappresenterà un simbolo della nuova identità di Lucropoli e del suo ruolo sempre più rilevante come capitale culturale di Profitgrado.L'imponente progetto non sarà solamente un luogo dedicato agli eventi, ma un'opera destinata a lasciare un segno nel tempo, offrendo alla popolazione uno spazio dove tradizione, cultura e intrattenimento potranno incontrarsi. La sua costruzione segna l'inizio di una nuova fase per la città, confermando la volontà di creare un centro degno delle future generazioni.Tra le numerose possibilità legate al futuro della struttura, alcuni osservatori hanno ipotizzato che essa possa ospitare anche competizioni di grande rilievo, tra cui le prime Olimpiadi. Sebbene non siano state rilasciate conferme ufficiali, la presenza di un'arena di tale portata apre nuove prospettive per eventi mai realizzati prima.Lucropoli si prepara così ad accogliere una nuova era, con un'opera destinata a diventare uno dei simboli più riconoscibili del progresso e della grandezza della città.
+Diciamolo chiaramente: il Lollocausto non è stato un incidente. È stato un ordine, e quell’ordine porta direttamente a Falconia. Migliaia di cadaveri furono ritrovati sulle rive del lago e, dopo le analisi, emerse il dettaglio che qualcuno vorrebbe disperatamente farci dimenticare: si chiamavano tutti Lollo. Davvero dovremmo credere che sia una coincidenza? Io no. Il leader di Falconia aveva tutto: il potere, gli uomini e soprattutto un motivo. Un’intera comunità di Lollo poteva essere diventata un problema, troppo numerosa, troppo indipendente, troppo difficile da controllare. E cosa succede quando qualcuno diventa scomodo per chi comanda? Sparisce. La parte più sospetta è il silenzio successivo. Nessuna vera indagine, nessun responsabile, nessuna spiegazione convincente. Solo il lago, i cadaveri e una città che improvvisamente sembrava non sapere nulla. Eppure qualcuno sapeva. Il leader di Falconia sapeva. Forse non ha mai sporcato personalmente le proprie mani. Forse non ne aveva bisogno. Bastava dare un ordine, lasciare che altri facessero il lavoro e poi cancellare ogni traccia. Ma una traccia è rimasta: il nome Lollo. E finché qualcuno continuerà a fare domande, Falconia non potrà nascondere per sempre ciò che è successo.
