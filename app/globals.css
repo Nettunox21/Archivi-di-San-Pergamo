@@ -2866,13 +2866,23 @@ canvas {
     pointer-events: none;
     transition: opacity 0.9s ease;
     overflow: hidden;
-    background:
-        radial-gradient(circle at 50% 6%, rgba(139, 77, 255, 0.3), transparent 55%),
-        radial-gradient(circle at 12% 88%, rgba(90, 30, 160, 0.38), transparent 50%),
-        radial-gradient(circle at 88% 72%, rgba(60, 20, 120, 0.42), transparent 50%),
-        radial-gradient(rgba(205, 180, 255, 0.35) 1px, transparent 1.6px) 0 0 / 90px 90px,
-        radial-gradient(rgba(205, 180, 255, 0.2) 1px, transparent 1.6px) 45px 45px / 130px 130px,
-        #0b0614;
+    background: #000;
+}
+
+/* Immagine centrale, SOTTO il sigillo.
+   Metti il file in public/ con questo nome (o cambia l'url qui sotto).
+   Dimensione e luminosità si regolano con width/height e opacity. */
+.news-page-bg--occult::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(80vmin, 640px);
+    height: min(80vmin, 640px);
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    opacity: 0.55;
+    background: url("/occult_bg.png") center / contain no-repeat;
 }
 
 /* Grande sigillo che ruota lentamente dietro ai contenuti */
@@ -2884,7 +2894,8 @@ canvas {
     width: min(95vmin, 760px);
     height: min(95vmin, 760px);
     transform: translate(-50%, -50%);
-    opacity: 0.14;
+    z-index: 1;
+    opacity: 0.22;
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' fill='none' stroke='%23a67cff' stroke-width='1.2'><circle cx='200' cy='200' r='192'/><circle cx='200' cy='200' r='176' stroke-dasharray='3 9'/><circle cx='200' cy='200' r='120'/><polygon points='200,40 338.6,280 61.4,280'/><polygon points='200,360 61.4,120 338.6,120'/><circle cx='200' cy='200' r='28'/></svg>") center / contain no-repeat;
     animation: occult-sigil-spin 140s linear infinite;
 }
@@ -3040,7 +3051,8 @@ canvas {
     .news-hero-inner,
     .news-card--occult,
     .news-page-bg--occult,
-    .news-page-bg--occult::before {
+    .news-page-bg--occult::before,
+    .news-page-bg--occult::after {
         animation: none;
         transition: none;
     }
