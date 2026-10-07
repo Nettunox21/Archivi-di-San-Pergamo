@@ -1,6 +1,6 @@
 ---
 title: "Il leader di Falconia colpevole del Lollocausto?"
-image: "/images/notizie/Arena_Lucropoli.png"
+image: "/images/notizie/Falconia_Lollocausto.png"
 date: "6 Ottobre, 2168"
 location: "Terra di Nessuno"
 reporter: "Jhon Doe"
