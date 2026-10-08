@@ -3278,3 +3278,107 @@ canvas {
     background: rgba(8, 3, 16, 0.75);
     border-color: rgba(75, 42, 122, 0.6);
 }
+
+/* =====================================================================
+ *  NOTIZIE — barra di ricerca
+ * ===================================================================== */
+
+/* senza il link "hai notizie da archiviare" il titolo ha meno spazio sotto */
+.news-hero {
+    margin-bottom: 1.5rem;
+}
+
+.news-search {
+    position: relative;
+    max-width: 520px;
+    margin: 0 auto 2rem;
+}
+
+.news-search-input {
+    width: 100%;
+    padding: 0.7rem 2.6rem 0.7rem 1rem;
+    font-family: inherit;
+    font-size: 1rem; /* 16px: evita lo zoom automatico su iPhone */
+    color: #e8c98a;
+    background: rgba(10, 8, 5, 0.72);
+    border: 1px solid #4a3a22;
+    border-radius: 6px;
+    outline: none;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.news-search-input::placeholder {
+    color: #a89877;
+}
+
+.news-search-input:focus {
+    border-color: #c8a96e;
+    box-shadow: 0 0 0 2px rgba(200, 169, 110, 0.2);
+}
+
+/* togliamo la "x" nativa del browser: usiamo la nostra */
+.news-search-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+}
+
+.news-search-clear {
+    position: absolute;
+    top: 0;
+    right: 0.3rem;
+    height: 2.75rem; /* stessa altezza dell'input */
+    width: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #a89877;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.news-search-clear:hover {
+    color: #e8c98a;
+}
+
+.news-search-count {
+    margin-top: 0.4rem;
+    text-align: center;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    color: #a89877;
+}
+
+/* variante occulta */
+.news-container--secret .news-search-input {
+    color: #cfb0ff;
+    background: rgba(8, 3, 16, 0.75);
+    border-color: #4b2a7a;
+}
+
+.news-container--secret .news-search-input::placeholder {
+    color: #8e7bb8;
+}
+
+.news-container--secret .news-search-input:focus {
+    border-color: #9a6cf0;
+    box-shadow: 0 0 0 2px rgba(140, 90, 255, 0.25), 0 0 14px rgba(120, 60, 230, 0.3);
+}
+
+.news-container--secret .news-search-clear,
+.news-container--secret .news-search-count {
+    color: #8e7bb8;
+}
+
+@media (max-width: 760px) {
+    .news-search {
+        margin-bottom: 1rem;
+    }
+}
