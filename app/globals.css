@@ -3057,3 +3057,213 @@ canvas {
         transition: none;
     }
 }
+
+/* =====================================================================
+ *  NOTIZIE — vista TELEFONO (lista di sole immagini) + pagina articolo
+ * ===================================================================== */
+
+/* Il "tile" (immagine + titolo) esiste solo su telefono */
+.news-tile {
+    display: none;
+}
+
+/* Su telefono: tile al posto delle card. Stessa soglia del menu hamburger. */
+@media (max-width: 760px) {
+    .news-container {
+        padding: 1rem 0.75rem 4rem;
+    }
+
+    .news-hero {
+        margin-bottom: 1.5rem;
+    }
+
+    .news-hero h1 {
+        font-size: 2rem;
+    }
+
+    .news-main .news-card {
+        display: none;
+    }
+
+    .news-main {
+        gap: 1rem;
+    }
+
+    .news-tile {
+        display: block;
+        position: relative;
+        line-height: 0; /* niente spazietto sotto l'immagine */
+        overflow: hidden;
+        background: #1c1712;
+        border: 1px solid #4a3a22;
+        border-radius: 6px;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Immagine intera: larghezza piena, altezza libera (9:16 non viene ritagliata) */
+    .news-tile-img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    /* Titolo piccolo in basso sull'immagine, su sfumatura scura per leggerlo */
+    .news-tile-title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 1.8rem 0.75rem 0.55rem;
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: 0.82rem;
+        line-height: 1.25;
+        letter-spacing: 0.02em;
+        color: #f1dfb8;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0));
+    }
+
+    .news-tile--occult {
+        background: #0e0819;
+        border-color: #4b2a7a;
+        box-shadow: 0 0 14px rgba(120, 60, 230, 0.25);
+    }
+
+    .news-tile--occult .news-tile-title {
+        color: #dcc8ff;
+        text-shadow: 0 0 8px rgba(150, 90, 255, 0.6);
+    }
+}
+
+/* --- Pagina dell'articolo (/notizie/[slug]) --- */
+.news-page-bg--on {
+    opacity: 1;
+}
+
+.news-detail {
+    position: relative;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1rem 0.9rem 4rem;
+}
+
+.news-detail-back {
+    display: inline-block;
+    margin-bottom: 0.9rem;
+    color: #c8a96e;
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+}
+
+.news-detail-images {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.news-detail-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid #4a3a22;
+    border-radius: 6px;
+}
+
+.news-detail-head {
+    margin-top: 1.1rem;
+    padding: 1rem 1.1rem;
+    background: #1c1712;
+    border: 1px solid #4a3a22;
+    border-radius: 6px;
+}
+
+.news-detail-title {
+    font-family: "Playfair Display", Georgia, serif;
+    color: #e8c98a;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid #4a3a22;
+}
+
+/* Data / Autore / Luogo affiancati, ognuno con la sua intestazione */
+.news-detail-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0.6rem;
+    margin: 0;
+}
+
+.news-detail-info > div {
+    padding-left: 0.6rem;
+    border-left: 1px solid #332a1c;
+}
+
+.news-detail-info > div:first-child {
+    padding-left: 0;
+    border-left: none;
+}
+
+.news-detail-info dt {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #a89877;
+}
+
+.news-detail-info dd {
+    margin: 0.2rem 0 0;
+    color: #e8c98a;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+.news-detail-body {
+    margin-top: 1.25rem;
+    color: #d9cbb0;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.news-detail-body p {
+    margin-bottom: 1rem;
+}
+
+/* Variante occulta (articoli con secret: yes) */
+.news-detail--occult .news-detail-back {
+    color: #c9a6ff;
+}
+
+.news-detail--occult .news-detail-img {
+    border-color: #4b2a7a;
+    box-shadow: 0 0 18px rgba(120, 60, 230, 0.3);
+}
+
+.news-detail--occult .news-detail-head {
+    background: linear-gradient(160deg, #170d28, #0e0819);
+    border-color: #4b2a7a;
+}
+
+.news-detail--occult .news-detail-title {
+    color: #cfb0ff;
+    border-bottom-color: #4b2a7a;
+    text-shadow: 0 0 10px rgba(150, 90, 255, 0.5);
+}
+
+.news-detail--occult .news-detail-info > div {
+    border-left-color: #2c1c47;
+}
+
+.news-detail--occult .news-detail-info dt {
+    color: #8e7bb8;
+}
+
+.news-detail--occult .news-detail-info dd {
+    color: #cfb0ff;
+}
+
+.news-detail--occult .news-detail-body {
+    color: #d8cdea;
+}
