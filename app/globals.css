@@ -3222,9 +3222,18 @@ canvas {
 
 .news-detail-body {
     margin-top: 1.25rem;
+    padding: 1.1rem 1.1rem 0.3rem;
     color: #d9cbb0;
     font-size: 1rem;
     line-height: 1.7;
+    /* Pannello scuro semitrasparente dietro il testo, per leggerlo anche
+       quando lo sfondo dietro è chiaro. Più alto il quarto numero (0.72),
+       più il pannello è scuro. */
+    background: rgba(10, 8, 5, 0.72);
+    border: 1px solid rgba(74, 58, 34, 0.6);
+    border-radius: 6px;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
 }
 
 .news-detail-body p {
@@ -3266,4 +3275,6 @@ canvas {
 
 .news-detail--occult .news-detail-body {
     color: #d8cdea;
+    background: rgba(8, 3, 16, 0.75);
+    border-color: rgba(75, 42, 122, 0.6);
 }
