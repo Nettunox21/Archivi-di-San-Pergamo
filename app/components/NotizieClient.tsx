@@ -2,24 +2,56 @@
 
 "use client";
 
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import {
+    Fragment,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import Link from "next/link";
 import Image from "next/image";
 import NewsImageCarousel from "@/app/components/NewsImageCarousel";
 import type { NewsArticle } from "@/lib/notizie";
 
+// Minuscolo e senza accenti: "Città" e "citta" si trovano a vicenda
+function normalizza(s: string) {
+    return s
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
+// Cerca in titolo, testo, autore, luogo e data.
+// Più parole = devono comparire tutte (in qualsiasi ordine).
+function filtra(list: NewsArticle[], query: string) {
+    const parole = normalizza(query).split(/\s+/).filter(Boolean);
+    if (parole.length === 0) return list;
+    return list.filter((a) => {
+        const testo = normalizza(
+            [a.title, a.text, a.reporter, a.location, a.date].join(" ")
+        );
+        return parole.every((p) => testo.includes(p));
+    });
+}
+
 function Cards({
     articles,
     secret,
+    query,
 }: {
     articles: NewsArticle[];
     secret: boolean;
+    query: string;
 }) {
     return (
         <main className="news-main">
             {articles.length === 0 && (
                 <p className="news-empty">
-                    {secret
+                    {query.trim()
+                        ? `Nessun risultato per “${query.trim()}”.`
+                        : secret
                         ? "Nessun fascicolo segreto è stato ancora recuperato."
                         : "Nessuna notizia disponibile al momento."}
                 </p>
@@ -110,12 +142,19 @@ export default function NotizieClient({
     segreti: NewsArticle[];
 }) {
     const [secret, setSecret] = useState(false);
+    const [query, setQuery] = useState("");
     const secretRef = useRef(false);
     const lockRef = useRef(false);
 
     // Se non ci sono articoli segreti, lo scroll orizzontale resta disattivato:
     // nessun visitatore finisce in una sezione vuota.
     const enabled = segreti.length > 0;
+
+    // Risultati della ricerca (la ricerca vale solo per la sezione che stai guardando:
+    // gli articoli segreti non compaiono mai cercando dalla sezione normale)
+    const normaliF = useMemo(() => filtra(normali, query), [normali, query]);
+    const segretiF = useMemo(() => filtra(segreti, query), [segreti, query]);
+    const risultati = secret ? segretiF.length : normaliF.length;
 
     const go = useCallback(
         (toSecret: boolean) => {
@@ -125,6 +164,7 @@ export default function NotizieClient({
             lockRef.current = true;
             secretRef.current = toSecret;
             setSecret(toSecret);
+            setQuery(""); // cambiando sezione la ricerca si azzera
             window.scrollTo({ top: 0, behavior: "smooth" });
 
             // Ricorda la sezione nell'indirizzo (#segreti): tornando indietro
@@ -226,9 +266,6 @@ export default function NotizieClient({
                             <p className="news-subtitle">
                                 Ciò che l&apos;Ordine non vuole che tu sappia
                             </p>
-                            <Link href="/notizie/richiedi" className="news-request-link">
-                                Hai visto qualcosa che non dovresti? Sussurralo qui
-                            </Link>
                         </>
                     ) : (
                         <>
@@ -236,13 +273,43 @@ export default function NotizieClient({
                             <p className="news-subtitle">
                                 I dispacci dell&apos;Ordine
                             </p>
-                            <Link href="/notizie/richiedi" className="news-request-link">
-                                Hai notizie da archiviare? Clicca qui!
-                            </Link>
                         </>
                     )}
                 </div>
             </header>
+
+            {/* Barra di ricerca: filtra gli articoli della sezione attiva */}
+            <div className="news-search">
+                <input
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={
+                        secret
+                            ? "Cerca negli archivi proibiti…"
+                            : "Cerca nelle notizie…"
+                    }
+                    aria-label="Cerca negli articoli"
+                    className="news-search-input"
+                    autoComplete="off"
+                    enterKeyHint="search"
+                />
+                {query && (
+                    <button
+                        type="button"
+                        className="news-search-clear"
+                        onClick={() => setQuery("")}
+                        aria-label="Cancella la ricerca"
+                    >
+                        ×
+                    </button>
+                )}
+                {query.trim() && (
+                    <p className="news-search-count">
+                        {risultati} risultat{risultati === 1 ? "o" : "i"}
+                    </p>
+                )}
+            </div>
 
             {/* Le due sezioni stanno una accanto all'altra: scorri a destra per i complotti */}
             <div className="news-pager">
@@ -254,7 +321,7 @@ export default function NotizieClient({
                     }
                     aria-hidden={secret}
                 >
-                    <Cards articles={normali} secret={false} />
+                    <Cards articles={normaliF} secret={false} query={query} />
                 </section>
 
                 {enabled && (
@@ -266,7 +333,7 @@ export default function NotizieClient({
                         }
                         aria-hidden={!secret}
                     >
-                        <Cards articles={segreti} secret={true} />
+                        <Cards articles={segretiF} secret={true} query={query} />
                     </section>
                 )}
             </div>
