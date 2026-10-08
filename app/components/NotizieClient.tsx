@@ -2,8 +2,9 @@
 
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import NewsImageCarousel from "@/app/components/NewsImageCarousel";
 import type { NewsArticle } from "@/lib/notizie";
 
@@ -34,41 +35,67 @@ function Cards({
                 if (secret) cls += " news-card--occult";
 
                 return (
-                    <article key={a.slug} className={cls}>
-                        <NewsImageCarousel images={a.images} alt={a.title} />
+                    <Fragment key={a.slug}>
+                        {/* SOLO TELEFONO: immagine intera + titolo piccolo in basso.
+                            Il tocco apre la pagina dell'articolo.
+                            Su PC questo blocco è nascosto dal CSS. */}
+                        <Link
+                            href={`/notizie/${encodeURIComponent(a.slug)}`}
+                            className={
+                                secret ? "news-tile news-tile--occult" : "news-tile"
+                            }
+                        >
+                            <Image
+                                src={a.images[0]}
+                                alt={a.title}
+                                width={0}
+                                height={0}
+                                sizes="100vw"
+                                className="news-tile-img"
+                            />
+                            <span className="news-tile-title">{a.title}</span>
+                        </Link>
 
-                        <div className="news-body">
-                            <h2
-                                className="news-title"
-                                data-text={isCyberpunk ? a.title : undefined}
-                            >
-                                {a.title}
-                            </h2>
+                        {/* SOLO PC: la card completa di sempre.
+                            Su telefono è nascosta dal CSS. */}
+                        <article className={cls}>
+                            <NewsImageCarousel images={a.images} alt={a.title} />
 
-                            <div className="news-text">
-                                {a.text
-                                    .split("\n")
-                                    .filter(Boolean)
-                                    .map((par, i) => (
-                                        <p key={i}>{par}</p>
-                                    ))}
+                            <div className="news-body">
+                                <h2
+                                    className="news-title"
+                                    data-text={isCyberpunk ? a.title : undefined}
+                                >
+                                    {a.title}
+                                </h2>
+
+                                <div className="news-text">
+                                    {a.text
+                                        .split("\n")
+                                        .filter(Boolean)
+                                        .map((par, i) => (
+                                            <p key={i}>{par}</p>
+                                        ))}
+                                </div>
+
+                                <div className="news-meta">
+                                    {a.date && (
+                                        <span className="news-meta-item">{a.date}</span>
+                                    )}
+                                    {a.location && (
+                                        <span className="news-meta-item">
+                                            {a.location}
+                                        </span>
+                                    )}
+                                    {a.reporter && (
+                                        <span className="news-meta-item">
+                                            Reporter: {a.reporter}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-
-                            <div className="news-meta">
-                                {a.date && (
-                                    <span className="news-meta-item">{a.date}</span>
-                                )}
-                                {a.location && (
-                                    <span className="news-meta-item">{a.location}</span>
-                                )}
-                                {a.reporter && (
-                                    <span className="news-meta-item">
-                                        Reporter: {a.reporter}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </article>
+                        </article>
+                    </Fragment>
                 );
             })}
         </main>
@@ -99,6 +126,17 @@ export default function NotizieClient({
             secretRef.current = toSecret;
             setSecret(toSecret);
             window.scrollTo({ top: 0, behavior: "smooth" });
+
+            // Ricorda la sezione nell'indirizzo (#segreti): tornando indietro
+            // da un articolo si riapre la sezione giusta.
+            window.history.replaceState(
+                window.history.state,
+                "",
+                toSecret
+                    ? "#segreti"
+                    : window.location.pathname + window.location.search
+            );
+
             // blocco anti-rimbalzo: l'inerzia del trackpad genera molti eventi
             window.setTimeout(() => {
                 lockRef.current = false;
@@ -106,6 +144,14 @@ export default function NotizieClient({
         },
         [enabled]
     );
+
+    // Arrivando con #segreti nell'indirizzo, apri subito la sezione segreta
+    useEffect(() => {
+        if (enabled && window.location.hash === "#segreti") {
+            secretRef.current = true;
+            setSecret(true);
+        }
+    }, [enabled]);
 
     useEffect(() => {
         if (!enabled) return;
