@@ -7,14 +7,5 @@ reporter: "Jhon Doe"
 order: 2
 secret: yes
 ---
----
-title: "Il leader di Falconia colpevole del Lollocausto?"
-image: "/images/notizie/Falconia_Lollocausto.png"
-date: "6 Ottobre, 2168"
-location: "Terra di Nessuno"
-reporter: "Jhon Doe"
-order: 1
-secret: yes
----
 
-Diciamolo chiaramente: il Lollocausto non è stato un incidente. È stato un ordine, e quell’ordine porta direttamente a Falconia. Migliaia di cadaveri furono ritrovati sulle rive del lago e, dopo le analisi, emerse il dettaglio che qualcuno vorrebbe disperatamente farci dimenticare: si chiamavano tutti Lollo. Davvero dovremmo credere che sia una coincidenza? Io no. Il leader di Falconia aveva tutto: il potere, gli uomini e soprattutto un motivo. Un’intera comunità di Lollo poteva essere diventata un problema, troppo numerosa, troppo indipendente, troppo difficile da controllare. E cosa succede quando qualcuno diventa scomodo per chi comanda? Sparisce. La parte più sospetta è il silenzio successivo. Nessuna vera indagine, nessun responsabile, nessuna spiegazione convincente. Solo il lago, i cadaveri e una città che improvvisamente sembrava non sapere nulla. Eppure qualcuno sapeva. Il leader di Falconia sapeva. Forse non ha mai sporcato personalmente le proprie mani. Forse non ne aveva bisogno. Bastava dare un ordine, lasciare che altri facessero il lavoro e poi cancellare ogni traccia. Ma una traccia è rimasta: il nome Lollo. E finché qualcuno continuerà a fare domande, Falconia non potrà nascondere per sempre ciò che è successo.
+Gli scontrini rendono gay? Secondo me la risposta è molto più semplice di quanto vogliano farci credere: guardate l’inchiostro. Quella sostanza che rimane sulle dita dopo aver maneggiato uno scontrino non è innocua come ci raccontano. È veleno, veleno gay. Sono anni che ci dicono di non preoccuparci, che basta lavarsi le mani e che gli scontrini sono perfettamente sicuri, ma nessuno sembra voler spiegare cosa succede dopo un’esposizione continua. Un singolo scontrino forse non significa nulla, ma cosa accade quando ne tocchiamo centinaia ogni settimana? Migliaia nel corso di una vita? È proprio qui che la teoria diventa inquietante: l’esposizione prolungata potrebbe accumulare gli effetti di quella misteriosa sostanza, provocando lentamente un cambiamento nelle preferenze e nel comportamento. E perché l’inchiostro dovrebbe essere così facile da trasferire sulla pelle? Perché nessuno sembra preoccuparsene? La risposta, secondo chi indaga davvero, è semplice: più scontrini tocchi, più veleno gay assorbi. Non vogliono che colleghiamo i punti. Vogliono che continuiamo a prendere la ricevuta, piegarla, metterla in tasca e dimenticarcene. Ma noi non ce ne dimenticheremo. La prossima volta che vi porgeranno uno scontrino, osservate bene quelle macchie sulle dita. Potrebbero essere molto più importanti di quanto pensiate.
