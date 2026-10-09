@@ -1,11 +1,11 @@
 import "./globals.css";
+import "./economia.css";
 import Link from "next/link";
 import Image from "next/image";
 import SearchBar from "./components/SearchBar";
 import MobileMenu from "./components/MobileMenu";
 import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
-import { cookies } from "next/headers";
-import { getUsers } from "@/auth/users";
+import { getCurrentUser } from "@/auth/users";
 import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
@@ -32,9 +32,7 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user")?.value || null;
-    const currentUser = getUsers().find((u) => u.username === userCookie) || null;
+    const currentUser = await getCurrentUser();
 
     return (
         <html lang="it">
@@ -58,6 +56,7 @@ export default async function RootLayout({
                         <Link href="/">Home</Link>
                         <Link href="/mappa">Mappa</Link>
                         <Link href="/fazioni">Fazioni</Link>
+                        <Link href="/economia">Economia</Link>
                         <Link href="/documenti">Documenti</Link>
                         <Link href="/feedback">Feedback</Link>
                         <Link href="/notizie">Notizie</Link>
