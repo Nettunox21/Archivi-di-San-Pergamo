@@ -1,5 +1,4 @@
-import { cookies } from "next/headers";
-import { getUsers } from "@/auth/users";
+import { getCurrentUser } from "@/auth/users";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
@@ -25,14 +24,14 @@ const adminSections = [
         href: "/admin/map",
     },
     {
-        title: "Scepter δ-me13",
+        title: "Risorse (economia)",
         image: "/images/admin-placeholder.jpeg",
-        href: "#",
+        href: "/admin/risorse",
     },
     {
-        title: "Scepter δ-me13",
+        title: "Appartenenze fazioni",
         image: "/images/admin-placeholder.jpeg",
-        href: "#",
+        href: "/admin/appartenenze",
     },
     {
         title: "Scepter δ-me13",
@@ -42,9 +41,7 @@ const adminSections = [
 ];
 
 export default async function AdminPage() {
-    const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user")?.value || null;
-    const currentUser = getUsers().find((u) => u.username === userCookie) || null;
+    const currentUser = await getCurrentUser();
 
     if (!currentUser || currentUser.role !== "admin") {
         redirect("/");
