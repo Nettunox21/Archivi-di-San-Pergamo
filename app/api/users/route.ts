@@ -1,63 +1,82 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { getUsers } from "@/auth/users";
-import fs from "fs";
-import path from "path";
+import { db, eq } from "@/lib/db";
+import { getCurrentUser, getUsers, destroyUserSessions } from "@/auth/users";
+import { hashPassword } from "@/auth/password";
+import { leggiJson, risposta, rispostaErrore } from "@/lib/api";
 
-// On Vercel, the project root is read-only. We use /tmp for writable storage.
-// Users are initialized from the bundled data/users.json on first cold start.
-const USERS_TMP = path.join("/tmp", "users.json");
-
-function saveUsers(data: object[]) {
-    fs.writeFileSync(USERS_TMP, JSON.stringify(data, null, 2));
+async function soloAdmin() {
+    const u = await getCurrentUser();
+    return u && u.role === "admin" ? u : null;
 }
 
+const USERNAME_OK = /^[A-Za-z0-9_.-]{3,32}$/;
+
+// Modifica username e/o password di un utente
 export async function POST(req: NextRequest) {
-    const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user")?.value || null;
-    const currentUser = getUsers().find((u) => u.username === userCookie) || null;
+    if (!(await soloAdmin())) return risposta("Non autorizzato", 403);
 
-    if (!currentUser || currentUser.role !== "admin") {
-        return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
-    }
+    const b = await leggiJson(req);
+    const targetUsername = b && typeof b.targetUsername === "string" ? b.targetUsername : "";
+    const newUsername = b && typeof b.newUsername === "string" ? b.newUsername.trim() : "";
+    const newPassword = b && typeof b.newPassword === "string" ? b.newPassword : "";
+    if (!targetUsername) return risposta("Utente non specificato", 400);
 
-    const { targetUsername, newUsername, newPassword } = await req.json();
+    try {
+        const esiste = await db<{ username: string }[]>(`/utenti?username=${eq(targetUsername)}&select=username`);
+        if (!esiste?.[0]) return risposta("Utente non trovato", 404);
 
-    if (!targetUsername) {
-        return NextResponse.json({ error: "Utente non specificato" }, { status: 400 });
-    }
-
-    const users = getUsers();
-    const index = users.findIndex((u) => u.username === targetUsername);
-
-    if (index === -1) {
-        return NextResponse.json({ error: "Utente non trovato" }, { status: 404 });
-    }
-
-    if (newUsername && newUsername !== targetUsername) {
-        const exists = users.find((u) => u.username === newUsername);
-        if (exists) {
-            return NextResponse.json({ error: "Username già in uso" }, { status: 400 });
+        const patch: Record<string, string> = {};
+        if (newUsername && newUsername !== targetUsername) {
+            if (!USERNAME_OK.test(newUsername)) return risposta("Username non valido (3-32 caratteri: lettere, numeri, _ . -)", 400);
+            const occupato = await db<{ username: string }[]>(`/utenti?username=${eq(newUsername)}&select=username`);
+            if (occupato?.[0]) return risposta("Username già in uso", 400);
+            patch.username = newUsername;
         }
-        users[index].username = newUsername;
-    }
+        if (newPassword.trim().length > 0) {
+            if (newPassword.length < 6) return risposta("Password troppo corta (minimo 6 caratteri)", 400);
+            patch.password_hash = await hashPassword(newPassword);
+        }
+        if (Object.keys(patch).length === 0) return NextResponse.json({ ok: true });
 
-    if (newPassword && newPassword.trim().length > 0) {
-        users[index].password = newPassword;
+        await db(`/utenti?username=${eq(targetUsername)}`, { method: "PATCH", prefer: "return=minimal", body: patch });
+        // cambio password: l'utente viene disconnesso ovunque
+        if (patch.password_hash) await destroyUserSessions(patch.username ?? targetUsername);
+        return NextResponse.json({ ok: true });
+    } catch (e) {
+        return rispostaErrore(e);
     }
-
-    saveUsers(users);
-    return NextResponse.json({ ok: true });
 }
 
-export async function GET(req: NextRequest) {
-    const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user")?.value || null;
-    const currentUser = getUsers().find((u) => u.username === userCookie) || null;
+// Crea un nuovo utente
+export async function PUT(req: NextRequest) {
+    if (!(await soloAdmin())) return risposta("Non autorizzato", 403);
 
-    if (!currentUser || currentUser.role !== "admin") {
-        return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
+    const b = await leggiJson(req);
+    const username = b && typeof b.username === "string" ? b.username.trim() : "";
+    const password = b && typeof b.password === "string" ? b.password : "";
+    const role = b && b.role === "admin" ? "admin" : "user";
+    const avatar = b && typeof b.avatar === "string" && b.avatar.trim() ? b.avatar.trim().slice(0, 200) : "/avatars/Scepter-me13.png";
+
+    if (!USERNAME_OK.test(username)) return risposta("Username non valido (3-32 caratteri: lettere, numeri, _ . -)", 400);
+    if (password.length < 6) return risposta("Password troppo corta (minimo 6 caratteri)", 400);
+
+    try {
+        await db("/utenti", {
+            method: "POST",
+            prefer: "return=minimal",
+            body: { username, password_hash: await hashPassword(password), role, avatar },
+        });
+        return NextResponse.json({ ok: true });
+    } catch (e) {
+        return rispostaErrore(e);
     }
+}
 
-    return NextResponse.json(getUsers());
+export async function GET() {
+    if (!(await soloAdmin())) return risposta("Non autorizzato", 403);
+    try {
+        return NextResponse.json(await getUsers());
+    } catch (e) {
+        return rispostaErrore(e);
+    }
 }
