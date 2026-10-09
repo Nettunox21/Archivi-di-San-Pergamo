@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { getUsers } from "@/auth/users";
+import { getCurrentUser } from "@/auth/users";
 import fs from "fs";
 import path from "path";
 
@@ -45,9 +44,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-    const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user")?.value || null;
-    const currentUser = getUsers().find((u) => u.username === userCookie) || null;
+    const currentUser = await getCurrentUser();
 
     if (!currentUser || currentUser.role !== "admin") {
         return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
