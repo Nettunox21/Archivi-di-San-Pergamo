@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { getUsers } from "@/auth/users";
+import { getCurrentUser } from "@/auth/users";
 
 const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY!;
@@ -19,9 +18,7 @@ async function supabase(path: string, options: RequestInit = {}) {
 }
 
 export async function POST(req: NextRequest) {
-    const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user")?.value || null;
-    const currentUser = getUsers().find((u) => u.username === userCookie) || null;
+    const currentUser = await getCurrentUser();
 
     if (!currentUser) {
         return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
@@ -57,9 +54,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-    const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user")?.value || null;
-    const currentUser = getUsers().find((u) => u.username === userCookie) || null;
+    const currentUser = await getCurrentUser();
 
     if (!currentUser || currentUser.role !== "admin") {
         return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
@@ -71,9 +66,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-    const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user")?.value || null;
-    const currentUser = getUsers().find((u) => u.username === userCookie) || null;
+    const currentUser = await getCurrentUser();
 
     if (!currentUser || currentUser.role !== "admin") {
         return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
