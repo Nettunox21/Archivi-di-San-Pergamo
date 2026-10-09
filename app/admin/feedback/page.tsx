@@ -1,16 +1,16 @@
 import { cookies } from "next/headers";
-import { getUsers } from "@/auth/users";
+import { getCurrentUser, SESSION_COOKIE } from "@/auth/users";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 async function deleteFeedback(id: number) {
     "use server";
     const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user")?.value || null;
+    const token = cookieStore.get(SESSION_COOKIE)?.value || "";
 
     await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/feedback`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json", "Cookie": `user=${userCookie}` },
+        headers: { "Content-Type": "application/json", "Cookie": `${SESSION_COOKIE}=${token}` },
         body: JSON.stringify({ id }),
     });
     revalidatePath("/admin/feedback");
@@ -18,15 +18,15 @@ async function deleteFeedback(id: number) {
 
 export default async function AdminFeedbackPage() {
     const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user")?.value || null;
-    const currentUser = getUsers().find((u) => u.username === userCookie) || null;
+    const token = cookieStore.get(SESSION_COOKIE)?.value || "";
+    const currentUser = await getCurrentUser();
 
     if (!currentUser || currentUser.role !== "admin") {
         redirect("/");
     }
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/feedback`, {
-        headers: { "Cookie": `user=${userCookie}` },
+        headers: { "Cookie": `${SESSION_COOKIE}=${token}` },
         cache: "no-store",
     });
     const feedbacks: { id: number; username: string; tag: string; message: string; date: string }[] =
