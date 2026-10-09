@@ -6,10 +6,10 @@ import path from "path";
 const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY!;
 
-const MAP_SEED = path.join(process.cwd(), "data", "map.json");
+const STATES_SEED = path.join(process.cwd(), "data", "mapStates.json");
 
-async function loadMap() {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/map?id=eq.1`, {
+async function loadStates() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/map_states?id=eq.1`, {
         headers: {
             "apikey": SUPABASE_KEY,
             "Authorization": `Bearer ${SUPABASE_KEY}`,
@@ -20,13 +20,12 @@ async function loadMap() {
     if (rows && rows.length > 0) {
         return rows[0].data;
     }
-    // Fallback al seed locale
-    const raw = fs.readFileSync(MAP_SEED, "utf-8");
+    const raw = fs.readFileSync(STATES_SEED, "utf-8");
     return JSON.parse(raw);
 }
 
-async function saveMap(data: object) {
-    await fetch(`${SUPABASE_URL}/rest/v1/map?id=eq.1`, {
+async function saveStates(data: object) {
+    await fetch(`${SUPABASE_URL}/rest/v1/map_states?id=eq.1`, {
         method: "PATCH",
         headers: {
             "apikey": SUPABASE_KEY,
@@ -39,8 +38,8 @@ async function saveMap(data: object) {
 }
 
 export async function GET() {
-    const map = await loadMap();
-    return NextResponse.json(map);
+    const states = await loadStates();
+    return NextResponse.json(states);
 }
 
 export async function POST(req: NextRequest) {
@@ -51,6 +50,6 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    await saveMap(body);
+    await saveStates(body);
     return NextResponse.json({ ok: true });
 }
