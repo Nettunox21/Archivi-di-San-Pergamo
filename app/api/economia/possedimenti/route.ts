@@ -1,55 +1,62 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/auth/users";
-import fs from "fs";
-import path from "path";
+import { db, eq } from "@/lib/db";
+import { trovaFazione, puoModificare, registra } from "@/lib/economia";
+import { leggiJson, risposta, rispostaErrore, intero } from "@/lib/api";
+import { parseNumero, raggruppa } from "@/lib/numeri";
 
-const SUPABASE_URL = process.env.SUPABASE_URL!;
-const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY!;
+// Imposta la quantità di una risorsa posseduta da una fazione (crea o aggiorna).
+export async function PUT(req: NextRequest) {
+    const user = await getCurrentUser();
+    if (!user) return risposta("Devi accedere", 401);
 
-const STATES_SEED = path.join(process.cwd(), "data", "mapStates.json");
+    const b = await leggiJson(req);
+    if (!b) return risposta("Richiesta non valida", 400);
 
-async function loadStates() {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/map_states?id=eq.1`, {
-        headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`,
-        },
-        cache: "no-store",
-    });
-    const rows = await res.json();
-    if (rows && rows.length > 0) {
-        return rows[0].data;
+    const fazione = typeof b.fazione === "string" ? b.fazione : "";
+    const risorsaId = intero(b.risorsaId);
+    const quantita = parseNumero(b.quantita);
+    if (!trovaFazione(fazione) || !risorsaId) return risposta("Dati non validi", 400);
+    if (quantita === null) return risposta("Quantità non valida (solo numeri interi, max 30 cifre)", 400);
+    if (!(await puoModificare(user, fazione))) return risposta("Non hai i permessi per questa fazione", 403);
+
+    try {
+        const ris = await db<{ nome: string }[]>(`/risorse?id=${eq(risorsaId)}&select=nome`);
+        if (!ris?.[0]) return risposta("Risorsa non trovata", 404);
+
+        await db("/possedimenti?on_conflict=fazione,risorsa_id", {
+            method: "POST",
+            prefer: "resolution=merge-duplicates,return=minimal",
+            body: { fazione, risorsa_id: risorsaId, quantita: quantita.toString() },
+        });
+        await registra(user.username, fazione, "risorsa", `${ris[0].nome}: quantità impostata a ${raggruppa(quantita)}`);
+        return NextResponse.json({ ok: true });
+    } catch (e) {
+        return rispostaErrore(e);
     }
-    const raw = fs.readFileSync(STATES_SEED, "utf-8");
-    return JSON.parse(raw);
 }
 
-async function saveStates(data: object) {
-    await fetch(`${SUPABASE_URL}/rest/v1/map_states?id=eq.1`, {
-        method: "PATCH",
-        headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`,
-            "Content-Type": "application/json",
-            "Prefer": "return=minimal",
-        },
-        body: JSON.stringify({ data }),
-    });
-}
+export async function DELETE(req: NextRequest) {
+    const user = await getCurrentUser();
+    if (!user) return risposta("Devi accedere", 401);
 
-export async function GET() {
-    const states = await loadStates();
-    return NextResponse.json(states);
-}
+    const b = await leggiJson(req);
+    if (!b) return risposta("Richiesta non valida", 400);
 
-export async function POST(req: NextRequest) {
-    const currentUser = await getCurrentUser();
+    const fazione = typeof b.fazione === "string" ? b.fazione : "";
+    const risorsaId = intero(b.risorsaId);
+    if (!trovaFazione(fazione) || !risorsaId) return risposta("Dati non validi", 400);
+    if (!(await puoModificare(user, fazione))) return risposta("Non hai i permessi per questa fazione", 403);
 
-    if (!currentUser || currentUser.role !== "admin") {
-        return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
+    try {
+        const ris = await db<{ nome: string }[]>(`/risorse?id=${eq(risorsaId)}&select=nome`);
+        await db(`/possedimenti?fazione=${eq(fazione)}&risorsa_id=${eq(risorsaId)}`, {
+            method: "DELETE",
+            prefer: "return=minimal",
+        });
+        await registra(user.username, fazione, "risorsa", `${ris?.[0]?.nome ?? "Risorsa"}: rimossa dalla fazione`);
+        return NextResponse.json({ ok: true });
+    } catch (e) {
+        return rispostaErrore(e);
     }
-
-    const body = await req.json();
-    await saveStates(body);
-    return NextResponse.json({ ok: true });
 }
