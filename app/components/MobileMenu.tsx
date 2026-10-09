@@ -58,6 +58,7 @@ export default function MobileMenu({ currentUser }: MobileMenuProps) {
                         <Link href="/" onClick={() => setOpen(false)}>Home</Link>
                         <Link href="/mappa" onClick={() => setOpen(false)}>Mappa</Link>
                         <Link href="/fazioni" onClick={() => setOpen(false)}>Fazioni</Link>
+                        <Link href="/economia" onClick={() => setOpen(false)}>Economia</Link>
                         <Link href="/documenti" onClick={() => setOpen(false)}>Documenti</Link>
                         <Link href="/feedback" onClick={() => setOpen(false)}>Feedback</Link>
                         <Link href="/notizie" onClick={() => setOpen(false)}>Notizie</Link>
