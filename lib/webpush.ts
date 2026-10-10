@@ -17,11 +17,75 @@ export function generaChiaviVapid(): ChiaviVapid {
     return { pubblica: b64u(ecdh.getPublicKey()), privata: b64u(privata) };
 }
 
+/** Ripulisce un valore incollato su Vercel: spazi, virgolette e il prefisso "NOME=" copiato per errore. */
+export function pulisciEnv(valore: string | undefined, nome: string): string {
+    let v = (valore ?? "").trim();
+    if (v.toUpperCase().startsWith(`${nome}=`)) v = v.slice(nome.length + 1).trim();
+    return v.replace(/^["'`]+|["'`]+$/g, "").trim();
+}
+
+const SOGGETTO_PREDEFINITO = "https://archivi-di-san-pergamo.vercel.app";
+
+export type DiagnosiVapid = { valida: boolean; problemi: string[]; avvisi: string[] };
+
+/** Controlla le tre variabili di Vercel e spiega, in italiano, cosa non va. */
+export function diagnosiVapid(): DiagnosiVapid {
+    const problemi: string[] = [];
+    const avvisi: string[] = [];
+    const pub = pulisciEnv(process.env.VAPID_PUBLIC_KEY, "VAPID_PUBLIC_KEY");
+    const priv = pulisciEnv(process.env.VAPID_PRIVATE_KEY, "VAPID_PRIVATE_KEY");
+
+    if (!pub) problemi.push("Manca la variabile VAPID_PUBLIC_KEY su Vercel.");
+    if (!priv) problemi.push("Manca la variabile VAPID_PRIVATE_KEY su Vercel.");
+
+    const bytesPub = pub ? daB64u(pub) : Buffer.alloc(0);
+    const bytesPriv = priv ? daB64u(priv) : Buffer.alloc(0);
+
+    if (pub && !(bytesPub.length === 65 && bytesPub[0] === 4)) {
+        problemi.push(
+            bytesPub.length === 32
+                ? "VAPID_PUBLIC_KEY contiene una chiave di 32 byte: sembra la chiave PRIVATA. Probabilmente le due chiavi sono state scambiate."
+                : `VAPID_PUBLIC_KEY non è valida (${pub.length} caratteri, ne servono 87): ricopiala per intero, senza spazi.`
+        );
+    }
+    if (priv && bytesPriv.length !== 32) {
+        problemi.push(
+            bytesPriv.length === 65
+                ? "VAPID_PRIVATE_KEY contiene una chiave di 65 byte: sembra la chiave PUBBLICA. Probabilmente le due chiavi sono state scambiate."
+                : `VAPID_PRIVATE_KEY non è valida (${priv.length} caratteri, ne servono 43): ricopiala per intero, senza spazi.`
+        );
+    }
+
+    if (problemi.length === 0) {
+        try {
+            const e = createECDH("prime256v1");
+            e.setPrivateKey(bytesPriv);
+            if (!e.getPublicKey().equals(bytesPub)) {
+                problemi.push("VAPID_PUBLIC_KEY e VAPID_PRIVATE_KEY non sono una coppia: vanno copiate dalla stessa generazione di chiavi.");
+            }
+        } catch {
+            problemi.push("VAPID_PRIVATE_KEY non è una chiave valida.");
+        }
+    }
+
+    const sub = pulisciEnv(process.env.VAPID_SUBJECT, "VAPID_SUBJECT");
+    if (sub && !soggettoValido(sub)) {
+        avvisi.push("VAPID_SUBJECT non è valido (serve mailto:tua@email.it, senza segnaposto): uso al suo posto l'indirizzo del sito.");
+    }
+    return { valida: problemi.length === 0, problemi, avvisi };
+}
+
+function soggettoValido(s: string): boolean {
+    if (/TUA-EMAIL|esempio\.it|example\./i.test(s)) return false;
+    return /^mailto:[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s) || /^https:\/\/[^\s/]+/.test(s);
+}
+
 export function configVapid(): (ChiaviVapid & { soggetto: string }) | null {
-    const pubblica = process.env.VAPID_PUBLIC_KEY;
-    const privata = process.env.VAPID_PRIVATE_KEY;
-    if (!pubblica || !privata) return null;
-    const soggetto = process.env.VAPID_SUBJECT || process.env.NEXT_PUBLIC_BASE_URL || "https://archivi-di-san-pergamo.vercel.app";
+    if (!diagnosiVapid().valida) return null;
+    const pubblica = pulisciEnv(process.env.VAPID_PUBLIC_KEY, "VAPID_PUBLIC_KEY");
+    const privata = pulisciEnv(process.env.VAPID_PRIVATE_KEY, "VAPID_PRIVATE_KEY");
+    const sub = pulisciEnv(process.env.VAPID_SUBJECT, "VAPID_SUBJECT");
+    const soggetto = soggettoValido(sub) ? sub : SOGGETTO_PREDEFINITO;
     return { pubblica, privata, soggetto };
 }
 
