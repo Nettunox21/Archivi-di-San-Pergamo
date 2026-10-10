@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/auth/users";
 import { db, eq } from "@/lib/db";
 import { trovaFazione } from "@/lib/economia";
 import { inviaAi, pushConfigurato, trovaDispositivi, type Destinatari } from "@/lib/push";
+import { diagnosiVapid } from "@/lib/webpush";
 import { leggiJson, risposta, rispostaErrore, testo } from "@/lib/api";
 
 async function soloAdmin() {
@@ -15,8 +16,11 @@ export async function GET() {
     if (!(await soloAdmin())) return risposta("Non autorizzato", 403);
     try {
         const righe = await db<{ username: string }[]>("/push_sottoscrizioni?select=username");
+        const diagnosi = diagnosiVapid();
         return NextResponse.json({
             configurato: pushConfigurato(),
+            problemi: diagnosi.problemi,
+            avvisi: diagnosi.avvisi,
             dispositivi: righe.length,
             utenti: new Set(righe.map((r) => r.username)).size,
         });
@@ -28,7 +32,10 @@ export async function GET() {
 // Invia la notifica. Il messaggio NON viene salvato: si risponde solo con il riepilogo dell'invio.
 export async function POST(req: NextRequest) {
     if (!(await soloAdmin())) return risposta("Non autorizzato", 403);
-    if (!pushConfigurato()) return risposta("Notifiche non configurate: mancano le chiavi su Vercel", 503);
+    if (!pushConfigurato()) {
+        const d = diagnosiVapid();
+        return risposta(`Notifiche non configurate correttamente. ${d.problemi.join(" ")}`.trim(), 503);
+    }
 
     const b = await leggiJson(req);
     if (!b) return risposta("Richiesta non valida", 400);
