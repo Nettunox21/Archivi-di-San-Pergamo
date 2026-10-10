@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { fazioniEcon } from "@/lib/fazioni";
 
-type Stato = { configurato: boolean; dispositivi: number; utenti: number };
+type Stato = { configurato: boolean; problemi: string[]; avvisi: string[]; dispositivi: number; utenti: number };
 type Chiavi = { pubblica: string; privata: string };
 
 export default function AdminNotifichePage() {
@@ -89,8 +89,17 @@ export default function AdminNotifichePage() {
                         <span className="admin-date">{stato.dispositivi} dispositivi iscritti ({stato.utenti} utenti)</span>
                     </div>
 
+                    {stato.avvisi?.length > 0 && stato.avvisi.map((a) => <p key={a} className="eco-errore">{a}</p>)}
+
                     {!stato.configurato && (
                         <div className="notif-config">
+                            {stato.problemi?.length > 0 && (
+                                <div className="eco-errore" role="alert">
+                                    <p><strong>La configurazione su Vercel non è corretta:</strong></p>
+                                    <ul>{stato.problemi.map((p) => <li key={p}>{p}</li>)}</ul>
+                                    <p>Sistema le variabili su Vercel (oppure rigenera le chiavi qui sotto) e rifai il deploy.</p>
+                                </div>
+                            )}
                             <p>Prima di inviare serve una configurazione da fare una volta sola:</p>
                             <ol className="notif-passi">
                                 <li>Premi <strong>Genera chiavi</strong> qui sotto.</li>
