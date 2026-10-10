@@ -1,10 +1,12 @@
 import "./globals.css";
 import "./economia.css";
+import "./notifiche.css";
 import Link from "next/link";
 import Image from "next/image";
 import SearchBar from "./components/SearchBar";
 import MobileMenu from "./components/MobileMenu";
 import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
+import NotificheBell from "./components/NotificheBell";
 import { getCurrentUser } from "@/auth/users";
 import type { Metadata, Viewport } from "next";
 
@@ -67,6 +69,7 @@ export default async function RootLayout({
                     <div className="profile">
                         {currentUser ? (
                             <div className="profile-logged">
+                                <NotificheBell />
                                 <span>{currentUser.username}</span>
                                 <Image
                                     src={currentUser.avatar}
@@ -87,6 +90,8 @@ export default async function RootLayout({
                             </Link>
                         )}
                     </div>
+
+                    {currentUser && <NotificheBell className="notif-bell--mobile" />}
 
                     <MobileMenu
                         currentUser={
