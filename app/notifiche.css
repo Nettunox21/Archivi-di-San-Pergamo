@@ -62,3 +62,8 @@
   overflow-wrap: anywhere;
   user-select: all;
 }
+
+.notif-tecnico { font-size: 12px; color: rgba(216, 204, 179, 0.55); overflow-wrap: anywhere; margin: 6px 0 0; }
+.notif-dettagli { margin-top: 14px; font-size: 12px; color: rgba(216, 204, 179, 0.6); }
+.notif-dettagli summary { cursor: pointer; }
+.notif-dettagli pre { margin: 8px 0 0; padding: 10px; background: #151311; border: 1px solid #4f3928; white-space: pre-wrap; overflow-wrap: anywhere; user-select: all; }
