@@ -59,3 +59,57 @@ self.addEventListener("fetch", (event) => {
             .catch(() => caches.match(request).then((cached) => cached || caches.match("/")))
     );
 });
+
+// ---------------------------------------------------------------
+//  Notifiche push: il messaggio arriva, viene mostrato e basta.
+//  Non viene salvato né in cache né sul server.
+// ---------------------------------------------------------------
+self.addEventListener("push", (event) => {
+    let dati = {};
+    try {
+        dati = event.data ? event.data.json() : {};
+    } catch (e) {
+        dati = { body: event.data ? event.data.text() : "" };
+    }
+
+    event.waitUntil(
+        self.registration.showNotification(dati.title || "Archivi di San Pergamo", {
+            body: dati.body || "",
+            icon: "/icons/icon-192.png",
+            badge: "/icons/icon-192.png",
+            data: { url: dati.url || "/" },
+        })
+    );
+});
+
+self.addEventListener("notificationclick", (event) => {
+    event.notification.close();
+
+    let destinazione;
+    try {
+        destinazione = new URL((event.notification.data && event.notification.data.url) || "/", self.location.origin);
+    } catch (e) {
+        return;
+    }
+    if (destinazione.origin !== self.location.origin) return;
+
+    event.waitUntil(
+        (async () => {
+            const finestre = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+            for (const finestra of finestre) {
+                if ("focus" in finestra) {
+                    await finestra.focus();
+                    if ("navigate" in finestra) {
+                        try {
+                            await finestra.navigate(destinazione.href);
+                        } catch (e) {
+                            /* alcuni telefoni non lo permettono: basta aver portato l'app in primo piano */
+                        }
+                    }
+                    return;
+                }
+            }
+            await self.clients.openWindow(destinazione.href);
+        })()
+    );
+});
