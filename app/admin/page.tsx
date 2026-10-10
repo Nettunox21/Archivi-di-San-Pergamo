@@ -34,9 +34,9 @@ const adminSections = [
         href: "/admin/appartenenze",
     },
     {
-        title: "Scepter δ-me13",
+        title: "Notifiche",
         image: "/images/admin-placeholder.jpeg",
-        href: "#",
+        href: "/admin/notifiche",
     },
 ];
 
