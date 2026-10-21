@@ -211,11 +211,7 @@ a.talanton-card:hover {
 .talanton-banner-cta {
   flex: 0 0 auto;
   font-size: 12px;
-  color: #f4ead8;
-  background: #7a5427;
-  border: 1px solid #9b7341;
-  border-radius: 999px;
-  padding: 4px 12px;
+  color: #c8a96e;
 }
 
 @media (max-width: 900px) {
