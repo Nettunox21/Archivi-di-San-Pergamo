@@ -9,6 +9,7 @@ import MobileMenu from "./components/MobileMenu";
 import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
 import NotificheBell from "./components/NotificheBell";
 import TalantonBanner from "./components/TalantonBanner";
+import NascondiSuAziende from "./components/NascondiSuAziende";
 import { getAziendePubblicita } from "@/lib/talanton";
 import { getCurrentUser } from "@/auth/users";
 import type { Metadata, Viewport } from "next";
@@ -44,6 +45,7 @@ export default async function RootLayout({
         <html lang="it">
             <body>
                 <ServiceWorkerRegister />
+                <NascondiSuAziende>
                 <header className="topbar">
                     <Link
                         href={currentUser?.role === "admin" ? "/admin" : "/"}
@@ -107,6 +109,7 @@ export default async function RootLayout({
                     />
                 </header>
                 <TalantonBanner aziende={aziendePubblicita} />
+                </NascondiSuAziende>
                 <main className="container">{children}</main>
             </body>
         </html>
