@@ -130,7 +130,8 @@ a.talanton-card:hover {
 }
 
 /* Bagliore che attraversa il banner ogni 6 secondi */
-.talanton-banner::after {
+.talanton-banner::after,
+.talanton-ad::after {
   content: "";
   position: absolute;
   top: 0;
@@ -165,7 +166,9 @@ a.talanton-card:hover {
 
 @media (prefers-reduced-motion: reduce) {
   .talanton-banner,
-  .talanton-banner::after {
+  .talanton-ad,
+  .talanton-banner::after,
+  .talanton-ad::after {
     animation: none;
   }
 }
@@ -230,5 +233,65 @@ a.talanton-card:hover {
   }
   .talanton-banner-cta {
     display: none;
+  }
+}
+
+/* ---------- Pubblicità con immagine o video ---------- */
+
+.talanton-ad {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  border: 1px solid #6f5335;
+  border-radius: 6px;
+  background: #181c18;
+  color: #e6d4ae;
+  box-shadow: 0 0 0 rgba(230, 212, 174, 0);
+  animation: talanton-pulse 6s ease-in-out infinite;
+}
+
+.talanton-ad:hover {
+  border-color: #c8a96e;
+}
+
+.talanton-ad-label {
+  display: block;
+  padding: 6px 14px 4px;
+}
+
+/* L'immagine/video mantiene sempre il suo ratio: mai stirata né tagliata.
+   Se è troppo alta viene rimpicciolita, se è stretta resta centrata. */
+.talanton-ad-media {
+  display: flex;
+  justify-content: center;
+  background: #0d0b0a;
+}
+
+.talanton-ad-media img,
+.talanton-ad-media video {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 260px;
+}
+
+.talanton-ad-didascalia {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+}
+
+.talanton-ad-testo {
+  font-size: 13px;
+  color: rgba(230, 212, 174, 0.85);
+}
+
+@media (max-width: 600px) {
+  .talanton-ad-media img,
+  .talanton-ad-media video {
+    max-height: 200px;
   }
 }
