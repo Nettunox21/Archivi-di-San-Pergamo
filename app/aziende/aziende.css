@@ -1,0 +1,65 @@
+/* =========================================================
+ *  BASE COMUNE PAGINE AZIENDE (/aziende/...)
+ *  La pagina copre tutto lo schermo e annulla gli stili globali
+ *  del sito (link dorati, titoli con bordo, sfondo scuro...).
+ *  Ogni azienda aggiunge sopra il proprio tema.
+ * ========================================================= */
+
+.az-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow-y: auto;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+.az-shell *,
+.az-shell *::before,
+.az-shell *::after {
+  box-sizing: border-box;
+}
+
+.az-shell a,
+.az-shell a:hover {
+  color: inherit;
+  text-decoration: none;
+  transition: none;
+}
+
+.az-shell h1,
+.az-shell h2,
+.az-shell h3,
+.az-shell h4 {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  letter-spacing: normal;
+}
+
+.az-shell p,
+.az-shell ul,
+.az-shell ol {
+  margin: 0;
+}
+
+.az-shell blockquote {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-style: normal;
+  color: inherit;
+}
+
+.az-shell img {
+  max-width: 100%;
+  height: auto;
+}
+
+.az-shell button,
+.az-shell input,
+.az-shell select {
+  font: inherit;
+}
