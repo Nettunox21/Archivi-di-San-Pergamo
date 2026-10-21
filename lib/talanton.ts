@@ -2,6 +2,13 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
+/* ---------- Formati pubblicitari ---------- */
+
+export type Formato =
+    | { tipo: "banner" }
+    | { tipo: "immagine"; file: string; testo: string; cta: string; alt: string }
+    | { tipo: "video"; file: string; poster: string; testo: string; cta: string };
+
 export type Azienda = {
     slug: string;
     nome: string;
@@ -12,9 +19,19 @@ export type Azienda = {
     link: string;
     /** Logo opzionale: deve stare in /public (es. /images/logo-azienda.png) */
     logo: string;
-    /** Se false l'azienda compare nel portale ma NON nei banner pubblicitari */
-    pubblicita: boolean;
+    /** Formati pubblicitari attivi (vuoto = nessuna pubblicità) */
+    formati: Formato[];
     ordine: number;
+};
+
+/** Versione leggera passata al banner (componente client) */
+export type AziendaPubblicita = {
+    slug: string;
+    nome: string;
+    descrizione: string;
+    link: string;
+    logo: string;
+    formati: Formato[];
 };
 
 const DIR = path.join(process.cwd(), "content/talanton");
@@ -28,17 +45,59 @@ function toBool(v: unknown, predefinito: boolean): boolean {
     return predefinito;
 }
 
+function s(v: unknown): string {
+    return v === undefined || v === null ? "" : String(v);
+}
+
+function leggiFormati(v: unknown, nome: string): Formato[] {
+    // Campo assente: solo banner (come prima)
+    if (v === undefined || v === null || v === "") return [{ tipo: "banner" }];
+    // Vecchio stile: pubblicita: si / no
+    if (typeof v === "boolean" || typeof v === "string") {
+        return toBool(v, true) ? [{ tipo: "banner" }] : [];
+    }
+    if (!Array.isArray(v)) return [{ tipo: "banner" }];
+
+    const out: Formato[] = [];
+    for (const item of v) {
+        const obj: Record<string, unknown> =
+            typeof item === "string" ? { tipo: item } : (item as Record<string, unknown>) ?? {};
+        const tipo = s(obj.tipo).trim().toLowerCase();
+        if (tipo === "banner") {
+            out.push({ tipo: "banner" });
+        } else if (tipo === "immagine" && s(obj.file)) {
+            out.push({
+                tipo: "immagine",
+                file: s(obj.file),
+                testo: s(obj.testo),
+                cta: s(obj.cta),
+                alt: s(obj.alt) || nome,
+            });
+        } else if (tipo === "video" && s(obj.file)) {
+            out.push({
+                tipo: "video",
+                file: s(obj.file),
+                poster: s(obj.poster),
+                testo: s(obj.testo),
+                cta: s(obj.cta),
+            });
+        }
+    }
+    return out;
+}
+
 function leggi(slug: string, raw: string): Azienda {
     const { data } = matter(raw);
+    const nome = s(data.nome) || slug;
     return {
         slug,
-        nome: String(data.nome ?? slug),
-        titolare: String(data.titolare ?? ""),
-        nazione: String(data.nazione ?? ""),
-        descrizione: String(data.descrizione ?? ""),
-        link: String(data.link ?? ""),
-        logo: String(data.logo ?? ""),
-        pubblicita: toBool(data.pubblicita, true),
+        nome,
+        titolare: s(data.titolare),
+        nazione: s(data.nazione),
+        descrizione: s(data.descrizione),
+        link: s(data.link),
+        logo: s(data.logo),
+        formati: leggiFormati(data.pubblicita, nome),
         ordine: Number(data.ordine ?? 0) || 0,
     };
 }
@@ -52,7 +111,20 @@ export function getAziende(): Azienda[] {
         .sort((a, b) => b.ordine - a.ordine || a.nome.localeCompare(b.nome, "it"));
 }
 
-/** Solo le aziende che hanno una pagina collegata e non hanno disattivato la pubblicità. */
-export function getAziendePubblicita(): Azienda[] {
-    return getAziende().filter((a) => a.pubblicita && a.link);
+export function getAzienda(slug: string): Azienda | undefined {
+    return getAziende().find((a) => a.slug === slug);
+}
+
+/** Solo le aziende con una pagina collegata e almeno un formato pubblicitario attivo. */
+export function getAziendePubblicita(): AziendaPubblicita[] {
+    return getAziende()
+        .filter((a) => a.link && a.formati.length > 0)
+        .map((a) => ({
+            slug: a.slug,
+            nome: a.nome,
+            descrizione: a.descrizione,
+            link: a.link,
+            logo: a.logo,
+            formati: a.formati,
+        }));
 }
