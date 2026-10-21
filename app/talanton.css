@@ -110,19 +110,64 @@ a.talanton-card:hover {
 }
 
 .talanton-banner {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 10px 16px;
-  border: 1px solid #4f3928;
+  padding: 12px 18px;
+  border: 1px solid #6f5335;
   border-radius: 6px;
-  background: linear-gradient(90deg, #201815, #151915);
+  background: linear-gradient(90deg, #2a201a, #181c18);
   color: #e6d4ae;
+  box-shadow: 0 0 0 rgba(230, 212, 174, 0);
+  animation: talanton-pulse 6s ease-in-out infinite;
   transition: border-color 0.2s ease;
 }
 
 .talanton-banner:hover {
   border-color: #c8a96e;
+}
+
+/* Bagliore che attraversa il banner ogni 6 secondi */
+.talanton-banner::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -40%;
+  width: 30%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 236, 190, 0.35),
+    transparent
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: talanton-shine 6s ease-in-out infinite;
+}
+
+/* Il passaggio dura circa 1,5 s su 6: poi pausa */
+@keyframes talanton-shine {
+  0%   { left: -40%; }
+  25%  { left: 120%; }
+  100% { left: 120%; }
+}
+
+/* Leggero alone dorato sul bordo, in sincronia con il bagliore */
+@keyframes talanton-pulse {
+  0%   { box-shadow: 0 0 0 rgba(230, 212, 174, 0); border-color: #6f5335; }
+  12%  { box-shadow: 0 0 14px rgba(230, 212, 174, 0.35); border-color: #c8a96e; }
+  30%  { box-shadow: 0 0 0 rgba(230, 212, 174, 0); border-color: #6f5335; }
+  100% { box-shadow: 0 0 0 rgba(230, 212, 174, 0); border-color: #6f5335; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .talanton-banner,
+  .talanton-banner::after {
+    animation: none;
+  }
 }
 
 .talanton-banner-logo {
@@ -151,7 +196,7 @@ a.talanton-card:hover {
 
 .talanton-banner-nome {
   font-family: "Playfair Display", Palatino, Garamond, serif;
-  font-size: 15px;
+  font-size: 16px;
   color: #e6d4ae;
 }
 
@@ -166,7 +211,11 @@ a.talanton-card:hover {
 .talanton-banner-cta {
   flex: 0 0 auto;
   font-size: 12px;
-  color: #c8a96e;
+  color: #f4ead8;
+  background: #7a5427;
+  border: 1px solid #9b7341;
+  border-radius: 999px;
+  padding: 4px 12px;
 }
 
 @media (max-width: 900px) {
