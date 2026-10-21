@@ -1,12 +1,15 @@
 import "./globals.css";
 import "./economia.css";
 import "./notifiche.css";
+import "./talanton.css";
 import Link from "next/link";
 import Image from "next/image";
 import SearchBar from "./components/SearchBar";
 import MobileMenu from "./components/MobileMenu";
 import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
 import NotificheBell from "./components/NotificheBell";
+import TalantonBanner from "./components/TalantonBanner";
+import { getAziendePubblicita } from "@/lib/talanton";
 import { getCurrentUser } from "@/auth/users";
 import type { Metadata, Viewport } from "next";
 
@@ -35,6 +38,7 @@ export default async function RootLayout({
     children: React.ReactNode;
 }) {
     const currentUser = await getCurrentUser();
+    const aziendePubblicita = getAziendePubblicita();
 
     return (
         <html lang="it">
@@ -59,6 +63,7 @@ export default async function RootLayout({
                         <Link href="/mappa">Mappa</Link>
                         <Link href="/fazioni">Fazioni</Link>
                         <Link href="/economia">Economia</Link>
+                        <Link href="/talanton">Portale Talanton</Link>
                         <Link href="/documenti">Documenti</Link>
                         <Link href="/feedback">Feedback</Link>
                         <Link href="/notizie">Notizie</Link>
@@ -101,6 +106,7 @@ export default async function RootLayout({
                         }
                     />
                 </header>
+                <TalantonBanner aziende={aziendePubblicita} />
                 <main className="container">{children}</main>
             </body>
         </html>
