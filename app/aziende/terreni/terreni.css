@@ -1,0 +1,254 @@
+/* Tema "portale immobiliare" */
+
+.imm-root {
+  background: #f3f5f8;
+  color: #1c2733;
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.imm-header {
+  background: #ffffff;
+  border-bottom: 1px solid #dfe4ea;
+}
+
+.imm-header-in {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.imm-logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0b6fb8;
+  letter-spacing: -0.02em;
+}
+
+.imm-logo span {
+  color: #e8590c;
+}
+
+.imm-back {
+  font-size: 13px;
+  color: #5a6b7d;
+}
+
+.imm-back:hover {
+  color: #0b6fb8;
+  text-decoration: underline;
+}
+
+.imm-hero {
+  background: linear-gradient(135deg, #0b6fb8, #0a4f87);
+  color: #ffffff;
+  padding: 48px 20px 64px;
+}
+
+.imm-hero-in {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.imm-hero h1 {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.imm-hero p {
+  margin-top: 8px;
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.imm-search {
+  max-width: 1100px;
+  margin: -34px auto 0;
+  padding: 0 20px;
+}
+
+.imm-search-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 6px 24px rgba(20, 40, 70, 0.14);
+}
+
+.imm-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #5a6b7d;
+  margin-bottom: 6px;
+}
+
+.imm-field select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #c9d2dc;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1c2733;
+  font-size: 15px;
+}
+
+.imm-field select:disabled {
+  background: #eef1f5;
+  color: #8a98a8;
+}
+
+.imm-btn {
+  padding: 12px 28px;
+  border: 0;
+  border-radius: 8px;
+  background: #e8590c;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.imm-btn:hover {
+  background: #cf4d08;
+}
+
+.imm-btn:disabled {
+  background: #c9d2dc;
+  cursor: not-allowed;
+}
+
+.imm-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.imm-vuoto {
+  text-align: center;
+  color: #5a6b7d;
+  padding: 40px 0;
+}
+
+.imm-risultati-titolo {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.imm-zona {
+  margin-bottom: 30px;
+}
+
+.imm-zona-testa {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-bottom: 12px;
+}
+
+.imm-zona-nome {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0b6fb8;
+}
+
+.imm-zona-coord {
+  font-size: 13px;
+  color: #5a6b7d;
+}
+
+.imm-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imm-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #ffffff;
+  border: 1px solid #dfe4ea;
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+
+.imm-card-icona {
+  flex: 0 0 56px;
+  height: 56px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #d9ecfa, #b9dcf5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.imm-card-corpo {
+  flex: 1;
+  min-width: 0;
+}
+
+.imm-card-nome {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.imm-card-meta {
+  font-size: 13px;
+  color: #5a6b7d;
+  margin-top: 2px;
+}
+
+.imm-card-prezzo {
+  flex: 0 0 auto;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 800;
+  color: #e8590c;
+}
+
+.imm-card-prezzo small {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8a98a8;
+}
+
+.imm-footer {
+  border-top: 1px solid #dfe4ea;
+  background: #ffffff;
+  text-align: center;
+  font-size: 12px;
+  color: #8a98a8;
+  padding: 18px 20px;
+}
+
+@media (max-width: 700px) {
+  .imm-search-box {
+    grid-template-columns: 1fr;
+  }
+  .imm-hero h1 {
+    font-size: 26px;
+  }
+  .imm-card {
+    flex-wrap: wrap;
+  }
+  .imm-card-prezzo {
+    flex: 1 0 100%;
+    text-align: left;
+  }
+}
