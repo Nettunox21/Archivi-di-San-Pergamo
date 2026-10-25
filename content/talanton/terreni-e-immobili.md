@@ -8,4 +8,5 @@ logo: ""
 ordine: 5
 pubblicita:
   - tipo: banner
----
+  - tipo: video
+    file: /video/ads/terreni.mp4
