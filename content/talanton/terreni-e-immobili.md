@@ -10,3 +10,4 @@ pubblicita:
   - tipo: banner
   - tipo: video
     file: /video/ads/terreni.mp4
+---
