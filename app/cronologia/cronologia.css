@@ -1,0 +1,358 @@
+/* =========================================================
+ *  LINEA DEL TEMPO (/cronologia)
+ *  File separato: non tocca globals.css.
+ * ========================================================= */
+
+.cron-page {
+  position: relative;
+  isolation: isolate;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px 120px;
+}
+
+/* ---------- Sfondo: anello runico (provvisorio) ---------- */
+
+.cron-ring {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: 150vmax;
+  height: 150vmax;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.17;
+  /* sfuma verso i bordi dell'anello così non si vede il taglio netto */
+  -webkit-mask-image: radial-gradient(circle, #000 55%, transparent 72%);
+  mask-image: radial-gradient(circle, #000 55%, transparent 72%);
+}
+
+.cron-ring svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.cron-ring circle {
+  fill: none;
+  stroke: #c8a96e;
+  stroke-width: 1.5;
+}
+
+.cron-ring .cron-ring-sottile {
+  stroke-width: 0.8;
+}
+
+.cron-ring .cron-ring-tacche {
+  stroke-width: 14;
+  stroke-dasharray: 2 17;
+  opacity: 0.7;
+}
+
+.cron-ring text {
+  fill: #e6d4ae;
+  font-family: "Segoe UI Symbol", "Noto Sans Runic", "Noto Sans Symbols", "Arial Unicode MS", serif;
+}
+
+.cron-runa-grande {
+  font-size: 40px;
+}
+
+.cron-runa-piccola {
+  font-size: 30px;
+}
+
+.cron-ring-a,
+.cron-ring-b {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+
+.cron-ring-a { --giro: 360deg; }
+.cron-ring-b { --giro: -540deg; }
+
+@keyframes cron-gira {
+  to { transform: rotate(var(--giro, 360deg)); }
+}
+
+/* Senza scroll animato: rotazione lentissima continua */
+.cron-ring-a { animation: cron-gira 260s linear infinite; }
+.cron-ring-b { animation: cron-gira 200s linear infinite; }
+
+/* Con scroll animato: gira in base a quanto scorri la pagina */
+@supports (animation-timeline: scroll()) {
+  .cron-ring-a,
+  .cron-ring-b {
+    animation: cron-gira linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* ---------- Intestazione ---------- */
+
+.cron-hero {
+  text-align: center;
+  padding: 60px 10px 30px;
+}
+
+.cron-hero h1 {
+  font-size: 44px;
+  margin: 0 0 10px;
+  color: #f3dfb2;
+  text-shadow: 0 0 14px rgba(0, 0, 0, 0.8), 0 0 30px rgba(200, 169, 110, 0.25);
+}
+
+.cron-hero p {
+  max-width: 560px;
+  margin: 0 auto;
+  color: #d9c7a2;
+  opacity: 0.9;
+}
+
+.cron-vuota {
+  text-align: center;
+  color: #d9c7a2;
+  padding: 60px 0;
+}
+
+/* ---------- Ere ---------- */
+
+.cron-era {
+  margin-top: 70px;
+}
+
+.cron-era-testa {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.cron-era-titolo {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  margin: 0;
+  font-family: "Playfair Display", "Palatino", "Garamond", serif;
+  font-size: 30px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #e6d4ae;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.9);
+}
+
+.cron-era-titolo::before,
+.cron-era-titolo::after {
+  content: "";
+  width: clamp(24px, 8vw, 90px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c8a96e);
+}
+
+.cron-era-titolo::after {
+  transform: scaleX(-1);
+}
+
+.cron-era-desc {
+  margin: 8px auto 0;
+  max-width: 520px;
+  color: #bfae8a;
+  font-style: italic;
+}
+
+/* ---------- Linea e eventi ---------- */
+
+.cron-list {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cron-list::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    #7a5a35 8%,
+    #c8a96e 50%,
+    #7a5a35 92%,
+    transparent
+  );
+  box-shadow: 0 0 10px rgba(200, 169, 110, 0.35);
+}
+
+.cron-item {
+  position: relative;
+  width: 50%;
+  box-sizing: border-box;
+  padding: 0 42px 34px 0;
+  text-align: right;
+  --dx: -40px;
+}
+
+.cron-item:nth-child(even) {
+  margin-left: 50%;
+  padding: 0 0 34px 42px;
+  text-align: left;
+  --dx: 40px;
+}
+
+.cron-dot {
+  position: absolute;
+  top: 6px;
+  right: -8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #151311;
+  border: 2px solid #e6d4ae;
+  box-shadow: 0 0 0 4px rgba(200, 169, 110, 0.15), 0 0 14px rgba(230, 212, 174, 0.6);
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.cron-item:nth-child(even) .cron-dot {
+  right: auto;
+  left: -8px;
+}
+
+.cron-item:hover .cron-dot {
+  transform: scale(1.35);
+  background: #c8a96e;
+}
+
+.cron-etichetta {
+  margin-bottom: 6px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c8a96e;
+}
+
+/* ---------- Card ---------- */
+
+.cron-card {
+  position: relative;
+  display: block;
+  padding: 14px 18px 16px;
+  border: 1px solid #4f3928;
+  border-radius: 10px;
+  background: rgba(32, 24, 21, 0.88);
+  color: #d8ccb3;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.cron-card--link:hover {
+  transform: translateY(-4px);
+  border-color: #c8a96e;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5), 0 0 18px rgba(200, 169, 110, 0.25);
+}
+
+.cron-titolo {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.3;
+  color: #f3dfb2;
+}
+
+.cron-desc {
+  margin: 6px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #bfae8a;
+}
+
+.cron-vai {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: #c8a96e;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.cron-card--link:hover .cron-vai {
+  opacity: 1;
+  transform: none;
+}
+
+.cron-tipo {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid #6f5335;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #d9c7a2;
+  background: rgba(21, 19, 17, 0.7);
+}
+
+.cron-tipo--archivio { border-color: #8a6a3a; }
+.cron-tipo--notizia  { border-color: #a14d3a; color: #e8b9a8; }
+.cron-tipo--documento { border-color: #5d7a55; color: #c3dab9; }
+
+/* ---------- Comparsa allo scroll ---------- */
+
+@keyframes cron-compare {
+  from { opacity: 0; transform: translateX(var(--dx, 0)) translateY(30px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@supports (animation-timeline: view()) {
+  .cron-item {
+    animation: cron-compare linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+}
+
+/* ---------- Mobile: una sola colonna ---------- */
+
+@media (max-width: 760px) {
+  .cron-hero h1 { font-size: 32px; }
+  .cron-era-titolo { font-size: 22px; gap: 10px; }
+
+  .cron-list::before { left: 12px; margin-left: 0; }
+
+  .cron-item,
+  .cron-item:nth-child(even) {
+    width: 100%;
+    margin-left: 0;
+    padding: 0 0 28px 38px;
+    text-align: left;
+    --dx: 30px;
+  }
+
+  .cron-dot,
+  .cron-item:nth-child(even) .cron-dot {
+    left: 5px;
+    right: auto;
+  }
+
+  .cron-vai { opacity: 1; transform: none; }
+}
+
+/* ---------- Animazioni ridotte ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .cron-ring-a,
+  .cron-ring-b,
+  .cron-item {
+    animation: none !important;
+  }
+  .cron-card,
+  .cron-dot,
+  .cron-vai {
+    transition: none;
+  }
+}
