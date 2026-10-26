@@ -50,7 +50,7 @@ export const factions = [
     },
         {
         name: "Abetonia",
-        banner: "/images/Abetonia.jpeg",
+        banner: "/images/Abetonia.png",
         description: "Descrizione breve.",
         info: "Informazioni aggiuntive",
         slug: "Abetonia",
