@@ -48,4 +48,11 @@ export const factions = [
         info: "Informazioni aggiuntive",
         slug: "Calkiria",
     },
+        {
+        name: "Abetonia",
+        banner: "/images/Abetonia.jpeg",
+        description: "Descrizione breve.",
+        info: "Informazioni aggiuntive",
+        slug: "Abetonia",
+    },
 ];
