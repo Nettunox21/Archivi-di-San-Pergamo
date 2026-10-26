@@ -63,6 +63,7 @@ export default function MobileMenu({ currentUser }: MobileMenuProps) {
                         <Link href="/documenti" onClick={() => setOpen(false)}>Documenti</Link>
                         <Link href="/feedback" onClick={() => setOpen(false)}>Feedback</Link>
                         <Link href="/notizie" onClick={() => setOpen(false)}>Notizie</Link>
+                        <Link href="/cronologia" onClick={() => setOpen(false)}>Linea del tempo</Link>
                     </div>
 
                     <div className="mobile-menu-divider" />
