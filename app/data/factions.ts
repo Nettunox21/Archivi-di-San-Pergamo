@@ -29,7 +29,7 @@ export const factions = [
     },
     {
         name: "FIORD",
-        banner: "/images/FIORD.jpeg",
+        banner: "/images/FIORD.png",
         description: "Descrizione breve della fazione.",
         info: "Informazioni aggiuntive",
         slug: "fiord",
