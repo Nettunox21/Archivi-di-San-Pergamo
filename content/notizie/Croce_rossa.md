@@ -1,7 +1,7 @@
 ---
 title: "Avrà un impatto sul nostro mondo?"
 image: "/images/notizie/Croce_rossa.png"
-date: "26 Ottobre, 2499"
+date: "25 Ottobre, 2499"
 location: "Ex-Regno dei Nani"
 reporter: "Cittadino di San Pergamo"
 order: 11
