@@ -43,9 +43,14 @@ export default function HomePage() {
                     L’Ordine ti da il benvenuto
                 </p>
 
-                <Link href="/archivio" className="btn">
-                    Esplora archivio
-                </Link>
+                <div className="wiki-hero-actions">
+                    <Link href="/archivio" className="btn">
+                        Esplora archivio
+                    </Link>
+                    <Link href="/cronologia" className="btn">
+                        Linea del tempo
+                    </Link>
+                </div>
             </header>
 
             <main className="wiki-main">
