@@ -69,6 +69,7 @@ export default async function RootLayout({
                         <Link href="/documenti">Documenti</Link>
                         <Link href="/feedback">Feedback</Link>
                         <Link href="/notizie">Notizie</Link>
+                        <Link href="/cronologia">Linea del tempo</Link>
                     </nav>
                     <div className="search">
                         <SearchBar />
