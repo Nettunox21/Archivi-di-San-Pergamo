@@ -1,5 +1,5 @@
 ---
-title: "Una nuova conquista?"
+title: "Avrà un impatto sul nostro mondo?"
 image: "/images/notizie/Croce_rossa.png"
 date: "26 Ottobre, 2499"
 location: "Ex-Regno dei Nani"
