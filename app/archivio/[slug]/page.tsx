@@ -3,6 +3,7 @@ import path from "path";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { parseWiki } from "@/lib/markdown";
+import "../galleria.css";
 
 marked.setOptions({
     gfm: true,
