@@ -14,6 +14,12 @@ type Raccolta = {
     significato?: string;
 };
 
+type Opera = {
+    immagine: string;
+    titolo?: string;
+    descrizione?: string;
+};
+
 /**
  * Mini-parser YAML "fatto in casa": niente dipendenze esterne.
  * Supporta solo il sottoinsieme che serve all'infobox e ai blocchi wiki:
@@ -146,11 +152,6 @@ function renderRaccolte(items: Raccolta[]): string {
         )
         .join("");
 }
-type Opera = {
-    immagine: string;
-    titolo?: string;
-    descrizione?: string;
-};
 
 /** Galleria scorrevole: immagine, titolo, descrizione. Nessuna indentazione/newline
  *  nell'output (stesso motivo di renderFlagList). */
@@ -290,6 +291,27 @@ export function parseWiki(md: string) {
         if (!items.length) return "";
 
         return `<div class="raccolte-list">${renderRaccolte(items)}</div>`;
+    });
+
+    // 3c. BLOCCO ":::galleria" (galleria scorrevole di opere: immagine, titolo, descrizione)
+    md = md.replace(/:::galleria([\s\S]*?):::/g, (_, content) => {
+        let parsed: any = {};
+        try {
+            parsed = parseSimpleYaml(content) ?? {};
+        } catch (e) {
+            console.error("Errore nel parsing del blocco galleria:", e);
+            return "";
+        }
+
+        const items: Opera[] = Array.isArray(parsed)
+            ? parsed
+            : Array.isArray(parsed.items)
+            ? parsed.items
+            : [];
+
+        if (!items.length) return "";
+
+        return renderGalleria(items);
     });
 
     // 4. NOW PARSE CLEAN MARKDOWN
