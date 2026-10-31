@@ -1,8 +1,8 @@
 :::galleria
-- immagine: /images/opera1.jpg
+- immagine: /images/FalconiaBanner.jpeg
   titolo: Titolo della prima opera
   descrizione: Descrizione della prima opera.
-- immagine: /images/opera2.jpg
+- immagine: /images/SanPergamoBanner.jpeg
   titolo: Titolo della seconda opera
   descrizione: Descrizione della seconda opera.
 :::
