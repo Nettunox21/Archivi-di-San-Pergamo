@@ -1,0 +1,49 @@
+.galleria {
+    max-width: 100%;
+    min-width: 0;
+    margin: 24px 0;
+}
+
+.galleria-track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 14px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #c8a96e #201815;
+}
+
+.galleria-item {
+    flex: 0 0 min(320px, 80%);
+    margin: 0;
+    scroll-snap-align: start;
+    background: #201815;
+    border: 1px solid #4f3928;
+    align-self: flex-start;
+}
+
+.galleria-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid #4f3928;
+}
+
+.galleria-info {
+    padding: 14px 16px 18px;
+}
+
+.galleria-titolo {
+    margin: 0 0 6px;
+    font-family: "Playfair Display", Palatino, Garamond, serif;
+    font-size: 1.15rem;
+    color: #e6d4ae;
+}
+
+.galleria-desc {
+    margin: 0;
+    color: #c8a96e;
+    line-height: 1.55;
+}
