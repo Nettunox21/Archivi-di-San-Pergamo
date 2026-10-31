@@ -146,6 +146,23 @@ function renderRaccolte(items: Raccolta[]): string {
         )
         .join("");
 }
+type Opera = {
+    immagine: string;
+    titolo?: string;
+    descrizione?: string;
+};
+
+/** Galleria scorrevole: immagine, titolo, descrizione. Nessuna indentazione/newline
+ *  nell'output (stesso motivo di renderFlagList). */
+function renderGalleria(items: Opera[]): string {
+    const card = items
+        .map((o) => {
+            const alt = (o.titolo ?? "Opera").replace(/"/g, "&quot;");
+            return `<figure class="galleria-item"><img src="${o.immagine}" alt="${alt}" class="galleria-img" loading="lazy" /><figcaption class="galleria-info">${o.titolo ? `<h3 class="galleria-titolo">${o.titolo}</h3>` : ""}${o.descrizione ? `<p class="galleria-desc">${o.descrizione}</p>` : ""}</figcaption></figure>`;
+        })
+        .join("");
+    return `<div class="galleria"><div class="galleria-track">${card}</div></div>`;
+}
 
 export function parseWiki(md: string) {
     // 1. REMOVE FRONTMATTER
