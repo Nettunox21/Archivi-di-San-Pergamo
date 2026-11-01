@@ -2,18 +2,18 @@ import fs from "fs";
 import path from "path";
 import Link from "next/link";
 import { getDocuments } from "@/lib/documents";
+import { getSlugVisibili } from "@/lib/accesso";
 
-function getArticles() {
+async function getArticles() {
     const dir = path.join(process.cwd(), "content/archivio");
-    const files = fs.readdirSync(dir);
+    const visibili = await getSlugVisibili();
 
-    return files
-        .map((file) => {
-            const filePath = path.join(dir, file);
-            const stats = fs.statSync(filePath);
+    return visibili
+        .map((slug) => {
+            const stats = fs.statSync(path.join(dir, `${slug}.md`));
 
             return {
-                slug: file.replace(".md", ""),
+                slug,
                 created: stats.birthtimeMs,
             };
         })
@@ -30,8 +30,8 @@ function formatSlug(slug: string) {
         .trim();
 }
 
-export default function HomePage() {
-    const articles = getArticles();
+export default async function HomePage() {
+    const articles = await getArticles();
     const documents = getDocuments().slice(0, 3); // anteprima: solo i primi 3
 
     return (
