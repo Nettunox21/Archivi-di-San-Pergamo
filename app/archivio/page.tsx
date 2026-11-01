@@ -1,15 +1,8 @@
-import fs from "fs";
-import path from "path";
 import Link from "next/link";
+import { getSlugVisibili } from "@/lib/accesso";
 
-export default function ArchivioPage() {
-    const dir = path.join(process.cwd(), "content/archivio");
-
-    const files = fs.readdirSync(dir);
-
-    const pages = files
-        .filter(f => f.endsWith(".md"))
-        .map(f => f.replace(".md", ""));
+export default async function ArchivioPage() {
+    const pages = await getSlugVisibili();
 
     return (
         <div className="wiki-container">
