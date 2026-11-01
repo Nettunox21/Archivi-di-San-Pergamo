@@ -1,8 +1,11 @@
 import fs from "fs";
 import path from "path";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { parseWiki } from "@/lib/markdown";
+import { leggiAccesso, puoVedere } from "@/lib/accesso";
+import { getCurrentUser } from "@/auth/users";
 import GalleriaControls from "@/app/components/GalleriaControls";
 import "../galleria.css";
 
@@ -48,6 +51,31 @@ export default async function Page({
         markdown = fs.readFileSync(filePath, "utf-8");
     } catch {
         notFound();
+    }
+
+    // Controllo accesso: il contenuto non viene nemmeno elaborato se non autorizzato
+    const accesso = leggiAccesso(markdown);
+    if (accesso !== null) {
+        const user = await getCurrentUser();
+        if (!puoVedere(accesso, user)) {
+            return (
+                <div className="wiki-container" style={{ textAlign: "center" }}>
+                    <h1>Pagina riservata</h1>
+                    <p className="wiki-subtitle">
+                        {user
+                            ? "Il tuo account non ha accesso a questa pagina."
+                            : "Accedi per verificare se hai accesso a questa pagina."}
+                    </p>
+                    <div style={{ marginTop: 24 }}>
+                        {!user && (
+                            <Link href="/login" className="btn">
+                                Accedi
+                            </Link>
+                        )}
+                    </div>
+                </div>
+            );
+        }
     }
 
     const html = parseWiki(markdown);
