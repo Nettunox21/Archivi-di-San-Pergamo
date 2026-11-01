@@ -3,6 +3,7 @@ import path from "path";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { parseWiki } from "@/lib/markdown";
+import GalleriaControls from "@/app/components/GalleriaControls";
 import "../galleria.css";
 
 marked.setOptions({
@@ -54,5 +55,10 @@ export default async function Page({
     // parseWiki() restituisce già l'intero markup, incluso
     // <div class="wiki-layout"><article class="markdown-content">...</article></div>.
     // Niente wrapper qui, altrimenti si annida due volte (bug del doppio wiki-layout).
-    return <div dangerouslySetInnerHTML={{ __html: html }} />;
+    return (
+        <>
+            <div dangerouslySetInnerHTML={{ __html: html }} />
+            <GalleriaControls />
+        </>
+    );
 }
