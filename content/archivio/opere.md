@@ -5,11 +5,11 @@
 - immagine: /images/connessione_mondi.png
   titolo: Foto di una lavagna dell'istituto
   descrizione: La foto è stata tratta durante un corso di brevettazione per macchina RPM
-  - immagine: /images/Tides_painting.png
+- immagine: /images/Tides_painting.png
   titolo: Tides da Kristoffer Zetterstrand
   descrizione: Il dipinto rappresenta l'arrivo dell'attuale civiltà nelle nuove terre,
 
-  - immagine: /images/connessione_mondi.png
+- immagine: /images/connessione_mondi.png
   titolo: Foto di una lavagna dell'istituto
   descrizione: La foto è stata tratta durante un corso di brevettazione per macchina RPM
 :::
