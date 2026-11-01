@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { leggiAccesso, puoVedere } from "@/lib/accesso";
+import { getCurrentUser } from "@/auth/users";
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
@@ -9,11 +11,16 @@ export async function GET(req: Request) {
     const dir = path.join(process.cwd(), "content/archivio");
     const files = fs.readdirSync(dir);
 
+    const user = await getCurrentUser();
+
     const results = files
         .map((file) => {
             const slug = file.replace(".md", "");
             const filePath = path.join(dir, file);
             const raw = fs.readFileSync(filePath, "utf8");
+
+            // Le pagine riservate non compaiono nei risultati (né titolo né contenuto)
+            if (!puoVedere(leggiAccesso(raw), user)) return null;
 
             const { data, content } = matter(raw);
 
