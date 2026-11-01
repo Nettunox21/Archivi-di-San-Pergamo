@@ -1,3 +1,5 @@
+accesso: Luigi
+
 :::galleria
 - immagine: /images/minecraft_painting_2003.jpg
   titolo: Dipinto astratto
