@@ -155,14 +155,22 @@ function renderRaccolte(items: Raccolta[]): string {
 
 /** Galleria scorrevole: immagine, titolo, descrizione. Nessuna indentazione/newline
  *  nell'output (stesso motivo di renderFlagList). */
+/** Galleria a carosello: un'opera alla volta (immagine, titolo, descrizione).
+ *  Nessuna indentazione/newline nell'output (stesso motivo di renderFlagList). */
 function renderGalleria(items: Opera[]): string {
-    const card = items
+    const slides = items
         .map((o) => {
             const alt = (o.titolo ?? "Opera").replace(/"/g, "&quot;");
-            return `<figure class="galleria-item"><img src="${o.immagine}" alt="${alt}" class="galleria-img" loading="lazy" /><figcaption class="galleria-info">${o.titolo ? `<h3 class="galleria-titolo">${o.titolo}</h3>` : ""}${o.descrizione ? `<p class="galleria-desc">${o.descrizione}</p>` : ""}</figcaption></figure>`;
+            return `<figure class="galleria-slide"><div class="galleria-frame"><img src="${o.immagine}" alt="${alt}" class="galleria-img" /></div><figcaption class="galleria-info">${o.titolo ? `<h3 class="galleria-titolo">${o.titolo}</h3>` : ""}${o.descrizione ? `<p class="galleria-desc">${o.descrizione}</p>` : ""}</figcaption></figure>`;
         })
         .join("");
-    return `<div class="galleria"><div class="galleria-track">${card}</div></div>`;
+
+    const nav =
+        items.length > 1
+            ? `<div class="galleria-nav"><button type="button" class="galleria-btn" data-dir="-1" aria-label="Opera precedente">&#8249;</button><span class="galleria-count">1 / ${items.length}</span><button type="button" class="galleria-btn" data-dir="1" aria-label="Opera successiva">&#8250;</button></div>`
+            : "";
+
+    return `<div class="galleria"><div class="galleria-track">${slides}</div>${nav}</div>`;
 }
 
 export function parseWiki(md: string) {
