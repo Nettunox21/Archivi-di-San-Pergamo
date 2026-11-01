@@ -1,49 +1,110 @@
-.galleria {
-    max-width: 100%;
+/* Evita che la galleria allarghi la colonna (causa del bug su telefono) */
+.markdown-content:has(.galleria) {
+    flex: 1 1 0;
     min-width: 0;
+    width: 100%;
+}
+
+.galleria {
+    width: 100%;
+    max-width: 100%;
     margin: 24px 0;
 }
 
 .galleria-track {
     display: flex;
-    gap: 20px;
     overflow-x: auto;
-    padding-bottom: 14px;
     scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: #c8a96e #201815;
-}
-
-.galleria-item {
-    flex: 0 0 min(320px, 80%);
-    margin: 0;
-    scroll-snap-align: start;
+    scrollbar-width: none;
     background: #201815;
     border: 1px solid #4f3928;
-    align-self: flex-start;
 }
 
-.galleria-img {
-    display: block;
+.galleria-track::-webkit-scrollbar {
+    display: none;
+}
+
+.galleria-slide {
+    flex: 0 0 100%;
     width: 100%;
-    height: auto;
+    box-sizing: border-box;
+    margin: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+}
+
+.galleria-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: clamp(240px, 55vh, 520px);
+    background: #0f0d0b;
     border-bottom: 1px solid #4f3928;
 }
 
-.galleria-info {
-    padding: 14px 16px 18px;
+.galleria .galleria-img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0;
+    object-fit: contain;
+    border-radius: 0;
 }
 
-.galleria-titolo {
-    margin: 0 0 6px;
+.galleria-info {
+    padding: 16px 18px 20px;
+    text-align: center;
+}
+
+.galleria .galleria-titolo {
+    margin: 0 0 8px;
     font-family: "Playfair Display", Palatino, Garamond, serif;
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     color: #e6d4ae;
 }
 
-.galleria-desc {
+.galleria .galleria-desc {
     margin: 0;
     color: #c8a96e;
-    line-height: 1.55;
+    line-height: 1.6;
+}
+
+.galleria-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 12px;
+}
+
+.galleria-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #58412d;
+    background: #201815;
+    color: #e6d4ae;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0 3px;
+}
+
+.galleria-btn:hover {
+    background: #2d221b;
+    border-color: #c8a96e;
+}
+
+.galleria-count {
+    min-width: 56px;
+    text-align: center;
+    color: #c8a96e;
+    font-size: 0.95rem;
 }
