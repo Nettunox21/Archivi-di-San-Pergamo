@@ -77,7 +77,7 @@
   place-items: center;
   font-size: 26px;
   color: #fff;
-  background: var(--tt-rosso);
+  background: #000000;
   clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
   box-shadow: 0 0 18px var(--tt-rosso);
 }
