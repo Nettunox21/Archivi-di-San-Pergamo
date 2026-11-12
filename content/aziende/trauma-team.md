@@ -16,37 +16,34 @@
 # Bronzo
 prezzo: Da definire
 durata: Da definire
-Copertura di base per chi vuole almeno un piano d'emergenza.
-- Intervento di un'unità medica entro 30 minuti
-- Stabilizzazione sul posto
-- Una chiamata d'emergenza al giorno
+Piano base
+- Lorem ipsum
+- Lorem ipsum
+- Lorem ipsum
 
 # Argento
 prezzo: Da definire
 durata: Da definire
-Il giusto compromesso tra costo e sicurezza.
-- Intervento entro 15 minuti
-- Stabilizzazione e trasporto in clinica
-- Chiamate d'emergenza illimitate
+Piano meh
+- Lorem ipsum
+- Lorem ipsum
+- Lorem ipsum
 
 # Oro
 prezzo: Da definire
 durata: Da definire
-Priorità sulle chiamate e personale specializzato.
-- Intervento entro 7 minuti
-- Équipe medica completa con trasporto aereo
-- Cure in clinica incluse
-- Linea prioritaria dedicata
+Piano alto
+- Lorem ipsum
+- Lorem ipsum
+- Lorem ipsum
 
 # Platino
 prezzo: Da definire
 durata: Da definire
-Il livello più alto: nessuna attesa, nessun compromesso.
-- Intervento entro 3 minuti
-- Squadra di recupero armata
-- Trasporto aereo blindato
-- Cure e ricostruzione complete
-- Linea riservata attiva 24 ore su 24
+Piano molto alto
+- Lorem ipsum
+- Lorem ipsum
+- Lorem ipsum
 
 # Secure your Soul
 tipo: programma
