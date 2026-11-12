@@ -82,6 +82,12 @@
   box-shadow: 0 0 18px var(--tt-rosso);
 }
 
+.tt-cross-img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+
 .tt-brand-nome {
   font-weight: 700;
   font-size: 26px;
