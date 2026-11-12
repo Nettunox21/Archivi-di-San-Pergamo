@@ -1,6 +1,6 @@
 ---
 title: Annessione Sanctum Imperum
-image: /images/VonProfitPollice.png
+raccolta: Il Papa (capovolto)
 background: /new_old_paper.png
 description: "Seguente alla sconfitta segnata da Arstozka, Predecessore del Priore"
 ---
