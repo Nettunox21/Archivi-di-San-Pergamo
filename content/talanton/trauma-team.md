@@ -8,4 +8,6 @@ logo: ""
 ordine: 3
 pubblicita:
   - tipo: banner
+  - tipo: immagine
+    file: /images/ads/trauma-team-ad1.jpeg
 ---
