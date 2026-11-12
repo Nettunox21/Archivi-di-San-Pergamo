@@ -102,7 +102,7 @@ export default function TraumaTeamClient({
             <main className="tt-main">
                 <div className="tt-titolo">
                     <h1>
-                        <span>//</span> Scegli il tuo livello di copertura
+                        <span>{"//"}</span> Scegli il tuo livello di copertura
                     </h1>
                 </div>
 
