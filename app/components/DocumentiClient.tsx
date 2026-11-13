@@ -1,119 +1,152 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
-import { marked } from "marked";
+"use client";
 
-export type WikiDocument = {
-    slug: string;
-    title: string;
-    /** Titolo della raccolta a cui appartiene (campo "raccolta" nel frontmatter) */
-    raccolta: string;
-    /** Immagine della raccolta: è l'unica immagine della card (il campo "image" nei documenti non esiste più) */
-    image: string;
-    /** Immagine di sfondo mostrata dietro il testo nella modale */
-    background: string;
-    description: string;
-    /** Testo diviso in pagine (una stringa HTML per pagina) */
-    pages: string[];
-};
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import type { WikiDocument } from "@/lib/documents";
 
-const DOCS_DIR = path.join(process.cwd(), "content/documenti");
-const RACCOLTE_FILE = path.join(process.cwd(), "content/documenti-help.md");
+export default function DocumentiClient({ documents }: { documents: WikiDocument[] }) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
-// Separatore di pagina da usare nel corpo del .md: una riga con scritto ":::pagina:::"
-const PAGE_BREAK = /\r?\n\s*:::pagina:::\s*\r?\n/;
+    const [query, setQuery] = useState("");
+    const [selected, setSelected] = useState<WikiDocument | null>(null);
+    const [pageIndex, setPageIndex] = useState(0);
 
-function splitIntoPages(content: string): string[] {
-    return content
-        .split(PAGE_BREAK)
-        .map((chunk) => chunk.trim())
-        .filter((chunk) => chunk.length > 0)
-        .map((chunk) => marked.parse(chunk) as string);
-}
+    // Se si arriva da un link tipo /documenti?doc=slug (da un articolo wiki),
+    // apre automaticamente la modale del documento corrispondente
+    useEffect(() => {
+        const docParam = searchParams.get("doc");
+        if (!docParam) return;
 
-/** Normalizza un titolo per confrontarlo (minuscole, niente accenti/apostrofi/parentesi) */
-function norm(s: string): string {
-    return s
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/\(.*?\)/g, "")
-        .replace(/[^a-z0-9]+/g, " ")
-        .trim();
-}
-
-type RaccoltaInfo = { titolo: string; immagine: string };
-
-/** Legge titolo + immagine di ogni raccolta dal blocco :::raccolte di documenti-help.md */
-function loadRaccolte(): RaccoltaInfo[] {
-    if (!fs.existsSync(RACCOLTE_FILE)) return [];
-
-    const raw = fs.readFileSync(RACCOLTE_FILE, "utf-8").replace(/\r\n/g, "\n");
-    const block = raw.match(/:::raccolte([\s\S]*?):::/);
-    if (!block) return [];
-
-    const result: RaccoltaInfo[] = [];
-    let current: Partial<RaccoltaInfo> | null = null;
-
-    for (const line of block[1].split("\n")) {
-        const img = line.match(/^\s*-\s*immagine:\s*(.+?)\s*$/);
-        if (img) {
-            if (current?.titolo && current.immagine) result.push(current as RaccoltaInfo);
-            current = { immagine: img[1] };
-            continue;
+        const found = documents.find((d) => d.slug === docParam);
+        if (found) {
+            setSelected(found);
+            setPageIndex(0);
         }
-        const tit = line.match(/^\s*titolo:\s*(.+?)\s*$/);
-        if (tit && current) current.titolo = tit[1];
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams, documents]);
+
+    const filtered = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        if (!q) return documents;
+        return documents.filter((d) =>
+            (d.title + " " + d.description).toLowerCase().includes(q)
+        );
+    }, [documents, query]);
+
+    function openDocument(doc: WikiDocument) {
+        setSelected(doc);
+        setPageIndex(0);
     }
-    if (current?.titolo && current.immagine) result.push(current as RaccoltaInfo);
 
-    return result;
-}
+    function closeDocument() {
+        setSelected(null);
+        // pulisce l'URL da ?doc=... senza ricaricare la pagina
+        if (searchParams.get("doc")) {
+            router.replace("/documenti");
+        }
+    }
 
-function findRaccolta(nome: string, raccolte: RaccoltaInfo[]): RaccoltaInfo | null {
-    if (!nome) return null;
-    const n = norm(nome);
+    const totalPages = selected?.pages.length ?? 0;
+
     return (
-        raccolte.find((r) => norm(r.titolo) === n) ??
-        // tollera "Il Papa" al posto di "Il Papa (capovolto)"
-        raccolte.find((r) => norm(r.titolo).startsWith(n) || n.startsWith(norm(r.titolo))) ??
-        null
+        <div className="documenti-wrapper">
+            <div className="documenti-search">
+                <input
+                    type="text"
+                    placeholder="Cerca nei documenti..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                />
+            </div>
+
+            <div className="documenti-grid">
+                {filtered.map((doc) => (
+                    <button
+                        key={doc.slug}
+                        className="document-card"
+                        onClick={() => openDocument(doc)}
+                    >
+                        <div className="document-banner">
+                            {doc.image && (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={doc.image} alt={doc.title} />
+                            )}
+                            <div className="document-banner-overlay" />
+                        </div>
+                        <div className="document-info">
+                            <h3 className="document-title">{doc.title}</h3>
+                            <p className="document-description">{doc.description}</p>
+                        </div>
+                    </button>
+                ))}
+
+                {filtered.length === 0 && (
+                    <p className="documenti-empty">Nessun documento trovato.</p>
+                )}
+            </div>
+
+            {selected && (
+                <div className="document-modal-backdrop" onClick={closeDocument}>
+                    {/* Rettangolo STONDATO esterno: nessuna immagine, solo cornice/tema */}
+                    <div className="document-modal" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            className="document-modal-close"
+                            onClick={closeDocument}
+                            aria-label="Chiudi documento"
+                        >
+                            ✕
+                        </button>
+
+                        {/* Rettangolo NORMALE interno: qui va lo sfondo */}
+                        <div
+                            className="document-modal-panel"
+                            style={{
+                                backgroundImage: selected.background
+                                    ? `url(${selected.background})`
+                                    : undefined,
+                            }}
+                        >
+                            <div className="document-modal-scrim" />
+
+                            <div className="document-modal-content">
+                                <h2 className="document-modal-title">{selected.title}</h2>
+
+                                <div
+                                    className="document-modal-text"
+                                    dangerouslySetInnerHTML={{
+                                        __html: selected.pages[pageIndex] ?? "",
+                                    }}
+                                />
+                            </div>
+
+                            {totalPages > 1 && (
+                                <div className="document-modal-pagination">
+                                    <button
+                                        onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+                                        disabled={pageIndex === 0}
+                                        aria-label="Pagina precedente"
+                                    >
+                                        ‹
+                                    </button>
+                                    <span>
+                                        Pagina {pageIndex + 1} di {totalPages}
+                                    </span>
+                                    <button
+                                        onClick={() =>
+                                            setPageIndex((p) => Math.min(totalPages - 1, p + 1))
+                                        }
+                                        disabled={pageIndex === totalPages - 1}
+                                        aria-label="Pagina successiva"
+                                    >
+                                        ›
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
-}
-
-function readDocument(slug: string, raw: string, raccolte: RaccoltaInfo[]): WikiDocument {
-    const { data, content } = matter(raw);
-    const nomeRaccolta = typeof data.raccolta === "string" ? data.raccolta : "";
-    const raccolta = findRaccolta(nomeRaccolta, raccolte);
-
-    return {
-        slug,
-        title: data.title ?? slug,
-        raccolta: raccolta?.titolo ?? nomeRaccolta,
-        image: raccolta?.immagine ?? "",
-        background: data.background ?? "",
-        description: data.description ?? "",
-        pages: splitIntoPages(content),
-    };
-}
-
-export function getDocuments(): WikiDocument[] {
-    if (!fs.existsSync(DOCS_DIR)) return [];
-
-    const raccolte = loadRaccolte();
-    const files = fs.readdirSync(DOCS_DIR).filter((f) => f.endsWith(".md"));
-
-    return files.map((file) => {
-        const slug = file.replace(/\.md$/, "");
-        const raw = fs.readFileSync(path.join(DOCS_DIR, file), "utf-8");
-        return readDocument(slug, raw, raccolte);
-    });
-}
-
-export function getDocument(slug: string): WikiDocument | null {
-    const filePath = path.join(DOCS_DIR, `${slug}.md`);
-    if (!fs.existsSync(filePath)) return null;
-
-    const raw = fs.readFileSync(filePath, "utf-8");
-    return readDocument(slug, raw, loadRaccolte());
 }
