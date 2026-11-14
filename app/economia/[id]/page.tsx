@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/auth/users";
 import {
-    caricaEconomia, caricaRegistro, calcolaFarm, fazioniEcon, mappaValori,
+    caricaEconomia, calcolaFarm, fazioniEcon, mappaValori,
     patrimonioFazione, patrimonioMondiale, puoModificareDa, trovaFazione, type Ruolo,
 } from "@/lib/economia";
 import { elencoDocumenti } from "@/lib/economiaDocs";
@@ -12,6 +12,19 @@ import { Euro, GraficoFarm, Quantita, Torta, type Fetta } from "@/app/components
 import EconomiaEditor from "@/app/components/EconomiaEditor";
 
 export const dynamic = "force-dynamic";
+
+function ElencoVoci({ voci, nomi }: { voci: { risorsaId: number; quantita: bigint }[]; nomi: Map<number, string> }) {
+    return (
+        <>
+            {voci.map((x, i) => (
+                <span key={x.risorsaId}>
+                    {i > 0 ? ", " : ""}
+                    <Quantita v={x.quantita} /> {nomi.get(x.risorsaId) ?? "?"}
+                </span>
+            ))}
+        </>
+    );
+}
 
 const ETICHETTA_RUOLO: Record<Ruolo, string> = { sovrano: "Sovrano", vice: "Vice", civile: "Civili" };
 
@@ -49,7 +62,6 @@ export default async function EconomiaFazionePage({ params }: { params: Promise<
     const membri = dati.appartenenze.filter((a) => a.fazione === id);
 
     const puoModificare = puoModificareDa(user, id, dati.appartenenze);
-    const registro = puoModificare ? await caricaRegistro(id) : [];
 
     return (
         <div className="eco-pagina">
@@ -145,27 +157,25 @@ export default async function EconomiaFazionePage({ params }: { params: Promise<
                             const c = calcolaFarm(f, valori);
                             return (
                                 <article key={f.id} className="eco-farm">
-                                    <h3>{f.nome}</h3>
+                                    <h3>
+                                        {f.nome} <span className={`eco-badge${f.passiva ? " eco-badge-passiva" : ""}`}>{f.passiva ? "Passiva" : "Attiva"}</span>
+                                    </h3>
                                     {f.descrizione && <p className="eco-farm-desc">{f.descrizione}</p>}
                                     <p>
-                                        Produce <Quantita v={f.prodottoQuantita} /> {nomeRisorsa.get(f.prodottoId) ?? "?"} ogni{" "}
-                                        <strong>{formatTempo(f.tempoSecondi)}</strong>.
+                                        {f.passiva ? "Produce da sola, ogni " : "A ogni utilizzo ("}
+                                        <strong>{formatTempo(f.tempoSecondi)}</strong>
+                                        {f.passiva ? ": " : ") produce: "}
+                                        <ElencoVoci voci={f.prodotti} nomi={nomeRisorsa} />.
                                     </p>
                                     <p className="eco-farm-costi">
-                                        Costo per utilizzo:{" "}
-                                        {f.costi.length === 0
-                                            ? "nessuno"
-                                            : f.costi.map((x, i) => (
-                                                  <span key={x.risorsaId}>
-                                                      {i > 0 ? ", " : ""}
-                                                      <Quantita v={x.quantita} /> {nomeRisorsa.get(x.risorsaId) ?? "?"}
-                                                  </span>
-                                              ))}
+                                        Costo {f.passiva ? "a ogni ciclo" : "a ogni utilizzo"}:{" "}
+                                        {f.costi.length === 0 ? "nessuno" : <ElencoVoci voci={f.costi} nomi={nomeRisorsa} />}
                                     </p>
                                     <p className="eco-farm-profitto">
-                                        Profitto per utilizzo: <Euro v={c.profitto} segno /> · all&apos;ora: <Euro v={c.profittoOra} segno />
+                                        Profitto {f.passiva ? "a ogni ciclo" : "a ogni utilizzo"}: <Euro v={c.profitto} segno /> · all&apos;ora: <Euro v={c.profittoOra} segno />
+                                        {f.passiva && <> · al giorno: <Euro v={c.profittoGiorno} segno /></>}
                                     </p>
-                                    <GraficoFarm ricavo={c.ricavo} costo={c.costo} tempoSecondi={f.tempoSecondi} />
+                                    <GraficoFarm ricavo={c.ricavo} costo={c.costo} tempoSecondi={f.tempoSecondi} passiva={f.passiva} />
                                 </article>
                             );
                         })}
@@ -212,9 +222,9 @@ export default async function EconomiaFazionePage({ params }: { params: Promise<
                         id: f.id,
                         nome: f.nome,
                         descrizione: f.descrizione,
-                        prodottoId: f.prodottoId,
-                        prodottoQuantita: f.prodottoQuantita.toString(),
+                        passiva: f.passiva,
                         tempoSecondi: f.tempoSecondi,
+                        prodotti: f.prodotti.map((c) => ({ risorsaId: c.risorsaId, quantita: c.quantita.toString() })),
                         costi: f.costi.map((c) => ({ risorsaId: c.risorsaId, quantita: c.quantita.toString() })),
                     }))}
                     scambi={scambi.map((s) => ({
@@ -225,13 +235,6 @@ export default async function EconomiaFazionePage({ params }: { params: Promise<
                     }))}
                     altreFazioni={fazioniEcon.filter((f) => f.id !== id).map((f) => ({ id: f.id, name: f.name }))}
                     documenti={elencoDocumenti()}
-                    registro={registro.map((v) => ({
-                        id: v.id,
-                        username: v.username,
-                        azione: v.azione,
-                        dettaglio: v.dettaglio,
-                        quando: new Date(v.creatoIl).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "short" }),
-                    }))}
                 />
             )}
         </div>
