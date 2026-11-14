@@ -1,5 +1,5 @@
 ---
-nome: Carote d'Oro
+nome: Karrot
 titolare: SkeMma720
 nazione: ""
 descrizione: "Carote d'oro fresche, al miglior prezzo: uno smeraldo ogni 32 carote. Anche a domicilio."
