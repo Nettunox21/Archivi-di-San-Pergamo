@@ -1,10 +1,9 @@
 ## Dove trovarci
 
-- **Regno:** da definire
-- **Zona:** da definire
+- **Regno:** San Pergamo
+- **Zona:** Mercato Centrale, nei pressi di Piazza Pergamo
 - **Coordinate:** x ___ z ___
-- **Orari:** da definire
+- **Orari:** Servizio in sede disponibile 24/7
 
-Non puoi venire di persona? Richiedi la consegna a domicilio dal pulsante in alto.
-
-*Testo di esempio: sostituiscilo con le informazioni vere.*
+Non puoi venire di persona? Impegnato a espandere il regno?
+Richiedi la consegna a domicilio dal pulsante in alto.
