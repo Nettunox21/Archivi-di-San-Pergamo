@@ -4,7 +4,7 @@ import Link from "next/link";
 import { marked } from "marked";
 import "../aziende.css";
 import "./carote-doro.css";
-import { getConfigCarote, getDoveCarote, getRegolamentoCarote } from "@/lib/carote-doro";
+import { getConfigCarote, getDoveCarote, getRegolamentoCarote, getScorteCarote } from "@/lib/carote-doro";
 import { getAzienda } from "@/lib/talanton";
 import { getCurrentUser } from "@/auth/users";
 import CaroteDoroClient from "./CaroteDoroClient";
@@ -21,6 +21,7 @@ const html = (md: string) => marked.parse(md) as string;
 export default async function CaroteDoroPage() {
     const cfg = getConfigCarote();
     const azienda = getAzienda("carote-doro");
+    const scorte = await getScorteCarote(cfg);
     const utente = await getCurrentUser();
     const haLogo = fs.existsSync(path.join(process.cwd(), "public", LOGO));
 
@@ -50,6 +51,8 @@ export default async function CaroteDoroPage() {
 
             <CaroteDoroClient
                 prezzo={{ smeraldi: cfg.smeraldi, carote: cfg.carote }}
+                scorte={scorte}
+                stackSize={cfg.stack}
                 storiaHtml={html(cfg.storia)}
                 doveHtml={html(getDoveCarote())}
                 regolamentoHtml={html(getRegolamentoCarote())}

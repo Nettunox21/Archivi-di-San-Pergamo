@@ -233,6 +233,37 @@
   margin-bottom: 16px !important;
 }
 
+/* ---------- Disponibilità (quadrati) ---------- */
+
+.cd-quadrati {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+
+.cd-gruppo {
+  display: flex;
+  gap: 4px;
+}
+
+.cd-quadrato {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  background: var(--cd-bg);
+  border: 1px solid var(--cd-bordo);
+}
+
+.cd-quadrato--acceso {
+  background: var(--cd-carota);
+  border-color: var(--cd-ottone);
+  box-shadow: 0 0 8px rgba(226, 135, 60, 0.65);
+}
+
+.cd-scorte .cd-calc-nota {
+  margin-bottom: 0 !important;
+}
+
 /* ---------- Calcolatore ---------- */
 
 .cd-calc-griglia {
@@ -500,6 +531,13 @@
   }
   .cd-card {
     padding: 20px 18px;
+  }
+  .cd-quadrato {
+    width: 15px;
+    height: 15px;
+  }
+  .cd-quadrati {
+    gap: 8px 12px;
   }
   .cd-modal {
     padding: 26px 18px 20px;

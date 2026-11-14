@@ -21,12 +21,16 @@ const plurale = (n: number, uno: string, molti: string) => (n === 1 ? uno : molt
 
 export default function CaroteDoroClient({
     prezzo,
+    scorte,
+    stackSize,
     storiaHtml,
     doveHtml,
     regolamentoHtml,
     utente,
 }: {
     prezzo: { smeraldi: number; carote: number };
+    scorte: { stack: number; massimo: number; pieno: boolean } | null;
+    stackSize: number;
     storiaHtml: string;
     doveHtml: string;
     regolamentoHtml: string;
@@ -124,6 +128,38 @@ export default function CaroteDoroClient({
                         <span className="cd-prezzo-num">{prezzo.carote}</span>
                         <span className="cd-prezzo-unita">carote d&apos;oro</span>
                     </div>
+                </section>
+
+                {/* ---- Disponibilità ---- */}
+                <section className="cd-card cd-scorte">
+                    <h2 className="cd-titolo">Disponibilità</h2>
+                    {scorte ? (
+                        <>
+                            <div
+                                className="cd-quadrati"
+                                role="img"
+                                aria-label={`${scorte.stack}${scorte.pieno ? " o più" : ""} stack disponibili`}
+                            >
+                                {Array.from({ length: Math.ceil(scorte.massimo / 4) }, (_, g) => (
+                                    <div className="cd-gruppo" key={g}>
+                                        {Array.from({ length: 4 }, (_, k) => g * 4 + k)
+                                            .filter((i) => i < scorte.massimo)
+                                            .map((i) => (
+                                                <span key={i} className={`cd-quadrato ${i < scorte.stack ? "cd-quadrato--acceso" : ""}`} />
+                                            ))}
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="cd-calc-nota">
+                                {scorte.stack === 0
+                                    ? "Al momento le scorte sono esaurite."
+                                    : `${scorte.pieno ? `${scorte.massimo}+` : scorte.stack} ${plurale(scorte.stack, "stack", "stack")} disponibili`}
+                                {" · "}1 quadrato = 1 stack ({stackSize} carote)
+                            </p>
+                        </>
+                    ) : (
+                        <p className="cd-calc-nota">La disponibilità non è consultabile al momento.</p>
+                    )}
                 </section>
 
                 {/* ---- Calcolatore ---- */}
