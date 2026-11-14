@@ -2,22 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inParole, parseNumero } from "@/lib/numeri";
+import { MAX_CIFRE, inParole, parseNumero, raggruppa } from "@/lib/numeri";
 
 type Risorsa = { id: number; nome: string; valore: string };
 type Possedimento = { risorsaId: number; quantita: string };
-type Costo = { risorsaId: number; quantita: string };
+type Voce = { risorsaId: number; quantita: string };
 type FarmDati = {
     id: number;
     nome: string;
     descrizione: string;
-    prodottoId: number;
-    prodottoQuantita: string;
+    passiva: boolean;
     tempoSecondi: number;
-    costi: Costo[];
+    prodotti: Voce[];
+    costi: Voce[];
 };
 type ScambioDati = { id: number; con: string; descrizione: string; data: string };
-type VoceRegistro = { id: number; username: string; azione: string; dettaglio: string; quando: string };
 
 type Props = {
     fazione: { id: string; name: string };
@@ -27,8 +26,14 @@ type Props = {
     scambi: ScambioDati[];
     altreFazioni: { id: string; name: string }[];
     documenti: { slug: string; title: string }[];
-    registro: VoceRegistro[];
 };
+
+type Modo = "imposta" | "aggiungi" | "sottrai";
+const MODI: { v: Modo; nome: string }[] = [
+    { v: "aggiungi", nome: "Aggiungi" },
+    { v: "sottrai", nome: "Sottrai" },
+    { v: "imposta", nome: "Imposta" },
+];
 
 const UNITA_TEMPO = [
     { nome: "secondi", s: 1 },
@@ -58,14 +63,128 @@ function CampoNumero({
     );
 }
 
+/** Risultato di un'operazione sulla quantità, calcolato nel browser solo per l'anteprima. */
+function calcolaNuovo(attuale: bigint, modo: Modo, importo: bigint | null): { nuovo: bigint | null; errore: string | null } {
+    if (importo === null) return { nuovo: null, errore: null };
+    if (modo === "imposta") return { nuovo: importo, errore: null };
+    if (modo === "aggiungi") {
+        const n = attuale + importo;
+        return n.toString().length > MAX_CIFRE
+            ? { nuovo: null, errore: `Il risultato supera il limite di ${MAX_CIFRE} cifre` }
+            : { nuovo: n, errore: null };
+    }
+    return importo > attuale
+        ? { nuovo: null, errore: "Non puoi sottrarre più di quello che la fazione possiede" }
+        : { nuovo: attuale - importo, errore: null };
+}
+
+/** Scelta Aggiungi / Sottrai / Imposta, importo e anteprima "Attuale → Nuovo". */
+function ModificaQuantita({
+    attuale, disabilitato, etichetta, onApplica,
+}: {
+    attuale: bigint;
+    disabilitato?: boolean;
+    etichetta?: string;
+    onApplica: (modo: Modo, importo: string) => Promise<boolean>;
+}) {
+    const [modo, setModo] = useState<Modo>("aggiungi");
+    const [importo, setImporto] = useState("");
+    const n = parseNumero(importo);
+    const { nuovo, errore } = calcolaNuovo(attuale, modo, n);
+
+    return (
+        <div className="eco-quantita">
+            <div className="eco-modi" role="group" aria-label="Come modificare la quantità">
+                {MODI.map((m) => (
+                    <button
+                        key={m.v}
+                        type="button"
+                        className={modo === m.v ? "is-attivo" : ""}
+                        aria-pressed={modo === m.v}
+                        onClick={() => setModo(m.v)}
+                    >
+                        {m.nome}
+                    </button>
+                ))}
+            </div>
+            <div className="eco-form-riga">
+                <CampoNumero value={importo} onChange={setImporto} placeholder={modo === "imposta" ? "Nuova quantità" : "Quantità"} />
+                <button
+                    className="admin-user-save-btn"
+                    disabled={disabilitato || n === null || errore !== null}
+                    onClick={async () => {
+                        if (await onApplica(modo, importo)) setImporto("");
+                    }}
+                >
+                    {etichetta ?? "Applica"}
+                </button>
+            </div>
+            <small className={errore ? "eco-errore" : "eco-anteprima"}>
+                {errore ?? (
+                    <>
+                        Attuale: <b title={raggruppa(attuale)}>{inParole(attuale)}</b>
+                        {nuovo !== null && (
+                            <> → Nuova: <b title={raggruppa(nuovo)}>{inParole(nuovo)}</b></>
+                        )}
+                    </>
+                )}
+            </small>
+        </div>
+    );
+}
+
+/** Elenco di righe (risorsa + quantità) per produzione e costi delle farm. */
+function ListaVoci({
+    voci, setVoci, risorse, aggiungi, minimo = 0,
+}: {
+    voci: { risorsaId: string; quantita: string }[];
+    setVoci: (v: { risorsaId: string; quantita: string }[]) => void;
+    risorse: Risorsa[];
+    aggiungi: string;
+    minimo?: number;
+}) {
+    return (
+        <>
+            {voci.map((c, i) => (
+                <div key={i} className="eco-form-riga">
+                    <select
+                        className="admin-user-input"
+                        value={c.risorsaId}
+                        onChange={(e) => setVoci(voci.map((x, j) => (j === i ? { ...x, risorsaId: e.target.value } : x)))}
+                    >
+                        <option value="">Scegli una risorsa…</option>
+                        {risorse.map((r) => <option key={r.id} value={r.id}>{r.nome}</option>)}
+                    </select>
+                    <CampoNumero
+                        value={c.quantita}
+                        onChange={(v) => setVoci(voci.map((x, j) => (j === i ? { ...x, quantita: v } : x)))}
+                    />
+                    {voci.length > minimo && (
+                        <button type="button" className="admin-delete-btn" onClick={() => setVoci(voci.filter((_, j) => j !== i))}>
+                            Togli
+                        </button>
+                    )}
+                </div>
+            ))}
+            <button type="button" className="admin-user-save-btn" onClick={() => setVoci([...voci, { risorsaId: "", quantita: "" }])}>
+                {aggiungi}
+            </button>
+        </>
+    );
+}
+
 export default function EconomiaEditor(props: Props) {
-    const { fazione, risorse, possedimenti, farm, scambi, altreFazioni, documenti, registro } = props;
+    const { fazione, risorse, possedimenti, farm, scambi, altreFazioni, documenti } = props;
     const router = useRouter();
-    const [scheda, setScheda] = useState<"risorse" | "farm" | "scambi" | "registro">("risorse");
+    const [scheda, setScheda] = useState<"risorse" | "farm" | "scambi">("risorse");
     const [msg, setMsg] = useState<{ testo: string; ok: boolean } | null>(null);
     const [occupato, setOccupato] = useState(false);
 
     const nomeRisorsa = (id: number) => risorse.find((r) => r.id === id)?.nome ?? "?";
+    const attualeDi = (id: number | null): bigint => {
+        const q = possedimenti.find((p) => p.risorsaId === id)?.quantita;
+        return (q ? parseNumero(q) : null) ?? 0n;
+    };
 
     async function chiama(metodo: string, url: string, body: unknown, okMsg: string): Promise<boolean> {
         setOccupato(true);
@@ -95,19 +214,16 @@ export default function EconomiaEditor(props: Props) {
 
     /* ---------- Risorse ---------- */
     const [nuovaRis, setNuovaRis] = useState<string>("");
-    const [nuovaQta, setNuovaQta] = useState("");
-    const [modifiche, setModifiche] = useState<Record<number, string>>({});
 
-    async function impostaRisorsa(risorsaId: number, quantita: string) {
-        const ok = await chiama("PUT", "/api/economia/possedimenti", { fazione: fazione.id, risorsaId, quantita }, "Quantità salvata");
-        if (ok) {
-            setModifiche((m) => {
-                const c = { ...m };
-                delete c[risorsaId];
-                return c;
-            });
-        }
-        return ok;
+    const MSG_MODO: Record<Modo, string> = {
+        imposta: "Quantità impostata",
+        aggiungi: "Quantità aggiunta",
+        sottrai: "Quantità sottratta",
+    };
+
+    function modificaQuantita(risorsaId: number) {
+        return (modo: Modo, quantita: string) =>
+            chiama("PUT", "/api/economia/possedimenti", { fazione: fazione.id, risorsaId, quantita, modo }, MSG_MODO[modo]);
     }
 
     /* ---------- Farm ---------- */
@@ -115,15 +231,16 @@ export default function EconomiaEditor(props: Props) {
         id: number | null;
         nome: string;
         descrizione: string;
-        prodottoId: string;
-        prodottoQuantita: string;
+        passiva: boolean;
         tempoValore: string;
         tempoUnita: number;
+        prodotti: { risorsaId: string; quantita: string }[];
         costi: { risorsaId: string; quantita: string }[];
     };
     const bozzaVuota = (): Bozza => ({
-        id: null, nome: "", descrizione: "", prodottoId: "", prodottoQuantita: "",
-        tempoValore: "", tempoUnita: 60, costi: [],
+        id: null, nome: "", descrizione: "", passiva: false,
+        tempoValore: "", tempoUnita: 60,
+        prodotti: [{ risorsaId: "", quantita: "" }], costi: [],
     });
     const [bozza, setBozza] = useState<Bozza | null>(null);
 
@@ -133,13 +250,18 @@ export default function EconomiaEditor(props: Props) {
             id: f.id,
             nome: f.nome,
             descrizione: f.descrizione,
-            prodottoId: String(f.prodottoId),
-            prodottoQuantita: f.prodottoQuantita,
+            passiva: f.passiva,
             tempoValore: String(f.tempoSecondi / unita.s),
             tempoUnita: unita.s,
+            prodotti: f.prodotti.map((c) => ({ risorsaId: String(c.risorsaId), quantita: c.quantita })),
             costi: f.costi.map((c) => ({ risorsaId: String(c.risorsaId), quantita: c.quantita })),
         });
     }
+
+    const vociValide = (v: { risorsaId: string; quantita: string }[]) =>
+        v
+            .filter((c) => c.risorsaId && parseNumero(c.quantita) !== null && parseNumero(c.quantita) !== 0n)
+            .map((c) => ({ risorsaId: Number(c.risorsaId), quantita: c.quantita }));
 
     async function salvaFarm() {
         if (!bozza) return;
@@ -150,12 +272,10 @@ export default function EconomiaEditor(props: Props) {
             fazione: fazione.id,
             nome: bozza.nome,
             descrizione: bozza.descrizione,
-            prodottoId: Number(bozza.prodottoId),
-            prodottoQuantita: bozza.prodottoQuantita,
+            passiva: bozza.passiva,
             tempoSecondi,
-            costi: bozza.costi
-                .filter((c) => c.risorsaId && c.quantita)
-                .map((c) => ({ risorsaId: Number(c.risorsaId), quantita: c.quantita })),
+            prodotti: vociValide(bozza.prodotti),
+            costi: vociValide(bozza.costi),
         };
         const ok = await chiama(bozza.id ? "PUT" : "POST", "/api/economia/farm", payload, bozza.id ? "Farm aggiornata" : "Farm creata");
         if (ok) setBozza(null);
@@ -181,7 +301,7 @@ export default function EconomiaEditor(props: Props) {
             <p className="eco-sotto">Sei sovrano o vice di questa fazione: puoi modificare risorse, farm e scambi.</p>
 
             <div className="eco-schede" role="tablist">
-                {(["risorse", "farm", "scambi", "registro"] as const).map((s) => (
+                {(["risorse", "farm", "scambi"] as const).map((s) => (
                     <button
                         key={s}
                         role="tab"
@@ -189,7 +309,7 @@ export default function EconomiaEditor(props: Props) {
                         className={scheda === s ? "is-attiva" : ""}
                         onClick={() => { setScheda(s); setMsg(null); }}
                     >
-                        {s === "risorse" ? "Risorse" : s === "farm" ? "Farm" : s === "scambi" ? "Scambi" : "Registro"}
+                        {s === "risorse" ? "Risorse" : s === "farm" ? "Farm" : "Scambi"}
                     </button>
                 ))}
             </div>
@@ -199,53 +319,43 @@ export default function EconomiaEditor(props: Props) {
             {scheda === "risorse" && (
                 <div className="eco-pannello">
                     <h3>Aggiungi o aggiorna una risorsa</h3>
-                    <div className="eco-form-riga">
+                    <div className="eco-form-colonna">
                         <select className="admin-user-input" value={nuovaRis} onChange={(e) => setNuovaRis(e.target.value)}>
                             <option value="">Scegli una risorsa…</option>
                             {risorse.map((r) => <option key={r.id} value={r.id}>{r.nome}</option>)}
                         </select>
-                        <CampoNumero value={nuovaQta} onChange={setNuovaQta} placeholder="Quantità" />
-                        <button
-                            className="admin-user-save-btn"
-                            disabled={occupato || !nuovaRis || parseNumero(nuovaQta) === null}
-                            onClick={async () => {
-                                if (await impostaRisorsa(Number(nuovaRis), nuovaQta)) { setNuovaRis(""); setNuovaQta(""); }
-                            }}
-                        >
-                            Imposta
-                        </button>
+                        <ModificaQuantita
+                            key={nuovaRis}
+                            attuale={attualeDi(nuovaRis ? Number(nuovaRis) : null)}
+                            disabilitato={occupato || !nuovaRis}
+                            onApplica={(modo, q) => modificaQuantita(Number(nuovaRis))(modo, q)}
+                        />
                     </div>
                     {risorse.length === 0 && <p className="eco-vuoto">Il catalogo è vuoto: l&apos;admin deve prima creare le risorse.</p>}
 
                     <h3>Risorse possedute</h3>
                     {possedimenti.length === 0 && <p className="eco-vuoto">Nessuna risorsa.</p>}
                     <ul className="eco-lista-edit">
-                        {possedimenti.map((p) => {
-                            const valore = modifiche[p.risorsaId] ?? p.quantita;
-                            return (
-                                <li key={p.risorsaId}>
-                                    <strong>{nomeRisorsa(p.risorsaId)}</strong>
-                                    <CampoNumero value={valore} onChange={(v) => setModifiche((m) => ({ ...m, [p.risorsaId]: v }))} />
-                                    <button
-                                        className="admin-user-save-btn"
-                                        disabled={occupato || valore === p.quantita || parseNumero(valore) === null}
-                                        onClick={() => impostaRisorsa(p.risorsaId, valore)}
-                                    >
-                                        Salva
-                                    </button>
-                                    <button
-                                        className="admin-delete-btn"
-                                        disabled={occupato}
-                                        onClick={() => {
-                                            if (confirm(`Rimuovere ${nomeRisorsa(p.risorsaId)} dalla fazione?`))
-                                                chiama("DELETE", "/api/economia/possedimenti", { fazione: fazione.id, risorsaId: p.risorsaId }, "Risorsa rimossa");
-                                        }}
-                                    >
-                                        Rimuovi
-                                    </button>
-                                </li>
-                            );
-                        })}
+                        {possedimenti.map((p) => (
+                            <li key={p.risorsaId}>
+                                <strong>{nomeRisorsa(p.risorsaId)}</strong>
+                                <ModificaQuantita
+                                    attuale={attualeDi(p.risorsaId)}
+                                    disabilitato={occupato}
+                                    onApplica={modificaQuantita(p.risorsaId)}
+                                />
+                                <button
+                                    className="admin-delete-btn"
+                                    disabled={occupato}
+                                    onClick={() => {
+                                        if (confirm(`Rimuovere ${nomeRisorsa(p.risorsaId)} dalla fazione?`))
+                                            chiama("DELETE", "/api/economia/possedimenti", { fazione: fazione.id, risorsaId: p.risorsaId }, "Risorsa rimossa");
+                                    }}
+                                >
+                                    Rimuovi
+                                </button>
+                            </li>
+                        ))}
                     </ul>
                 </div>
             )}
@@ -259,7 +369,9 @@ export default function EconomiaEditor(props: Props) {
                                 {farm.map((f) => (
                                     <li key={f.id}>
                                         <strong>{f.nome}</strong>
-                                        <span className="eco-sotto">produce {nomeRisorsa(f.prodottoId)}</span>
+                                        <span className="eco-sotto">
+                                            {f.passiva ? "passiva" : "attiva"} · produce {f.prodotti.map((p) => nomeRisorsa(p.risorsaId)).join(", ") || "—"}
+                                        </span>
                                         <button className="admin-user-save-btn" onClick={() => modificaFarm(f)}>Modifica</button>
                                         <button
                                             className="admin-delete-btn"
@@ -287,16 +399,25 @@ export default function EconomiaEditor(props: Props) {
                             <label>Descrizione (facoltativa)
                                 <input className="admin-user-input" maxLength={300} value={bozza.descrizione} onChange={(e) => setBozza({ ...bozza, descrizione: e.target.value })} />
                             </label>
-                            <label>Cosa produce
-                                <select className="admin-user-input" value={bozza.prodottoId} onChange={(e) => setBozza({ ...bozza, prodottoId: e.target.value })}>
-                                    <option value="">Scegli una risorsa…</option>
-                                    {risorse.map((r) => <option key={r.id} value={r.id}>{r.nome}</option>)}
-                                </select>
-                            </label>
-                            <label>Quantità prodotta per utilizzo
-                                <CampoNumero value={bozza.prodottoQuantita} onChange={(v) => setBozza({ ...bozza, prodottoQuantita: v })} />
-                            </label>
-                            <label>Tempo di produzione
+
+                            <div>
+                                <span className="eco-etichetta">Tipo di farm</span>
+                                <div className="eco-modi" role="group" aria-label="Tipo di farm">
+                                    <button type="button" className={!bozza.passiva ? "is-attivo" : ""} aria-pressed={!bozza.passiva} onClick={() => setBozza({ ...bozza, passiva: false })}>
+                                        Attiva
+                                    </button>
+                                    <button type="button" className={bozza.passiva ? "is-attivo" : ""} aria-pressed={bozza.passiva} onClick={() => setBozza({ ...bozza, passiva: true })}>
+                                        Passiva
+                                    </button>
+                                </div>
+                                <small className="eco-anteprima">
+                                    {bozza.passiva
+                                        ? "Produce da sola, senza che il giocatore faccia nulla."
+                                        : "Serve il giocatore: ogni produzione richiede un utilizzo."}
+                                </small>
+                            </div>
+
+                            <label>{bozza.passiva ? "Ogni quanto completa un ciclo" : "Quanto dura un utilizzo"}
                                 <span className="eco-form-riga">
                                     <input
                                         className="admin-user-input" inputMode="decimal" value={bozza.tempoValore}
@@ -308,29 +429,32 @@ export default function EconomiaEditor(props: Props) {
                                 </span>
                             </label>
 
-                            <h3>Costi per ogni utilizzo</h3>
-                            {bozza.costi.map((c, i) => (
-                                <div key={i} className="eco-form-riga">
-                                    <select
-                                        className="admin-user-input" value={c.risorsaId}
-                                        onChange={(e) => setBozza({ ...bozza, costi: bozza.costi.map((x, j) => (j === i ? { ...x, risorsaId: e.target.value } : x)) })}
-                                    >
-                                        <option value="">Scegli una risorsa…</option>
-                                        {risorse.map((r) => <option key={r.id} value={r.id}>{r.nome}</option>)}
-                                    </select>
-                                    <CampoNumero
-                                        value={c.quantita}
-                                        onChange={(v) => setBozza({ ...bozza, costi: bozza.costi.map((x, j) => (j === i ? { ...x, quantita: v } : x)) })}
-                                    />
-                                    <button className="admin-delete-btn" onClick={() => setBozza({ ...bozza, costi: bozza.costi.filter((_, j) => j !== i) })}>Togli</button>
-                                </div>
-                            ))}
-                            <button className="admin-user-save-btn" onClick={() => setBozza({ ...bozza, costi: [...bozza.costi, { risorsaId: "", quantita: "" }] })}>+ Aggiungi costo</button>
+                            <h3>{bozza.passiva ? "Cosa produce a ogni ciclo" : "Cosa produce a ogni utilizzo"}</h3>
+                            <ListaVoci
+                                voci={bozza.prodotti}
+                                setVoci={(v) => setBozza({ ...bozza, prodotti: v })}
+                                risorse={risorse}
+                                aggiungi="+ Aggiungi prodotto"
+                                minimo={1}
+                            />
+
+                            <h3>{bozza.passiva ? "Costi a ogni ciclo" : "Costi a ogni utilizzo"}</h3>
+                            <p className="eco-sotto">Lascia vuoto se la farm non costa nulla.</p>
+                            <ListaVoci
+                                voci={bozza.costi}
+                                setVoci={(v) => setBozza({ ...bozza, costi: v })}
+                                risorse={risorse}
+                                aggiungi="+ Aggiungi costo"
+                            />
 
                             <div className="eco-form-riga">
                                 <button
                                     className="admin-user-save-btn"
-                                    disabled={occupato || !bozza.nome.trim() || !bozza.prodottoId || parseNumero(bozza.prodottoQuantita) === null || !(Number(bozza.tempoValore.replace(",", ".")) > 0)}
+                                    disabled={
+                                        occupato || !bozza.nome.trim() ||
+                                        vociValide(bozza.prodotti).length === 0 ||
+                                        !(Number(bozza.tempoValore.replace(",", ".")) > 0)
+                                    }
                                     onClick={salvaFarm}
                                 >
                                     Salva farm
@@ -393,20 +517,6 @@ export default function EconomiaEditor(props: Props) {
                                 >
                                     Elimina
                                 </button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-
-            {scheda === "registro" && (
-                <div className="eco-pannello">
-                    <h3>Ultime modifiche</h3>
-                    {registro.length === 0 && <p className="eco-vuoto">Nessuna modifica registrata.</p>}
-                    <ul className="eco-registro">
-                        {registro.map((v) => (
-                            <li key={v.id}>
-                                <time>{v.quando}</time> <strong>{v.username}</strong> — {v.dettaglio}
                             </li>
                         ))}
                     </ul>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { eurInParole, formatEuro, formatPercento, formatTempo, inParole, percento, raggruppa } from "@/lib/numeri";
+import { eurInParole, formatEuro, formatPercento, formatTempo, inParole, percento, perPeriodo, raggruppa } from "@/lib/numeri";
 
 /* Grafici in SVG/CSS puro, calcolati sul server: nessuna libreria. */
 
@@ -108,34 +108,50 @@ export function Barre({ dati }: { dati: Fetta[] }) {
     );
 }
 
-/** Ricavo e costo della farm a 1, 2, 3 utilizzi (unico grafico temporale del sito). */
+/**
+ * Ricavo e costo della farm (unico grafico temporale del sito).
+ * Farm attiva: a 1, 2, 3 utilizzi. Farm passiva: dopo 1, 7 e 30 giorni.
+ */
 export function GraficoFarm({
-    ricavo, costo, tempoSecondi, utilizzi = 3,
-}: { ricavo: bigint; costo: bigint; tempoSecondi: number; utilizzi?: number }) {
+    ricavo, costo, tempoSecondi, passiva,
+}: { ricavo: bigint; costo: bigint; tempoSecondi: number; passiva: boolean }) {
+    const punti = passiva
+        ? [1, 7, 30].map((g) => ({
+              etichetta: g === 1 ? "1 giorno" : `${g} giorni`,
+              sotto: "",
+              ric: perPeriodo(ricavo, tempoSecondi, 86400 * g),
+              cos: perPeriodo(costo, tempoSecondi, 86400 * g),
+          }))
+        : [1, 2, 3].map((n) => ({
+              etichetta: `${n}×`,
+              sotto: formatTempo(tempoSecondi * n),
+              ric: ricavo * BigInt(n),
+              cos: costo * BigInt(n),
+          }));
+
     const W = 300, H = 130, base = 112, alto = 14;
-    const maxVal = (ricavo > costo ? ricavo : costo) * BigInt(utilizzi);
+    const maxVal = punti.reduce((m, p) => (p.ric > m ? p.ric : p.cos > m ? p.cos : m), 0n);
     const h = (v: bigint) => (maxVal === 0n ? 0 : (Number((v * 10000n) / maxVal) / 10000) * (base - alto));
-    const passo = W / utilizzi;
+    const passo = W / punti.length;
     const larg = Math.min(34, passo / 3);
 
     return (
         <div className="eco-farm-grafico">
-            <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Ricavo e costo a 1, 2 e 3 utilizzi">
+            <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={passiva ? "Ricavo e costo dopo 1, 7 e 30 giorni" : "Ricavo e costo a 1, 2 e 3 utilizzi"}>
                 <line x1="0" y1={base} x2={W} y2={base} stroke="rgba(200,169,110,0.35)" />
-                {Array.from({ length: utilizzi }, (_, i) => {
-                    const n = BigInt(i + 1);
+                {punti.map((p, i) => {
                     const cx = passo * i + passo / 2;
-                    const hr = h(ricavo * n), hc = h(costo * n);
+                    const hr = h(p.ric), hc = h(p.cos);
                     return (
                         <g key={i}>
                             <rect x={cx - larg - 2} y={base - hr} width={larg} height={hr} fill={PALETTE[0]}>
-                                <title>{`Ricavo: ${formatEuro(ricavo * n)}`}</title>
+                                <title>{`Ricavo: ${formatEuro(p.ric)}`}</title>
                             </rect>
                             <rect x={cx + 2} y={base - hc} width={larg} height={hc} fill={PALETTE[1]}>
-                                <title>{`Costo: ${formatEuro(costo * n)}`}</title>
+                                <title>{`Costo: ${formatEuro(p.cos)}`}</title>
                             </rect>
-                            <text x={cx} y={base + 13} textAnchor="middle" className="eco-svg-t">{i + 1}×</text>
-                            <text x={cx} y={base + 24} textAnchor="middle" className="eco-svg-t eco-svg-t2">{formatTempo(tempoSecondi * (i + 1))}</text>
+                            <text x={cx} y={base + 13} textAnchor="middle" className="eco-svg-t">{p.etichetta}</text>
+                            {p.sotto && <text x={cx} y={base + 24} textAnchor="middle" className="eco-svg-t eco-svg-t2">{p.sotto}</text>}
                         </g>
                     );
                 })}
@@ -145,17 +161,14 @@ export function GraficoFarm({
             </p>
             <table className="eco-mini">
                 <tbody>
-                    {Array.from({ length: utilizzi }, (_, i) => {
-                        const n = BigInt(i + 1);
-                        return (
-                            <tr key={i}>
-                                <th>{i + 1}×</th>
-                                <td><Euro v={ricavo * n} /></td>
-                                <td><Euro v={costo * n} /></td>
-                                <td><Euro v={(ricavo - costo) * n} segno /></td>
-                            </tr>
-                        );
-                    })}
+                    {punti.map((p, i) => (
+                        <tr key={i}>
+                            <th>{p.etichetta}</th>
+                            <td><Euro v={p.ric} /></td>
+                            <td><Euro v={p.cos} /></td>
+                            <td><Euro v={p.ric - p.cos} segno /></td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>
