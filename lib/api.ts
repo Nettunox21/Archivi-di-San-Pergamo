@@ -11,6 +11,8 @@ export function rispostaErrore(e: unknown) {
         if (e.code === "23514" || e.code === "22P02") return risposta("Valore non valido", 400);
         if (e.code === "env") return risposta(e.message, 500);
         if (e.code === "PGRST205" || e.code === "42P01") return risposta("Tabelle mancanti: esegui economia.sql su Supabase", 500);
+        if (e.code === "PGRST204" || e.code === "PGRST200" || e.code === "42703")
+            return risposta("Database non aggiornato: esegui economia-farm-v2.sql su Supabase", 500);
     }
     console.error(e);
     return risposta("Errore del server", 500);

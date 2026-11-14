@@ -1,6 +1,6 @@
 // Numeri enormi (triliardi e oltre): tutto in BigInt, salvato come testo di sole cifre.
-// Scala lunga italiana: miliardo = 10^9, bilione = 10^12, biliardo = 10^15,
-// trilione = 10^18, triliardo = 10^21, quadrilione = 10^24 ...
+// Nomi all'italiana: milione = 10^6, miliardo = 10^9; poi "mille miliardi" (10^12),
+// "milione di miliardi" (10^15), "miliardo di miliardi" (10^18), triliardo = 10^21 ...
 
 export const MAX_CIFRE = 30;
 
@@ -29,15 +29,14 @@ export const formatEuro = (n: bigint) => `${raggruppa(n)} €`;
 
 const UNITA: [bigint, string, string][] = [
     [10n ** 6n, "milione", "milioni"],
+    // da 10^9 a 10^15 si resta in miliardi: 10^12 diventa "1.000 miliardi" (mille miliardi)
     [10n ** 9n, "miliardo", "miliardi"],
-    [10n ** 12n, "bilione", "bilioni"],
-    [10n ** 15n, "biliardo", "biliardi"],
-    [10n ** 18n, "trilione", "trilioni"],
+    [10n ** 15n, "milione di miliardi", "milioni di miliardi"],
+    [10n ** 18n, "miliardo di miliardi", "miliardi di miliardi"],
     [10n ** 21n, "triliardo", "triliardi"],
     [10n ** 24n, "quadrilione", "quadrilioni"],
     [10n ** 27n, "quadriliardo", "quadriliardi"],
     [10n ** 30n, "quintilione", "quintilioni"],
-    [10n ** 33n, "quintiliardo", "quintiliardi"],
 ];
 
 /** Forma compatta a parole: 3250000000000000000000 -> "3,25 triliardi". Sotto il milione resta in cifre. */
@@ -68,6 +67,10 @@ export function percento(parte: bigint, totale: bigint): number {
 export function formatPercento(p: number): string {
     return `${p.toLocaleString("it-IT", { maximumFractionDigits: 1 })}%`;
 }
+
+/** Porta un importo riferito a un utilizzo/ciclo su un periodo più lungo (arrotondato per difetto). */
+export const perPeriodo = (importo: bigint, tempoSecondi: number, periodoSecondi: number): bigint =>
+    tempoSecondi > 0 ? (importo * BigInt(periodoSecondi)) / BigInt(tempoSecondi) : 0n;
 
 /** 5400 -> "1 h 30 min" */
 export function formatTempo(secondi: number): string {

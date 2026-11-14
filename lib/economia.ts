@@ -1,5 +1,5 @@
 import { db, eq } from "@/lib/db";
-import { daTesto } from "@/lib/numeri";
+import { daTesto, perPeriodo } from "@/lib/numeri";
 import type { User } from "@/auth/users";
 
 /* ---------- Fazioni ---------- */
@@ -15,16 +15,18 @@ export const RUOLI: Ruolo[] = ["sovrano", "vice", "civile"];
 export type Risorsa = { id: number; nome: string; valore: bigint };
 export type Appartenenza = { username: string; fazione: string; ruolo: Ruolo };
 export type Possedimento = { fazione: string; risorsaId: number; quantita: bigint };
-export type FarmCosto = { risorsaId: number; quantita: bigint };
+export type FarmVoce = { risorsaId: number; quantita: bigint };
 export type Farm = {
     id: number;
     fazione: string;
     nome: string;
     descrizione: string;
-    prodottoId: number;
-    prodottoQuantita: bigint;
+    /** true = produce da sola, senza intervento del giocatore; tempoSecondi è la durata di un ciclo */
+    passiva: boolean;
+    /** durata di un utilizzo (farm attiva) o di un ciclo (farm passiva) */
     tempoSecondi: number;
-    costi: FarmCosto[];
+    prodotti: FarmVoce[];
+    costi: FarmVoce[];
 };
 export type Scambio = {
     id: number;
@@ -35,15 +37,6 @@ export type Scambio = {
     creatoDa: string;
     creatoIl: string;
 };
-export type VoceRegistro = {
-    id: number;
-    username: string;
-    fazione: string;
-    azione: string;
-    dettaglio: string;
-    creatoIl: string;
-};
-
 export type DatiEconomia = {
     errore: string | null;
     risorse: Risorsa[];
@@ -60,11 +53,14 @@ type RigaFarm = {
     fazione: string;
     nome: string;
     descrizione: string;
-    prodotto_id: number;
-    prodotto_quantita: string;
+    passiva: boolean;
     tempo_secondi: number;
+    farm_prodotti: { risorsa_id: number; quantita: string }[];
     farm_costi: { risorsa_id: number; quantita: string }[];
 };
+
+const voci = (r: { risorsa_id: number; quantita: string }[] | null): FarmVoce[] =>
+    (r || []).map((x) => ({ risorsaId: x.risorsa_id, quantita: daTesto(x.quantita) }));
 
 export async function caricaEconomia(): Promise<DatiEconomia> {
     try {
@@ -72,7 +68,7 @@ export async function caricaEconomia(): Promise<DatiEconomia> {
             db<{ id: number; nome: string; valore: string }[]>("/risorse?select=id,nome,valore&order=nome.asc"),
             db<{ username: string; fazione: string; ruolo: Ruolo }[]>("/appartenenze?select=username,fazione,ruolo"),
             db<{ fazione: string; risorsa_id: number; quantita: string }[]>("/possedimenti?select=fazione,risorsa_id,quantita"),
-            db<RigaFarm[]>("/farm?select=id,fazione,nome,descrizione,prodotto_id,prodotto_quantita,tempo_secondi,farm_costi(risorsa_id,quantita)&order=id.asc"),
+            db<RigaFarm[]>("/farm?select=id,fazione,nome,descrizione,passiva,tempo_secondi,farm_prodotti(risorsa_id,quantita),farm_costi(risorsa_id,quantita)&order=id.asc"),
             db<{ id: number; fazione_a: string; fazione_b: string; descrizione: string; documenti: string[]; created_by: string; created_at: string }[]>(
                 "/scambi?select=id,fazione_a,fazione_b,descrizione,documenti,created_by,created_at&order=created_at.desc&limit=200"
             ),
@@ -88,10 +84,10 @@ export async function caricaEconomia(): Promise<DatiEconomia> {
                 fazione: x.fazione,
                 nome: x.nome,
                 descrizione: x.descrizione,
-                prodottoId: x.prodotto_id,
-                prodottoQuantita: daTesto(x.prodotto_quantita),
+                passiva: !!x.passiva,
                 tempoSecondi: x.tempo_secondi,
-                costi: (x.farm_costi || []).map((c) => ({ risorsaId: c.risorsa_id, quantita: daTesto(c.quantita) })),
+                prodotti: voci(x.farm_prodotti),
+                costi: voci(x.farm_costi),
             })),
             scambi: s.map((x) => ({
                 id: x.id,
@@ -112,24 +108,6 @@ export async function caricaEconomia(): Promise<DatiEconomia> {
             farm: [],
             scambi: [],
         };
-    }
-}
-
-export async function caricaRegistro(fazione: string, limite = 25): Promise<VoceRegistro[]> {
-    try {
-        const rows = await db<
-            { id: number; username: string; fazione: string; azione: string; dettaglio: string; created_at: string }[]
-        >(`/registro?fazione=${eq(fazione)}&select=id,username,fazione,azione,dettaglio,created_at&order=created_at.desc&limit=${limite}`);
-        return rows.map((x) => ({
-            id: x.id,
-            username: x.username,
-            fazione: x.fazione,
-            azione: x.azione,
-            dettaglio: x.dettaglio,
-            creatoIl: x.created_at,
-        }));
-    } catch {
-        return [];
     }
 }
 
@@ -154,19 +132,27 @@ export function patrimonioMondiale(dati: DatiEconomia): bigint {
 }
 
 export type ConteggioFarm = {
-    ricavo: bigint; // per utilizzo
-    costo: bigint; // per utilizzo
-    profitto: bigint; // per utilizzo (può essere negativo)
+    ricavo: bigint; // per utilizzo (attiva) o per ciclo (passiva)
+    costo: bigint; // per utilizzo o per ciclo
+    profitto: bigint; // per utilizzo o per ciclo (può essere negativo)
     profittoOra: bigint;
+    profittoGiorno: bigint;
 };
 
+const somma = (v: FarmVoce[], valori: Map<number, bigint>) =>
+    v.reduce((tot, x) => tot + x.quantita * (valori.get(x.risorsaId) ?? 0n), 0n);
+
 export function calcolaFarm(farm: Farm, valori: Map<number, bigint>): ConteggioFarm {
-    const ricavo = farm.prodottoQuantita * (valori.get(farm.prodottoId) ?? 0n);
-    let costo = 0n;
-    for (const c of farm.costi) costo += c.quantita * (valori.get(c.risorsaId) ?? 0n);
+    const ricavo = somma(farm.prodotti, valori);
+    const costo = somma(farm.costi, valori);
     const profitto = ricavo - costo;
-    const profittoOra = farm.tempoSecondi > 0 ? (profitto * 3600n) / BigInt(farm.tempoSecondi) : 0n;
-    return { ricavo, costo, profitto, profittoOra };
+    return {
+        ricavo,
+        costo,
+        profitto,
+        profittoOra: perPeriodo(profitto, farm.tempoSecondi, 3600),
+        profittoGiorno: perPeriodo(profitto, farm.tempoSecondi, 86400),
+    };
 }
 
 /* ---------- Permessi ---------- */
@@ -195,19 +181,5 @@ export async function puoModificare(user: User | null, fazione: string): Promise
         return r === "sovrano" || r === "vice";
     } catch {
         return false;
-    }
-}
-
-/* ---------- Registro modifiche ---------- */
-
-export async function registra(username: string, fazione: string, azione: string, dettaglio: string) {
-    try {
-        await db("/registro", {
-            method: "POST",
-            prefer: "return=minimal",
-            body: { username, fazione, azione, dettaglio: dettaglio.slice(0, 300) },
-        });
-    } catch {
-        /* il registro non deve mai bloccare un'operazione */
     }
 }
