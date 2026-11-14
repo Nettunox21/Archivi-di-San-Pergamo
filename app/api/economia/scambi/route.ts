@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/auth/users";
 import { db, eq } from "@/lib/db";
-import { trovaFazione, puoModificare, registra } from "@/lib/economia";
+import { trovaFazione, puoModificare } from "@/lib/economia";
 import { elencoDocumenti } from "@/lib/economiaDocs";
 import { leggiJson, risposta, rispostaErrore, intero, testo } from "@/lib/api";
 
@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
             prefer: "return=minimal",
             body: { fazione_a: fazioneA, fazione_b: fazioneB, descrizione, documenti, created_by: user.username },
         });
-        await registra(user.username, fazioneA, "scambio", `Scambio registrato con ${trovaFazione(fazioneB)!.name}`);
         return NextResponse.json({ ok: true });
     } catch (e) {
         return rispostaErrore(e);
@@ -57,7 +56,6 @@ export async function DELETE(req: NextRequest) {
             return risposta("Non hai i permessi per questo scambio", 403);
         }
         await db(`/scambi?id=${eq(id)}`, { method: "DELETE", prefer: "return=minimal" });
-        await registra(user.username, s.fazione_a, "scambio", `Scambio eliminato (con ${s.fazione_b})`);
         return NextResponse.json({ ok: true });
     } catch (e) {
         return rispostaErrore(e);
