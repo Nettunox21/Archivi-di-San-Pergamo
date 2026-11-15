@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
     caricaEconomia, calcolaFarm, fazioniEcon, mappaValori,
-    patrimonioFazione, patrimonioMondiale,
+    patrimonioFazione, patrimonioMondiale, trovaFazione,
 } from "@/lib/economia";
 import { elencoDocumenti } from "@/lib/economiaDocs";
 import { formatPercento, inParole, percento, raggruppa, formatEuro } from "@/lib/numeri";
@@ -31,7 +31,10 @@ export default async function EconomiaPage() {
         .sort((a, b) => (a.valore < b.valore ? 1 : a.valore > b.valore ? -1 : 0))
         .slice(0, 6);
 
-    const nomeFazione = (id: string) => fazioniEcon.find((f) => f.id === id)?.name ?? id;
+    // trovaFazione conosce anche gli istituti (che non sono più in lista), così gli scambi vecchi mostrano il nome giusto
+    const nomeFazione = (id: string) => trovaFazione(id)?.name ?? id;
+    const nomeConLink = (id: string) =>
+        fazioniEcon.some((f) => f.id === id) ? <Link href={`/economia/${id}`}>{nomeFazione(id)}</Link> : <span>{nomeFazione(id)}</span>;
 
     const farmMigliori = dati.farm
         .map((f) => ({ f, c: calcolaFarm(f, valori) }))
@@ -92,7 +95,7 @@ export default async function EconomiaPage() {
                         <ol className="eco-elenco">
                             {farmMigliori.map(({ f, c }) => (
                                 <li key={f.id}>
-                                    <Link href={`/economia/${f.fazione}`}>{f.nome}</Link>
+                                    {fazioniEcon.some((x) => x.id === f.fazione) ? <Link href={`/economia/${f.fazione}`}>{f.nome}</Link> : <span>{f.nome}</span>}
                                     <small>{nomeFazione(f.fazione)}</small>
                                     <span>
                                         <Euro v={c.profittoOra} segno /> / ora
@@ -113,9 +116,9 @@ export default async function EconomiaPage() {
                         {dati.scambi.slice(0, 6).map((s) => (
                             <li key={s.id}>
                                 <div className="eco-scambio-testa">
-                                    <Link href={`/economia/${s.fazioneA}`}>{nomeFazione(s.fazioneA)}</Link>
+                                    {nomeConLink(s.fazioneA)}
                                     <span aria-hidden>⇄</span>
-                                    <Link href={`/economia/${s.fazioneB}`}>{nomeFazione(s.fazioneB)}</Link>
+                                    {nomeConLink(s.fazioneB)}
                                     <time>{new Date(s.creatoIl).toLocaleDateString("it-IT")}</time>
                                 </div>
                                 <p>{s.descrizione}</p>
