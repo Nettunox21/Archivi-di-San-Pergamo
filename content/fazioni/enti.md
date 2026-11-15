@@ -35,3 +35,23 @@ nazioni: Falconia
 condivide: tutto
 descrizione: Falconia Institute of Research & Development
 link: /aziende/brevetti
+
+## Trauma Team
+tipo: azienda
+nazioni: Falconia
+condivide: Carote D'Oro, Razzetti
+descrizione: Soccorso e abbonamenti sanitari
+link: /aziende/trauma-team
+
+## Terreni & Immobili
+tipo: azienda
+nazioni: Falconia
+condivide: niente
+descrizione: Informativa su terreni disponibili
+link: /aziende/terreni
+
+## Carote d'Oro
+tipo: azienda
+nazioni: San Pergamo
+condivide: Carote, Lingotti D'Oro
+link: /aziende/carote-doro
