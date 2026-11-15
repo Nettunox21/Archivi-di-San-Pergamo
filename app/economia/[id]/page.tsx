@@ -10,6 +10,7 @@ import { elencoDocumenti } from "@/lib/economiaDocs";
 import { formatEuro, formatPercento, formatTempo, percento } from "@/lib/numeri";
 import { Euro, GraficoFarm, Quantita, Torta, type Fetta } from "@/app/components/EconomiaCharts";
 import EconomiaEditor from "@/app/components/EconomiaEditor";
+import { entiDellaFazione, normalizzaNome, type Ente } from "@/lib/enti";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +32,13 @@ const ETICHETTA_RUOLO: Record<Ruolo, string> = { sovrano: "Sovrano", vice: "Vice
 export default async function EconomiaFazionePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const fazione = trovaFazione(id);
-    if (!fazione) notFound();
+    // gli istituti non hanno una economia propria: vivono dentro le nazioni collegate
+    if (!fazione || fazione.tipo === "istituto") notFound();
 
     const [user, dati] = await Promise.all([getCurrentUser(), caricaEconomia()]);
     const valori = mappaValori(dati.risorse);
     const nomeRisorsa = new Map(dati.risorse.map((r) => [r.id, r.nome]));
-    const nomeFazione = (x: string) => fazioniEcon.find((f) => f.id === x)?.name ?? x;
+    const nomeFazione = (x: string) => trovaFazione(x)?.name ?? x;
     const titoliDoc = new Map(elencoDocumenti().map((d) => [d.slug, d.title]));
 
     const miei = dati.possedimenti.filter((p) => p.fazione === id);
@@ -62,6 +64,11 @@ export default async function EconomiaFazionePage({ params }: { params: Promise<
     const membri = dati.appartenenze.filter((a) => a.fazione === id);
 
     const puoModificare = puoModificareDa(user, id, dati.appartenenze);
+
+    // enti (istituti e aziende) collegati a questa nazione: solo informativo, da content/fazioni/enti.md
+    const enti = entiDellaFazione(id);
+    const idRisorsaPerNome = new Map(dati.risorse.map((r) => [normalizzaNome(r.nome), r.id]));
+    const quantitaPossedute = new Map(miei.map((p) => [p.risorsaId, p.quantita]));
 
     return (
         <div className="eco-pagina">
@@ -120,6 +127,48 @@ export default async function EconomiaFazionePage({ params }: { params: Promise<
                     )}
                 </section>
             </div>
+
+            {enti.length > 0 && (
+                <section className="eco-box">
+                    <h2>Enti collegati</h2>
+                    <ul className="eco-enti">
+                        {enti.map((e: Ente) => {
+                            const altre = e.nazioni.filter((n) => n !== id);
+                            return (
+                                <li key={e.nome}>
+                                    <div className="eco-ente-testa">
+                                        <strong>{e.link ? <Link href={e.link}>{e.nome}</Link> : e.nome}</strong>
+                                        <span className="eco-badge">{e.tipo === "istituto" ? "Istituto" : "Azienda"}</span>
+                                        {altre.length > 0 && <small>collegato anche a {altre.map(nomeFazione).join(", ")}</small>}
+                                    </div>
+                                    {e.descrizione && <p className="eco-ente-desc">{e.descrizione}</p>}
+                                    <p className="eco-ente-risorse">
+                                        {e.condivide.modo === "tutto" && <>Può attingere a tutto il magazzino di {fazione.name}.</>}
+                                        {e.condivide.modo === "niente" && <>Non condivide risorse con la nazione.</>}
+                                        {e.condivide.modo === "elenco" && (
+                                            <>
+                                                Condivide:{" "}
+                                                {e.condivide.risorse.map((nome, i) => {
+                                                    const rid = idRisorsaPerNome.get(normalizzaNome(nome));
+                                                    const q = rid === undefined ? undefined : quantitaPossedute.get(rid);
+                                                    return (
+                                                        <span key={nome}>
+                                                            {i > 0 ? ", " : ""}
+                                                            {nome}
+                                                            {rid === undefined ? " (non in catalogo)" : q !== undefined ? <> (<Quantita v={q} /> in magazzino)</> : " (non in magazzino)"}
+                                                        </span>
+                                                    );
+                                                })}
+                                                .
+                                            </>
+                                        )}
+                                    </p>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </section>
+            )}
 
             <section className="eco-box">
                 <h2>Risorse</h2>
@@ -195,7 +244,7 @@ export default async function EconomiaFazionePage({ params }: { params: Promise<
                                 <li key={s.id}>
                                     <div className="eco-scambio-testa">
                                         <span>con</span>
-                                        <Link href={`/economia/${altra}`}>{nomeFazione(altra)}</Link>
+                                        {fazioniEcon.some((f) => f.id === altra) ? <Link href={`/economia/${altra}`}>{nomeFazione(altra)}</Link> : <span>{nomeFazione(altra)}</span>}
                                         <time>{new Date(s.creatoIl).toLocaleDateString("it-IT")}</time>
                                     </div>
                                     <p>{s.descrizione}</p>
