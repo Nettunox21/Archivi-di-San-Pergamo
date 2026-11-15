@@ -139,6 +139,7 @@ export default async function EconomiaFazionePage({ params }: { params: Promise<
                                     <div className="eco-ente-testa">
                                         <strong>{e.link ? <Link href={e.link}>{e.nome}</Link> : e.nome}</strong>
                                         <span className="eco-badge">{e.tipo === "istituto" ? "Istituto" : "Azienda"}</span>
+                                        {e.profitto && <span className="eco-ente-profitto">Profitto: {e.profitto}</span>}
                                         {altre.length > 0 && <small>collegato anche a {altre.map(nomeFazione).join(", ")}</small>}
                                     </div>
                                     {e.descrizione && <p className="eco-ente-desc">{e.descrizione}</p>}
