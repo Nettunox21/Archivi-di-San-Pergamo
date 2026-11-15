@@ -211,3 +211,11 @@
 @media (prefers-reduced-motion: reduce) {
   .eco-fazione { transition: none; }
 }
+
+/* enti collegati alla nazione (istituti e aziende) */
+.eco-enti { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.eco-enti li { border-left: 2px solid #4f3928; padding-left: 12px; }
+.eco-ente-testa { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.eco-ente-testa small { color: rgba(216, 204, 179, 0.5); font-size: 12px; }
+.eco-ente-desc { margin: 4px 0 0; color: rgba(216, 204, 179, 0.6); font-size: 13px; }
+.eco-ente-risorse { margin: 6px 0 0; font-size: 14px; }

@@ -815,6 +815,19 @@ GALLERIA SCORREVOLE
   padding: 0 16px;
 }
 
+/* titolo di sezione sopra ogni griglia (Fazioni, Enti governativi...) */
+.fazioni-titolo-sez {
+  max-width: 960px;
+  margin: 48px auto -24px;
+  padding: 0 16px;
+  font-family: 'Palatino Linotype', Palatino, serif;
+  color: #c8a96e;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .faction-card {
   display: flex;
   flex-direction: column;
@@ -2029,6 +2042,12 @@ canvas {
     gap: 10px;
     padding: 0 10px;
     margin: 24px auto;
+  }
+
+  .fazioni-titolo-sez {
+    margin: 24px auto -12px;
+    padding: 0 10px;
+    font-size: 16px;
   }
 
   .faction-info {
