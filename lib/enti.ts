@@ -19,6 +19,8 @@ export type Ente = {
     nazioni: string[];
     condivide: Condivisione;
     descrizione: string;
+    /** testo libero mostrato in verde (es. "Nullo", "120 €, all'ora", "vedi abbonamenti") */
+    profitto: string;
     link: string;
 };
 
@@ -47,7 +49,7 @@ export function getEnti(): Ente[] {
         if (!r || r.startsWith("//")) continue;
 
         if (r.startsWith("## ")) {
-            corrente = { nome: r.slice(3).trim(), tipo: "istituto", nazioni: [], condivide: { modo: "niente" }, descrizione: "", link: "" };
+            corrente = { nome: r.slice(3).trim(), tipo: "istituto", nazioni: [], condivide: { modo: "niente" }, descrizione: "", profitto: "", link: "" };
             enti.push(corrente);
             continue;
         }
@@ -62,6 +64,7 @@ export function getEnti(): Ente[] {
         else if (chiave === "nazioni") corrente.nazioni = lista(valore).map(fazioneId);
         else if (chiave === "condivide") corrente.condivide = leggiCondivisione(valore);
         else if (chiave === "descrizione") corrente.descrizione = valore;
+        else if (chiave === "profitto") corrente.profitto = valore;
         else if (chiave === "link") corrente.link = valore;
     }
     return enti;
