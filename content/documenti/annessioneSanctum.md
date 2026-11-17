@@ -10,13 +10,14 @@ Dopo aver repentato l'Ender Drago, gli Stati sovrani nella classifica ecnomica h
 
 :::pagina:::
 Codeste sono le trattative coloniali:
--Ciò che è della colonia è del sovrano
--Dovranno essere pagati tributi
--Il sovrano servirà protezione se richiesta
--Verranno fornite risorse in base a quantità e rarità
--Ogni rivolta verrà soppressa
--Gli ordini verranno eseguiti senza lamenti
--In seguito alla  passata posizione di EtheralGlue26, l'incarico passerà al sovrano. Inoltre, il guadagno delle Competizioni del Satno, verrà assegnato al sovrano.
+- Ciò che è della colonia è del sovrano
+- Dovranno essere pagati tributi
+- Il sovrano servirà protezione se richiesta
+- Verranno fornite risorse in base a quantità e rarità
+- Ogni rivolta verrà soppressa
+- Gli ordini verranno eseguiti senza lamenti
+- In seguito alla passata posizione di EtherealGlue26, l'incarico passerà al sovrano. Inoltre, il guadagno delle Competizioni del Santo, verrà assegnato al sovrano.
+
 
 Gloria ad Arstozka!
 
