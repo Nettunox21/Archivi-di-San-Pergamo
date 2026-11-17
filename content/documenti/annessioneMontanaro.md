@@ -10,12 +10,12 @@ In seguito alla conquista del Sanctum Imperum, Arstozka invia al regno dell'Impe
 
 :::pagina:::
 Codeste sono le trattative coloniali:
--Ciò che è della colonia è del sovrano
--Dovranno essere pagati tributi
--Il sovrano servirà protezione se richiesta
--Verranno fornite risorse in base a quantità e rarità
--Ogni rivolta verrà soppressa
--Gli ordini verranno eseguiti senza lamentele
+- Ciò che è della colonia è del sovrano
+- Dovranno essere pagati tributi
+- Il sovrano servirà protezione se richiesta
+- Verranno fornite risorse in base a quantità e rarità
+- Ogni rivolta verrà soppressa
+- Gli ordini verranno eseguiti senza lamentele
 
 Gloria ad Arstozka!
 
