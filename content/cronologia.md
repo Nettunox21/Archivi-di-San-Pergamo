@@ -28,7 +28,7 @@
 > La migrazione sulle vette, le guerre del miele e l'unificazione sotto Arstozka.
 
 - Dopo millenni | La Migrazione sulle Vette | archivio:seconda-era-migrazione | I sopravvissuti fondano Arstozka, Collesalvetti, Sanctum Imperum, Impero del Montanaro e Terre di Nessuno.
-- Espansione | Le Campagne di Arstozka | archivio:campagne-arstozka | Spinta dalla fame e dal monopolio sul miele, Arstozka invade Collesalvetti e l'Impero del Montanaro.
+- Espansione | Le Campagne di Arstozka | archivio:campagne-arstozka | Arstozka soddisfa la sua sete espansionistica
 - La Guerra Santa | La Crociata e l'Annessione del Sanctum | documento:annessioneSanctum | Franco II sconfigge Papa Profit in duello sulla vetta, unificando il mondo sotto un solo impero.
 
 ## Terza Era: L'Età dell'Oro e la Democrazia
