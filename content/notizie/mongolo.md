@@ -1,6 +1,6 @@
 ---
 title: "Le ondate mongole colpiscono ancora"
-image: "/images/notizie/Mongolo2.png"
+image: "/images/notizie/Mongolo.png"
 date: "17 Novembre, 2875"
 location: "Continente di Arstozka"
 reporter: "Cittadino di San Pergamo"
