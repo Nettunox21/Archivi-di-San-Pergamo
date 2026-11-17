@@ -17,16 +17,37 @@
     Oppure scrivi un percorso intero (/mappa) o un indirizzo (https://...).
 -->
 
-## Era della Fondazione
-> Gli inizi: i primi regni e le prime alleanze.
+## Prima Era: Le Origini e l'Apocalisse
+> Le prime tre civiltà, i conflitti sui confini e la catastrofe nucleare.
 
-- Anno 1 | Nasce San Pergamo | archivio:san-pergamo | Il regno prende forma attorno all'Ordine.
-- Anno 2 | Nasce Profitgrado | archivio:profitgrado | Il regno dell'economia e delle costruzioni.
-- Anno 2 | Nasce Falconia | archivio:falconia
+- Gli inizi | La Nascita delle Tre Nazioni | archivio:prima-era-nazioni | Vinland, Behemdorg e Profitgrado sorgono in contemporanea in aree diverse.
+- Primi dialoghi | Il Primo Consiglio e la Prima Guerra | archivio:prima-guerra | Dopo i casi di vandalismo, il consiglio nella torre di Profitgrado fallisce e Vinland rade al suolo Behemdorg.
+- La fine | L'Attentato e l'Olocausto Nucleare | archivio:olocausto-nucleare | Profitgrado finanzia un attentato contro Vinland e lancia testate nucleari che distruggono il mondo.
 
-## Era dei Conflitti
-> Tensioni, guerre e trattati.
+## Seconda Era: La Ricostruzione e l'Impero
+> La migrazione sulle vette, le guerre del miele e l'unificazione sotto Arstozka.
 
-- Dopo la fondazione | La Guerra Santa | archivio:la-guerra-santa | Il primo grande scontro tra i regni.
-- Anno 4 | Annessione di Sanctum | documento:annessioneSanctum
-- Anno 5 | Lo stretto di Duloc e il Priorato | notizie:strettoDulocPriorato
+- Dopo millenni | La Migrazione sulle Vette | archivio:seconda-era-migrazione | I sopravvissuti fondano Arstozka, Collesalvetti, Sanctum Imperum, Impero del Montanaro e Terre di Nessuno.
+- Espansione | Le Campagne di Arstozka | archivio:campagne-arstozka | Spinta dalla fame e dal monopolio sul miele, Arstozka invade Collesalvetti e l'Impero del Montanaro.
+- La Guerra Santa | La Crociata e l'Annessione del Sanctum | documento:annessioneSanctum | Franco II sconfigge Papa Profit in duello sulla vetta, unificando il mondo sotto un solo impero.
+
+## Terza Era: L'Età dell'Oro e la Democrazia
+> L'esodo verso le terre fertili, la nascita della Costituzione e le grandi opere.
+
+- Fine del fallout | L'Esodo verso il Continente Arstozka | archivio:esodo-continente | I popoli attraversano le lande di Agartha e fondano un grande complesso abitativo nella montagna.
+- La svolta | Primo Governo Democratico e Costituzione | documento:costituzione-internazionale | Franco III vince le prime elezioni per un punto e viene firmata la legge internazionale.
+- La crisi | Il Grande Incendio e le Grandi Opere | archivio:grande-incendio | Il discendente del Bomber e Gherry incendiano il complesso; i loro lavori forzati finanziano la Cattedrale e il Francoforte.
+
+## Epoca Moderna: Frammentazione e Blocchi Geopolitici
+> La caduta dell'impero unitario, la guerra fredda tecnologica e l'industrializzazione.
+
+- Anno 500 - 650 | La Secessione di Falconia | archivio:falconia | Completata la Cattedrale, Franco III lascia la presidenza e fonda Falconia presso il Francoforte.
+- Anno 800 | Indipendenza di San Pergamo e Profitgrado | archivio:san-pergamo | Il Priore dichiara l'indipendenza di San Pergamo, isolando la nuova Profitgrado dal resto di Arstozka.
+- Anno 1000 | Il Regno dei Nani e l'Istituto SENPAI | archivio:istituto-senpai | Nasce il regno sotterraneo nella Mesa mentre San Pergamo e Profitgrado fondano l'ente di ricerca sulla duplicazione.
+- 12 Febbraio 1922 | La Costituzione di Falconia | documento:costituzione-falconia | Dopo aver annesso il Regno dei Nani, Falconia diventa il primo paese a esistere su carta oltre ad Arstozka.
+- Anno 1973 | L'Incidente di Chernobyl | archivio:disastro-chernobyl | Si verifica la più grande catastrofe ambientale dai tempi del Grande Incendio di 1700 anni prima.
+- Anno 2000 | La Lega di Lame e la Repubblica di Calkiria | archivio:lega-di-lame | Nasce l'alleanza orientale anti-falconiana mentre Calkiria viene fondata nell'estremo est.
+- 11 Settembre 2001 | Nasce il Parco Nazionale Lil Pisa | archivio:lil-pisa | Un abuso edilizio in terra neutra viene legalizzato e finanziato dalla Mambo's Industries di Gioele.
+- Età dei Monumenti | La Guerra Fredda e le Grandi Costruzioni | archivio:fiord-e-monumenti | Falconia fonda il FIORD contro il SENPAI mentre sorgono Villa Profit, Torre Molteni, Duloc e l'Archivio.
+- Anno 2700 | L'Arrivo di Gabriel e Totti e la Nascita dell'Asse | archivio:alleanza-asse | Nascono Abetonia e La Roma che si uniscono a Falconia nell'Asse commerciale contro la Lega di Lame.
+- Oggi | La Rivoluzione del Portale Talanton | archivio:portale-talanton | Nuove corporazioni come Trauma Team, Karrot e Krok guidano la massiccia industrializzazione del mondo.
