@@ -1,5 +1,5 @@
 ---
-title: "Le ondate mongole colpiscono ancora"
+title: "Le ondate mongole arrivano nel continente"
 image: "/images/notizie/Mongolo.png"
 date: "17 Novembre, 2875"
 location: "Continente di Arstozka"
