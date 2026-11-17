@@ -62,13 +62,13 @@
 - 16 Luglio 2026 | ProfitFC in Serie A | notizie:profitFC | La squadra sponsorizzata da Von Profit ottiene la promozione tra le polemiche, dopo una stagione che secondo molti osservatori non la meritava.
 - Età dei Monumenti | Le Grandi Costruzioni | archivio:grandi-costruzioni | Il mondo si arricchisce di monumenti iconici come Villa Profit, Torre Molteni, il Monolite di Duloc, Lucropoli e l'Archivio.
 - 3 Agosto 2168 | Una nuova arena a Lucropoli | notizie:Arena_Lucropoli | Parte la costruzione di una delle opere più importanti della giovane Lucropoli, che potrebbe ospitare anche le prime Olimpiadi.
+- 23 Ottobre 2400 | La Rivoluzione del Portale Talanton | archivio:portale-talanton | Nuove corporazioni come Trauma Team, Karrot e Krok guidano la massiccia industrializzazione del mondo.
 - 25 Ottobre 2499 | Una croce rossa nel cielo | notizie:Croce_rossa | Un'anomalia sconosciuta compare sopra un porto dell'ex Regno dei Nani, vicino al SENPAI, e le sue cause restano ignote.
 - Anno 2700 | L'Arrivo di Gabriel e la Nascita di Abetonia | archivio:abetonia | Giunto da Agartha, Gabriel si stabilisce a sud di Falconia fondando il regno di Abetonia sotto le ali del falco.
 - Anno 2700 | L'Arrivo di Totti e la Nascita de La Roma | archivio:la-roma | Ammaliato dalle infrastrutture del mondo, il viaggiatore Totti fonda La Roma a nord di Falconia.
 - Anno 2700 | La Nascita dell'Asse | archivio:alleanza-asse | Falconia, Abetonia e La Roma formano un blocco commerciale occidentale in diretta opposizione alla Lega di Lame.
 - 17 Novembre 2875 | Le ondate mongole arrivano nel continente | notizie:mongolo | L'Impero Mongolo razzia San Pergamo, Profitgrado e Calkiria, risparmiando solo Falconia.
 - 17 Novembre 2875 | La giostra di Lucropoli contro un guerriero mongolo | notizie:mongolo2 | Una guardia dell'Impero Cinese sfida un esponente mongolo in un duello a cavallo e perde.
-- Oggi | La Rivoluzione del Portale Talanton | archivio:portale-talanton | Nuove corporazioni come Trauma Team, Karrot e Krok guidano la massiccia industrializzazione del mondo.
 
 <!--
   NOTIZIE SEGRETE (teorie del complotto) - NON INCLUSE.
