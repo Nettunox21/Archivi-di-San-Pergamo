@@ -100,7 +100,7 @@ L'albero genealogico mostra più rami e matrimoni, da tenere distinti:
 - **Ferdinando III** (1637–1657);
 - **Otto von Bismarck** (1815–1898);
 - **Nayotake Shimizu** (1980–), con **Gan'an Shinomiya** e la figlia **Kaguya Shinomiya** (2007);
-- **Cristiano Speculus Von Profit** (1974–2010), con i figli **Gino** (2008) e **Giovanni** (2009) Speculus Von Profit.
+- **Cristiano Speculus Von Profit** (1974–2010), con **Asia Argento** e i figli **Gino** (2008) e **Giovanni** (2009) Speculus Von Profit.
 
 Dopo la morte di Vincent un erede diretto, con un ruolo religioso di massimo livello, assume la guida della famiglia. In seguito viene fondato in Giappone il centro operativo di **Profitgrado**, attorno alla **Torre di Von Profit**.
 
