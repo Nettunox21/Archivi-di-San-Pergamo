@@ -1,84 +1,38 @@
-My name is the fucking Mimic, oh yeah
-My name is the fucking Mimic, oh yeah
-Da, dada-da-da, da, dada-da-da
-Ba-da-da-da-da-da-da-da-da-da-da-da
+## Regolamento del Trauma Team
 
-[Verse 1]
-Time to play
-No? Well, time to die
-'Cause I'm not nice, no, I'm not nice
-I'll shoot you in the face 'til I make you die
-Watch me shoot my secret cannon
-I put bombs in your belongings
-They call me The Bomb Thief, uh
-The way I disperse grief, uh
-And I don't like to play by the rules
-So in my factory you will be doomed (Mimic)
+### 1. Gradi di rischio
+Ogni operazione ha un grado di rischio da 1 a 3. I piani Bronzo e Argento coprono solo il rischio 1, il piano Oro copre fino al rischio 2, il piano Platino copre fino al rischio 3.
 
-[Verse 2]
-My name is Edwin, I made the Mimic
-It was difficult to put the pieces together
-But unfortunatеly, something went so wrong
-And now I can't do anything but sing this stupid song
-My name is Edwin
+Esiste anche il livello di rischio 4: l'operazione è impossibile e il servizio viene annullato.
 
-[Bridge]
-It's timе to run and hide
-No time to fight
-It's time to run and hide
-No time to fight (My name is—)
-It's time to run and hide
-No time to fight
-It's time to run and hide
-No time to fight
-You might also like
-It’s me, It’s Verity
-Horror Skunx
-Master of Humanity (Lord Verity)
-Horror Skunx
-My name is Damiano David
-Damiano David
-[Verse 3]
-My name is David
-Dad, I want some ice cream
-David, that is my name
-David, I want another, David
-Where is my ball?
-I'm running out on the road
-There is a car
-And it is going to hit me *screams*
+### 2. Annullamento del servizio
+Il servizio viene annullato se:
 
-[Chorus]
-My name is the fucking Mimic, oh yeah
-My name is the fucking Mimic, oh yeah
-Da, dada-da-da, da, dada-da-da
-Ba-da-da-da-da-da-da-da-da-da-da-da
-My name is the fucking Mimic, oh yeah
-My name is the fucking Mimic, oh yeah
-Da, dada-da-da, da, dada-da-da
-Ba-da-da-da-da-da-da-da-da-da-da-da
-My name is the fucking Mimic, oh yeah
-My name is the fucking Mimic, oh yeah
-Da, dada-da-da, da, dada-da-da
-Ba-da-da-da-da-da-da-da-da-da-da-da
-My name is the fucking Mimic, oh yeah
-(It's time to run and hide, no time to fight)
-My name is the fucking Mimic, oh yeah
-Da, dada-da-da, da, dada-da-da
-(It's time to run and hide, no time to fight)
-Ba-da-da-da-da-da-da-da-da-da-da-da
-[Verse 4]
-My name is Jackie, and
-I'm fuckin' backie, yuh
-'Cause with my clown power
-I am gonna make you scream louder, haha
-It's a clown attack, bitch
-The circus is comin' to town
-So sit your ass down and get ready for a clown attack
+- il livello di rischio dell'operazione non è previsto dal piano del cliente;
+- l'intera squadra viene eliminata (è previsto un risarcimento al cliente);
+- il cliente è ricercato;
+- il cliente sta partecipando a una competizione amichevole autorizzata;
+- l'operazione è totalmente impossibile (è previsto un risarcimento al cliente).
 
-[Outro]
-(No, not the clown, what have I done?)
-It's time to run and hide
-(I'm sorry)
-No time to fight
-Robot deactivated
+Rimborsi e condizioni dell'annullamento dipendono dal piano scelto: vedi il listino.
+
+### 3. Scontro tra clienti
+Se due clienti dovessero scontrarsi, il cliente con il piano maggiore ha la priorità; il cliente con il piano inferiore viene eliminato e poi riceve indietro tutti i suoi averi.
+
+Se i clienti hanno lo stesso piano si ricorre alla diplomazia. Se fallisce e il servizio è comunque richiesto, entrambi i clienti vengono eliminati allo scopo di essere separati, gli averi vengono restituiti ed è previsto un risarcimento parziale.
+
+### 4. Truffe assicurative
+Le truffe assicurative sono punite con il ban, temporaneo o permanente, dai servizi del Trauma Team ed eventuali azioni legali.
+
+### 5. Cooperazione
+Dal cliente è prevista cooperazione totale. Dall'operatore sono previste velocità e professionalità.
+
+### 6. Secure your Soul
+Il programma è annullabile con risarcimento parziale del prezzo iniziale.
+
+### 7. Operatori e attrezzatura
+- Tutta l'attrezzatura operativa è finanziata, mantenuta e posseduta dal Trauma Team, finanziato da Falconia: gli strumenti usati dagli operatori sono di proprietà di Falconia e vanno usati esclusivamente durante il servizio.
+- L'operatore viene pagato in base alla difficoltà del servizio.
+- Se l'operatore perde equipaggiamento è tenuto a ripagarlo.
+- A ogni operatore spetta un singolo servizio Platino gratuito; per eventuali servizi extra paga come un comune cliente.
+- Gli operatori con un elevato grado di anzianità ed esperienza sul campo hanno diritto a uno sconto sui servizi.
