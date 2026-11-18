@@ -343,6 +343,108 @@
 .tt-platino { --tt-c: #5ff0ff; }
 .tt-neutro { --tt-c: var(--tt-rosso); }
 
+/* ---------- Badge rischio e nota prezzo ---------- */
+
+.tt-piano-nota {
+  margin-top: 6px;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--tt-spento);
+}
+
+.tt-piano-rischio {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 7px 10px;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--tt-c, var(--tt-testo));
+  border: 1px solid var(--tt-c, var(--tt-bordo));
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tt-pips {
+  display: flex;
+  gap: 4px;
+}
+
+.tt-pips i {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--tt-c, var(--tt-spento));
+}
+
+.tt-pips i.on {
+  background: var(--tt-c, var(--tt-spento));
+  box-shadow: 0 0 8px var(--tt-c, transparent);
+}
+
+/* ---------- Gradi di rischio ---------- */
+
+.tt-rischi {
+  margin-top: 34px;
+}
+
+.tt-rischi-griglia {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.tt-rischio {
+  --tt-r: var(--tt-ciano);
+  position: relative;
+  padding: 18px 18px 16px;
+  background: var(--tt-pannello);
+  border: 1px solid var(--tt-bordo);
+  border-left: 4px solid var(--tt-r);
+}
+
+.tt-rischio--1 { --tt-r: #3dff9b; }
+.tt-rischio--2 { --tt-r: #fcee0a; }
+.tt-rischio--3 { --tt-r: #ff8a2a; }
+.tt-rischio--4 {
+  --tt-r: #ff2a45;
+  background: repeating-linear-gradient(135deg, rgba(255, 42, 69, 0.1) 0 10px, transparent 10px 20px), var(--tt-pannello);
+}
+
+.tt-rischio-lv {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--tt-r);
+  text-shadow: 0 0 14px var(--tt-r);
+}
+
+.tt-rischio h3 {
+  margin-top: 6px !important;
+  font-size: 19px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tt-rischio p {
+  margin-top: 8px !important;
+  color: var(--tt-spento);
+  line-height: 1.35;
+  font-size: 16px;
+}
+
+.tt-rischio-coperto {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--tt-bordo);
+  font-family: "Share Tech Mono", monospace;
+  font-size: 12px;
+  color: var(--tt-r);
+}
+
 /* ---------- Programma (Secure your Soul) ---------- */
 
 .tt-programma {
@@ -533,13 +635,15 @@
 /* ---------- Mobile ---------- */
 
 @media (max-width: 1020px) {
-  .tt-piani {
+  .tt-piani,
+  .tt-rischi-griglia {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 600px) {
-  .tt-piani {
+  .tt-piani,
+  .tt-rischi-griglia {
     grid-template-columns: 1fr;
   }
   .tt-azioni-in {

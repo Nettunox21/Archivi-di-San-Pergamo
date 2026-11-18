@@ -4,7 +4,7 @@ import Link from "next/link";
 import { marked } from "marked";
 import "../aziende.css";
 import "./trauma-team.css";
-import { getPianiTT, getRegolamentoTT } from "@/lib/trauma-team";
+import { getPianiTT, getRegolamentoTT, getRischiTT } from "@/lib/trauma-team";
 import { getAzienda } from "@/lib/talanton";
 import { getCurrentUser } from "@/auth/users";
 import TraumaTeamClient from "./TraumaTeamClient";
@@ -48,7 +48,7 @@ export default async function TraumaTeamPage() {
                 </div>
             </header>
 
-            <TraumaTeamClient piani={piani} regolamentoHtml={regolamentoHtml} utente={utente ? utente.username : null} />
+            <TraumaTeamClient piani={piani} rischi={getRischiTT()} regolamentoHtml={regolamentoHtml} utente={utente ? utente.username : null} />
 
             <footer className="tt-footer">
                 {azienda?.titolare ? `Titolare: ${azienda.titolare} · ` : ""}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import type { PianoTT } from "@/lib/trauma-team";
+import type { PianoTT, RischioTT } from "@/lib/trauma-team";
 
 type Stato = { tipo: "idle" } | { tipo: "invio" } | { tipo: "ok" } | { tipo: "errore"; messaggio: string };
 
@@ -18,10 +18,12 @@ function tema(nome: string): string {
 
 export default function TraumaTeamClient({
     piani,
+    rischi,
     regolamentoHtml,
     utente,
 }: {
     piani: PianoTT[];
+    rischi: RischioTT[];
     regolamentoHtml: string;
     utente: string | null;
 }) {
@@ -123,9 +125,20 @@ export default function TraumaTeamClient({
                             <span className="tt-piano-tag">{scelto === p.nome ? "SELEZIONATO" : "SELEZIONA"}</span>
                             <h2 className="tt-piano-nome">{p.nome}</h2>
                             <div className="tt-piano-prezzo">{p.prezzo || "—"}</div>
+                            {p.nota && <div className="tt-piano-nota">{p.nota}</div>}
                             <div className="tt-piano-durata">
                                 <small>DURATA</small> {p.durata || "—"}
                             </div>
+                            {p.rischio > 0 && (
+                                <div className="tt-piano-rischio">
+                                    <span>Copre fino al rischio {p.rischio}</span>
+                                    <span className="tt-pips" aria-hidden="true">
+                                        {[1, 2, 3].map((n) => (
+                                            <i key={n} className={n <= p.rischio ? "on" : ""} />
+                                        ))}
+                                    </span>
+                                </div>
+                            )}
                             {p.descrizione && <p className="tt-piano-desc">{p.descrizione}</p>}
                             {p.caratteristiche.length > 0 && (
                                 <ul className="tt-piano-car">
@@ -145,6 +158,7 @@ export default function TraumaTeamClient({
                             <h2>{p.nome}</h2>
                             <div className="tt-programma-prezzo">{p.prezzo || "—"}</div>
                         </div>
+                        {p.nota && <div className="tt-piano-nota">{p.nota}</div>}
                         {p.descrizione && <p>{p.descrizione}</p>}
                         {p.caratteristiche.length > 0 && (
                             <ul className="tt-piano-car">
@@ -155,6 +169,32 @@ export default function TraumaTeamClient({
                         )}
                     </section>
                 ))}
+
+                {/* ---- Gradi di rischio ---- */}
+                {rischi.length > 0 && (
+                    <section className="tt-rischi">
+                        <div className="tt-titolo">
+                            <h1>
+                                <span>{"//"}</span> Gradi di rischio
+                            </h1>
+                        </div>
+                        <div className="tt-rischi-griglia">
+                            {rischi.map((r) => {
+                                const coperto = selezionabili.filter((p) => p.rischio >= r.livello).map((p) => p.nome);
+                                return (
+                                    <div key={r.livello} className={`tt-rischio tt-rischio--${Math.min(r.livello, 4)}`}>
+                                        <div className="tt-rischio-lv">{r.livello}</div>
+                                        <h3>{r.titolo}</h3>
+                                        {r.descrizione && <p>{r.descrizione}</p>}
+                                        <div className="tt-rischio-coperto">
+                                            {coperto.length > 0 ? `Coperto da: ${coperto.join(" · ")}` : "Nessun piano: servizio annullato"}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
             </main>
 
             {/* ---- Pop-up regolamento ---- */}
